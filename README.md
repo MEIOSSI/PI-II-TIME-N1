@@ -4,11 +4,11 @@
   PI-II-TIME-N1 - Sistema de 
 
 ## Nome dos integrantes:
-  Camille da Silva Chagas
-  Letycia Karen Marques Fernandes
-  Murilo Luis Iossi Lopes
-  Valentina Bastos de Souza
-  Vitor Hugo Turati Ianagui
+  Camille da Silva Chagas <br>
+  Letycia Karen Marques Fernandes <br>
+  Murilo Luis Iossi Lopes <br>
+  Valentina Bastos de Souza <br>
+  Vitor Hugo Turati Ianagui <br>
   
 ## Curso:
   Engenharia de Software
