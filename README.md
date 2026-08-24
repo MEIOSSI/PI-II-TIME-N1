@@ -1,7 +1,8 @@
 # PI-II-TIME-N1
 
 ## Nome do projeto/time: 
-  PI-II-TIME-N1 - Sistema de 
+  PI-II-TIME-N1 - Sistema De Acompanhamento De
+Demandas De Desenvolvimento
 
 ## Nome dos integrantes:
   Camille da Silva Chagas <br>
