@@ -6,7 +6,7 @@ Demandas De Desenvolvimento
 
 ## Nome dos integrantes:
   Camille da Silva Chagas <br>
-  Letycia Karen Marques Fernandes <br>
+  Leticya Karen Marques Fernandes <br>
   Murilo Luis Iossi Lopes <br>
   Valentina Bastos de Souza <br>
   Vitor Hugo Turati Ianagui <br>
