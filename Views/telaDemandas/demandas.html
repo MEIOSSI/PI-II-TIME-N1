@@ -14,31 +14,34 @@
 <body>
     <header class="p-3">        
         <div class="row">
-            <div class="col-6 nom-prjeto">
-                <a href="#"><-Todos os Projetos</a>
-                <h3 class="ms-4 mt-3">Nome do Projeto</h3>
+            <div class="col-6 proj-header">
+                <div class="d-flex">
+                    <a href="#"><img src="../../icons/arrow-left-solid.png " alt="Voltar" class="icon-voltar"></a>
+                    <p class="voltar-texto">Todos os Projetos</p>
+                </div>
+                <h3 class="ms-4 titulo-projeto">Nome do Projeto</h3>
             </div>
             <div class="col-6 container d-flex justify-content-end align-items-center itens">
                 <ul class="nav">
-                    <li class="nav-item ">
-                        <a class="nav-link btn btn-outline-light" href="#">Histórico de alterações</a>
+                    <li class="nav-item">
+                        <p class="integrantes">2 integrantes</p>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light" href="#">Infos</a>
+                        <a class="nav-link" href="#">Infos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light me-5" href="#">Infos</a>
+                        <a class="nav-link me-5" href="#">Histórico de alterações</a>
                     </li>
                 </ul>
             </div>
         </div>
     </header>
 
-    <div class="d-flex">
+    <div class="d-flex layout">
         <aside class="sidebar">
             <input type="search" class="form-control" placeholder="Pesquisar demandas">
             <form action="">
-                <h5 class="mb-3 mt-3">Filtros</h5>
+                <h6 class="mb-3 mt-3">Filtros</h6>
 
                 <div class="label">
                     <input class = "mt-3" type="checkbox" name="minhas-demandas" value="minhas-demandas">
@@ -47,45 +50,225 @@
 
                 <p class="mb-3 pt-3 label">Prioridade</p>
                 <div class="d-flex flex-column gap-2 mb-3 filtros">
-                    <div><input type="radio" name="prioridade" value="critica"> Crítica </div>
-                    <div><input type="radio" name="prioridade" value="alta"> Alta </div>
-                    <div><input type="radio" name="prioridade" value="media"> Média </div>
-                    <div><input type="radio" name="prioridade" value="baixa"> Baixa </div>
+                    <div><input type="checkbox" name="prioridade" value="critica"> Crítica </div>
+                    <div><input type="checkbox" name="prioridade" value="alta"> Alta </div>
+                    <div><input type="checkbox" name="prioridade" value="media"> Média </div>
+                    <div><input type="checkbox" name="prioridade" value="baixa"> Baixa </div>
                 </div>
 
                 <p class="mb-3 pt-3 label">Tipo</p>
                 <div class="d-flex flex-column gap-2 mb-3 filtros">
-                    <div><input type="radio" name="tipo" value="tarefa"> Tarefa </div>
-                    <div><input type="radio" name="tipo" value="defeito"> Defeito </div>
-                    <div><input type="radio" name="tipo" value="melhoria"> Melhoria </div>
-                    <div><input type="radio" name="tipo" value="documentacao"> Documentação </div>
+                    <div><input type="checkbox" name="tipo" value="tarefa"> Tarefa </div>
+                    <div><input type="checkbox" name="tipo" value="defeito"> Defeito </div>
+                    <div><input type="checkbox" name="tipo" value="melhoria"> Melhoria </div>
+                    <div><input type="checkbox" name="tipo" value="documentacao"> Documentação </div>
                 </div>
 
                 <div class="d-flex gap-2 mb-3 pt-3 botoes">
-                    <button type="button" class="btn btn-outline-secondary">Limpar Filtros</button>
-                    <button type="button" class="btn btn-primary">Aplicar</button>       
+                    <button type="button" class="btn btn-outline-secondary limpar">Limpar Filtros</button>
+                    <button type="button" class="btn btn-primary aplicar">Aplicar</button>       
                 </div>
             </form>
         </aside>
 
         <main class="row d-flex flex-grow-1 ">
-            <div class="col-12 col-md-3 coluna-demanda">
+            <!--coluna em aberto-->
+            <div class="col coluna-demanda">
                 <section class="card shadow-sm coluna-card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <p class="titulo-demanda">Aberta</p>
                     </div>
                     <!--card de demanda, será inserido conforme demandas são criadas apenas-->
                     <div class="card-body rounded-bottom">
-                        <article class="card mb-3 shadow-sm demanda-card">
+                        <div class="btn-nova-demanda">
+                            <button type="button" class="btn btn-primary aplicar mb-3"><span class="fw-bold">+ </span>Nova Demanda</button>
+                        </div>
+                        <article class="card mb-3 shadow-sm demanda-card critica">
                             <div class="card-body">
-                                <div class="mb-3 nome-demanda">demanda de bug</div>
-                                <div class="d-flex gap-2"><p class="prioridade">crítica </p><p>-</p><p class="tipo">Bug</p></div>
-                                <p class="small text-muted mb-0">O acesso não funciona para novos usuários.</p>
+                                <div class="mb-2 nome-demanda">demanda de defeito</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-defeito">Defeito</div>
+                                    <div class="prioridade-critica">Crítica</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
+                            </div>
+                        </article>
+                        <article class="card mb-3 shadow-sm demanda-card critica">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda de defeito</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-defeito">Defeito</div>
+                                    <div class="prioridade-critica">Crítica</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
+                            </div>
+                        </article>
+                        <article class="card mb-3 shadow-sm demanda-card critica">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda de defeito</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-defeito">Defeito</div>
+                                    <div class="prioridade-critica">Crítica</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
+                            </div>
+                        </article>
+                        <article class="card mb-3 shadow-sm demanda-card critica">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda de defeito</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-defeito">Defeito</div>
+                                    <div class="prioridade-critica">Crítica</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
+                            </div>
+                        </article>
+                        <article class="card mb-3 shadow-sm demanda-card critica">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda de defeito</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-defeito">Defeito</div>
+                                    <div class="prioridade-critica">Crítica</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
+                            </div>
+                        </article>
+                        <article class="card mb-3 shadow-sm demanda-card critica">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda de defeito</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-defeito">Defeito</div>
+                                    <div class="prioridade-critica">Crítica</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
+                            </div>
+                        </article>
+                        <article class="card mb-3 shadow-sm demanda-card critica">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda de defeito</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-defeito">Defeito</div>
+                                    <div class="prioridade-critica">Crítica</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
                             </div>
                         </article>
                     </div>
                 </section>
-            
+            </div>
+
+            <!--coluna em andamenmento-->
+            <div class="col coluna-demanda">
+                <section class="card shadow-sm coluna-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <p class="titulo-demanda">Em Andamento</p>
+                    </div>
+                    <div class="card-body rounded-bottom">
+                        <article class="card mb-3 shadow-sm demanda-card baixa">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">Demanda de Melhoria</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-melhoria">Melhoria</div>
+                                    <div class="prioridade-baixa">Baixa</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Souza Almeida</p>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            </div>
+
+            <!--coluna em revisão-->
+            <div class="col coluna-demanda">
+                <section class="card shadow-sm coluna-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <p class="titulo-demanda">Em Revisão</p>
+                    </div>
+                    <div class="card-body rounded-bottom">
+                        <article class="card mb-3 shadow-sm demanda-card media">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda de documentação</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-documentacao">Documentação</div>
+                                    <div class="prioridade-media">Média</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Santos Almeida</p>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            </div>
+
+            <!--coluna em concluida-->
+            <div class="col coluna-demanda">
+                <section class="card shadow-sm coluna-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <p class="titulo-demanda">Concluída</p>
+                    </div>
+                    <div class="card-body rounded-bottom">
+                        <article class="card mb-3 shadow-sm demanda-card alta">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda de tarefa</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-tarefa">Tarefa</div>
+                                    <div class="prioridade-alta">Alta</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            </div>
+
+            <!--coluna em cancelada-->
+            <div class="col coluna-demanda">
+                <section class="card shadow-sm coluna-card coluna-cancelada">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <p class="titulo-demanda">Cancelada</p>
+                    </div>
+                    <div class="card-body rounded-bottom">
+                        <article class="card mb-3 shadow-sm demanda-card baixa">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda cancelada</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-defeito">Defeito</div>
+                                    <div class="prioridade-baixa">Baixo</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
+                            </div>
+                        </article>
+                        <article class="card mb-3 shadow-sm demanda-card baixa">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda cancelada</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-defeito">Defeito</div>
+                                    <div class="prioridade-baixa">Baixo</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
+                            </div>
+                        </article>
+                        <article class="card mb-3 shadow-sm demanda-card baixa">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda cancelada</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-defeito">Defeito</div>
+                                    <div class="prioridade-baixa">Baixo</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
+                            </div>
+                        </article>
+                        <article class="card mb-3 shadow-sm demanda-card baixa">
+                            <div class="card-body">
+                                <div class="mb-2 nome-demanda">demanda cancelada</div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <div class="tipo-defeito">Defeito</div>
+                                    <div class="prioridade-baixa">Baixo</div>
+                                </div>
+                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
+                            </div>
+                        </article>
+                    </div>
+                </section>
             </div>
         </main>        
     </div>
