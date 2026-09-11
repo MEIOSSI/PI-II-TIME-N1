@@ -16,7 +16,7 @@ body {
 }
 
 header {
-    background-color: #69a4df;
+    background-color: #2d72b8;
     flex: 0 0 auto;
 }
 
@@ -116,11 +116,11 @@ header {
 
 .aplicar{
     border: none;
-    background-color:#69a4df;
+    background-color:#2d72b8;
 }
 
 .aplicar:hover{
-    background-color:#3578bb;
+    background-color:#4b97e2;
 }
 
 main {
