@@ -47,3 +47,25 @@ legend {
     box-shadow: 0 0 0 0.2rem rgba(111, 45, 189, 0.15);
 }
 
+.form-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.btn-primary {
+    background-color: #2d72b8;
+    border-color: #2d72b8;
+    border-radius: 30px;
+    padding: 8px 28px;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #4b97e2;
+    border-color: #4b97e2;
+}
+
+.btn-outline-secondary {
+  border-radius: 30px;
+  padding: 8px 28px;
+}
