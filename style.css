@@ -20,3 +20,30 @@ h1 {
 p.text-muted {
   text-align: center;
 }
+
+fieldset {
+    border: 1px solid #d4dde1;
+    border-radius: 12px;
+    background-color: #f4f7f9;
+}
+
+legend {
+    color: #2d72b8;
+    background-color: #dceaf7;
+    padding: 4px 12px;
+    border-radius: 10px;
+}
+
+.form-control,
+.form-select {
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid #d4dde1;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #d4dde1;
+    box-shadow: 0 0 0 0.2rem rgba(111, 45, 189, 0.15);
+}
+
