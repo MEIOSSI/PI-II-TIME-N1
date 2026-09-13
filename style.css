@@ -1,16 +1,22 @@
 body {
-    background-color: #edf2f7; 
+  background-color: #edf2f7;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .form-cadastro {
-    max-width: 700px;         
-    margin: 40px auto;        
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
-    border-radius: 10px;
+  max-width: 700px;
+  margin: 0 auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-legend {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #2d3748;
+.form-cadastro
+h1 {
+  color: #2d72b8;
+  font-weight: 700;
+  text-align: center;
+}
+
+p.text-muted {
+  text-align: center;
 }
