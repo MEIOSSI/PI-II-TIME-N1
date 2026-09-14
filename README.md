@@ -21,4 +21,4 @@ Demandas De Desenvolvimento
   2°/2026
 
 ## Professor Orientador:
-  Luã/Fernando
+  Fernando Luiz de Almeida Silveira
