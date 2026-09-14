@@ -44,7 +44,7 @@ legend {
 .form-control:focus,
 .form-select:focus {
     border-color: #d4dde1;
-    box-shadow: 0 0 0 0.2rem rgba(111, 45, 189, 0.15);
+    box-shadow: 0 0 0 0.2rem rgba(45, 114, 184, 0.15);
 }
 
 .form-label {
