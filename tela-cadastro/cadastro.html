@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-Br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastar-se</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main>
+         <form>
+            <div class="divPai">
+                <div class="logo">
+                    <i class="bi bi-grid-fill"></i>
+                </div>
+                <div>
+                    
+                    <h1>Cadastre-se</h1>
+                
+                </div>
+                <div class="txtcadastro">
+
+                    <p>Crie uma conta para utilizar o sistema.</p>
+
+                </div>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6" id="nome">
+                        <label for="nomecompleto" class="form-label">Nome completo</label>
+                        <input type="text" class="form-control" id="nomecompleto" placeholder="Digite seu nome completo">
+                    </div>
+                    <div class="col-12 col-md-6" id="CPF">
+                        <label for="cpf" class="form-label">CPF</label>
+                        <input type="number" class="form-control" id="cpf" placeholder="Digite seu CPF">
+
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="telefone" class="form-label">Telefone</label>
+                        <input type="tel" class="form-control" id="telefone" placeholder="Digite seu número de telefone">
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="endereco" class="form-label">Endereço</label>
+                        <input type="text" class="form-control" id="endereco" placeholder="Digite seu endereço">
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="cep" class="form-label">CEP</label>
+                        <input type="text" class="form-control" id="cep" placeholder="Digite seu CEP">
+                    </div>
+                    <div class="col-12 col-md-6">
+
+                        <label for="cadastro" class="form-label">E-mail</label><br>
+                        
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="email" class="form-control" id="cadastro" placeholder="Digite seu email">
+                        </div>
+                    
+                    </div>
+                    <div class="col-12 col-md-6">
+
+                        <label for="senha" class="form-label">Senha</label><br>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="senha" placeholder="Digite sua senha">
+                            <button class="btn btn-outline-secondary" type="button" id="togglesenha"><i class="bi bi-eye-slash"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+
+                        <label for="confirmasenha" class="form-label">Confirmar senha</label><br>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="confirmasenha" placeholder="Confirme sua senha">
+                            <button class="btn btn-outline-secondary" type="button" id="togglesenha"><i class="bi bi-eye-slash"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div id="esquecisenha">
+
+                    <a href="" style="color: #000000">Esqueci minha senha</a>
+
+                </div>
+                <div id="botaoCadastro">
+
+                    <button type="button" class="btn btn-info" id="btnCadastrar">Cadastrar-se</button>
+
+                </div>
+            </div>
+        </form>
+    </main>
+</body>
+
+</html>
