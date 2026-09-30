@@ -140,10 +140,30 @@ h2{
     color: 6c757d;
 }
 
-#togglesenha:hover {
-    background-color: #f8f9fa;
-}
-
+#togglesenha,
+#togglesenha:hover,
+#togglesenha:active,
 #togglesenha:focus {
+    background-color: #fff;
+    color: #6c757d;
     box-shadow: none;
 }
+
+.error {
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: px;
+    max-width: 200px;
+}
+
+.campo-invalido {
+    height: 60px;
+    width: 100%;
+    border: #dc2626;
+}
+
+.input-group.is-invalid > .input-group-text,
+.input-group.is-invalid > #togglesenha {
+    border-color: #dc3545;
+}
+

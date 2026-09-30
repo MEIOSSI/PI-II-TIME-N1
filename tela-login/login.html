@@ -6,7 +6,8 @@
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="login.css">
+    <script defer src="login.js"></script>
 </head>
 <body>
     <main>
@@ -31,8 +32,9 @@
                     
                     <div class="input-group mb-3">
                         <span class="input-group-text"><i class="bi bi-person"></i></span>
-                        <input type="email" class="form-control" id="login" placeholder="Digite seu login">
+                        <input type="email" class="form-control" id="login" placeholder="Ex: seunome@email.com">
                     </div>
+                    <span class="error" id="erroLogin"></span>
                 
 
                 <div>
@@ -43,16 +45,18 @@
                         <input type="password" class="form-control" id="senha" placeholder="Digite sua senha">
                         <button class="btn btn-outline-secondary" type="button" id="togglesenha"><i class="bi bi-eye-slash"></i></button>
                     </div>
+                    <span class="error" id="erroSenha"></span>
+                
                 </div>
 
                 <div id="esquecisenha">
 
-                    <a href="" style="color: #000000">Esqueci minha senha</a>
+                    <a href="../tela-redefinirsenha/redefinir.html" style="color: #000000">Esqueci minha senha</a>
 
                 </div>
                 <div id="botaoEntrar">
 
-                    <button type="button" class="btn btn-info" id="btnEntrar">Entrar</button>
+                    <button type="submit" class="btn btn-info" id="btnEntrar">Entrar</button>
 
                 </div>
             </div>
