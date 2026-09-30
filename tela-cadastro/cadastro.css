@@ -16,12 +16,13 @@ body {
 
 main {
     width: 100%;
-    max-width: 550px;
+    max-width: 1000px;
 }
 
 form {
     width: 100%;
-    max-width: 550px;
+    max-width: 1000px;
+    
 }
 
 .divPai {
@@ -29,7 +30,7 @@ form {
     flex-direction: column;
     height: auto;
     width: 100%;
-    max-width: 550px;
+    max-width: 1000px;
     box-sizing: border-box;
     box-shadow: 0 8px 24px rgba(44, 62, 80, 0.12);
     margin: 10px;
@@ -76,12 +77,10 @@ h1{
 
 h2{
     font-size: 20px;
-    font-weight: bold;
     margin-top: 20px;
 }
 
 .input-group {
-    height: 60px;
     width: 100%;
 }
 
@@ -91,30 +90,31 @@ h2{
     margin: 10px;
 }
 
-#botaoEntrar{
+#botaoCadastro{
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#btnRedefinir{
+#btnCadastrar{
     display: flex;
     border: #3276be;
     width: 100%;
     height: 60px;
     justify-content: center;
     align-items: center;
-    font-size: 20px;
+    font-size: 25px;
     color: white;
     background-color: #3276be;
 }
 
-#btnRedefinir:hover {
+#btnCadastrar:hover {
     background-color: #f8f9fa;
     border: 2px solid #3276be;
     color: #1f4e79;
 }
+
 
 
 .txtbtns p {
@@ -131,19 +131,56 @@ h2{
     border-right: 0;
 }
 
-#togglesenha {
+#togglesenha1 {
     border-top: 1px solid #DAE0E7;
     border-right: 1px solid #DAE0E7;
     border-left: none;
     border-bottom: 1px solid #DAE0E7;
     background-color: #fff;
-    color: 6c757d;
+    color: #6c757d;
 }
 
-#togglesenha:hover {
-    background-color: #f8f9fa;
-}
-
-#togglesenha:focus {
+#togglesenha1,
+#togglesenha1:hover,
+#togglesenha1:active,
+#togglesenha1:focus {
+    background-color: #fff;
+    color: #6c757d;
     box-shadow: none;
+}
+
+#togglesenha2 {
+    border-top: 1px solid #DAE0E7;
+    border-right: 1px solid #DAE0E7;
+    border-left: none;
+    border-bottom: 1px solid #DAE0E7;
+    background-color: #fff;
+    color: #6c757d;
+}
+
+#togglesenha2,
+#togglesenha2:hover,
+#togglesenha2:active,
+#togglesenha2:focus {
+    background-color: #fff;
+    color: #6c757d;
+    box-shadow: none;
+}
+
+.error {
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: px;
+    max-width: 200px;
+}
+
+.campo-invalido {
+    height: 60px;
+    width: 100%;
+    border: #dc2626;
+}
+
+.input-group.is-invalid > .input-group-text,
+.input-group.is-invalid > #togglesenha {
+    border-color: #dc3545;
 }
