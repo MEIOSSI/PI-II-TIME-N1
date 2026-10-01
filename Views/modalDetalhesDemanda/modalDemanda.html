@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Detalhes da Demanda</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="modalDemanda.css">
+
+</head>
+
+<body>
+
+<div class="container-fluid px-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+            <small class="titulo-wireframe">
+                DETALHES DA DEMANDA
+            </small>
+
+            <h5 class="mt-2">
+                005 - demanda de defeito
+            </h5>
+        </div>
+
+        <div class="perfil">
+
+            <button class="btn btn-dark btn-sm" disabled>
+                João da Silva (membro)
+            </button>
+        </div>
+
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-md-7">
+
+            <!-- INFORMAÇÕES -->
+            <div class="card mb-3">
+
+                <div class="card-body">
+
+                    <h6 class="titulo-secao">
+                        Informações da demanda
+                    </h6>
+
+                    <!-- PRIMEIRA LINHA -->
+                    <div class="row g-2">
+
+                        <div class="col-md-4 campo">
+                            <small>TIPO</small>
+                            <p>Defeito</p>
+                        </div>
+
+                        <div class="col-md-4 campo">
+                            <small>PRIORIDADE</small>
+                            <p>Alta</p>
+                        </div>
+
+                        <div class="col-md-4 campo">
+                            <small>STATUS</small>
+                            <p>Em andamento</p>
+                        </div>
+
+                        <div class="col-md-4 campo">
+                            <small>PROJETO</small>
+                            <p>Portal Financeiro</p>
+                        </div>
+
+                        <div class="col-md-4 campo">
+                            <small>RESPONSÁVEL</small>
+                            <p>Ana Ribeiro</p>
+                        </div>
+
+                        <div class="col-md-4 campo">
+                            <small>PRAZO DE FINALIZAÇÃO</small>
+                            <p>18/09/2026</p>
+                        </div>
+
+                        <div class="col-md-4 campo">
+                            <small>CRIADA EM</small>
+                            <p>02/09/2026 09:14</p>
+                        </div>
+
+                        <div class="col-md-4 campo">
+                            <small>ÚLTIMA ATUALIZAÇÃO</small>
+                            <p>10/09/2026 16:40</p>
+                        </div>
+
+                        <div class="col-md-4 campo">
+                            <small>CÓDIGO</small>
+                            <p>DEM-1042</p>
+                        </div>
+
+                    </div>
+
+                    <div class="campo mt-2">
+
+                        <small>DESCRIÇÃO</small>
+
+                        <p>
+                            O relatório de fechamento apresenta divergência
+                            de centavos quando há lançamentos estornados no
+                            mesmo período. Ajustar o arredondamento e cobrir
+                            com testes.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <h6 class="titulo-secao">
+                        Comentários e notas técnicas
+                    </h6>
+
+                    <div class="comentario mb-2">
+
+                        <div class="d-flex justify-content-between">
+
+                            <strong>João da Silva</strong>
+
+                            <small>
+                                08/09/2026 11:02
+                            </small>
+
+                        </div>
+
+                        <p>
+                            Reproduzi o erro no ambiente de homologação
+                            com lançamentos estornados em 31/08.
+                        </p>
+
+                    </div>
+
+                    <div class="comentario mb-3">
+
+                        <div class="d-flex justify-content-between">
+
+                            <strong>Maria Nunes</strong>
+
+                            <small>
+                                09/09/2026 15:27
+                            </small>
+
+                        </div>
+
+                        <p>
+                            Sugiro usar arredondamento bancário na função
+                            de consolidação antes de somar as parcelas.
+                        </p>
+
+                    </div>
+
+
+                    <!-- NOVO COMENTÁRIO -->
+
+                    <label class="label">
+                        NOVO COMENTÁRIO COMO João da Silva
+                    </label>
+
+                    <textarea
+                        class="form-control mt-1"
+                        rows="3"
+                        placeholder="Escreva uma observação ou nota técnica..."
+                    ></textarea>
+
+                    <button class="btn btn-secondary btn-sm mt-2">
+                        Publicar comentário
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-5">
+
+            <div class="card mb-3">
+
+                <div class="card-body">
+
+                    <h6 class="titulo-secao">
+                        Ações do ciclo de vida
+                    </h6>
+
+
+                    <!-- STATUS -->
+
+                    <div class="d-flex align-items-center gap-1 mb-2">
+
+                        <span class="status">
+                            Aberta
+                        </span>
+
+                        →
+
+                        <span class="status ativo">
+                            Em andamento
+                        </span>
+
+                        →
+
+                        <span class="status">
+                            Em revisão
+                        </span>
+
+                        →
+
+                        <span class="status">
+                            Concluída
+                        </span>
+
+                    </div>
+
+
+                    <button class="btn btn-secondary btn-sm">
+                        Mover para Em revisão
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <h6 class="titulo-secao">
+                        Histórico de alterações
+                    </h6>
+
+
+                    <!-- HISTÓRICO 1 -->
+
+                    <div class="historico">
+
+                        <div class="d-flex justify-content-between">
+
+                            <strong>Sistema</strong>
+
+                            <small>
+                                02/09/2026 09:14
+                            </small>
+
+                        </div>
+
+                        <p>
+                            Demanda criada com status Aberta
+                        </p>
+
+                    </div>
+
+                    <div class="historico">
+
+                        <div class="d-flex justify-content-between">
+
+                            <strong>Marina Alves</strong>
+
+                            <small>
+                                03/09/2026 08:30
+                            </small>
+
+                        </div>
+
+                        <p>
+                            Responsável alterado: — → Ana Ribeiro
+                        </p>
+
+                    </div>
+
+                    <div class="historico">
+
+                        <div class="d-flex justify-content-between">
+
+                            <strong>Marina Alves</strong>
+
+                            <small>
+                                03/09/2026 08:31
+                            </small>
+
+                        </div>
+
+                        <p>
+                            Prioridade alterada: Média → Alta
+                        </p>
+
+                    </div>
+
+                    <div class="historico">
+
+                        <div class="d-flex justify-content-between">
+
+                            <strong>Ana Ribeiro</strong>
+
+                            <small>
+                                04/09/2026 10:05
+                            </small>
+
+                        </div>
+
+                        <p>
+                            Status alterado: Aberta → Em andamento
+                        </p>
+
+                    </div>
+
+                    <div class="historico">
+
+                        <div class="d-flex justify-content-between">
+
+                            <strong>Marina Alves</strong>
+
+                            <small>
+                                10/09/2026 16:40
+                            </small>
+
+                        </div>
+
+                        <p>
+                            Prazo alterado: 12/09/2026 → 18/09/2026
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
