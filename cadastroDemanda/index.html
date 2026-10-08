@@ -20,11 +20,13 @@
             <div class="mb-3">
                 <label for="titulo" class="form-label">Título da demanda:</label>
                 <input type="text" id="titulo" name="titulo" class="form-control" placeholder="Ex: Erro ao emitir relatório de vendas" required>
+                <div id="erroTitulo"></div>
             </div>
 
             <div class="mb-3">
                 <label for="descricao" class="form-label">Descrição:</label>
                 <textarea name="descricao" id="descricao" class="form-control" rows="4" placeholder="Descreva detalhadamente o que você precisa..."></textarea>
+                <div id="erroDescricao"></div>
             </div>
         </fieldset>
 
@@ -40,6 +42,7 @@
                         <option value="melhoria">Melhoria</option>
                         <option value="documentacao">Documentação</option>
                 </select>
+                <div id="erroTipo"></div>
             </div>
 
             <!--Prioridade-->
@@ -52,18 +55,21 @@
                     <option value="media">Média</option>
                     <option value="baixa">Baixa</option>
                 </select>
+                <div id="erroPrioridade"></div>
             </div>
 
             <!--Responsável-->
             <div class="mb-3">
                 <label for="responsavel" class="form-label">Responsável:</label>
                 <input type="text" id="responsavel" name="responsavel" class="form-control" placeholder="Ex: Mario Almeida ou Equipe de Suporte">
+                <div id="erroResponsavel"></div>
             </div>
 
             <!--Prazo-->
             <div class="mb-3">
                 <label for="prazo" class="form-label">Prazo:</label>
                 <input type="date" id="prazo" name="prazo" class="form-control">
+                <div id="erroPrazo"></div>
             </div>
 
             <!--Status-->
@@ -76,6 +82,7 @@
                     <option value="concluida">Concluída</option>
                     <option value="cancelada">Cancelada</option>
                 </select>
+                <div id="erroStatus"></div>
             </div>
         </fieldset>
 
