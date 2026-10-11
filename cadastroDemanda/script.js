@@ -16,6 +16,7 @@ const erroResponsavel = document.querySelector("#erroResponsavel");
 const erroPrazo = document.querySelector("#erroPrazo");
 const erroStatus = document.querySelector("#erroStatus");
 
+// Painel exibido quando a demanda é cadastrada com sucesso
 const painelResultado = document.querySelector("#painelResultado");
 
 const camposComErro = [
@@ -37,3 +38,20 @@ const mensagensDeErro = [
     erroPrazo,
     erroStatus
 ];
+
+// Deixa o campo com a borda vermelha e escreve a mensagem embaixo dele
+function mostrarErro(campo, elementoErro, mensagem) {
+    campo.classList.add("is-invalid");
+    elementoErro.innerText = mensagem;
+}
+
+// Tira todos os erros da tela -antes de validar novamente- se não erros da tentativa anterior ficam aparecendo
+function limparErros() {
+    camposComErro.forEach(function (campo) {
+        campo.classList.remove("is-invalid");
+    });
+
+    mensagensDeErro.forEach(function (elementoErro) {
+    elementoErro.innerText = "";
+    });
+}
