@@ -55,3 +55,25 @@ function limparErros() {
     elementoErro.innerText = "";
     });
 }
+
+// Quando clica em CADASTRAR
+
+formulario.addEventListener("submit", function (event) {
+    // p/ quando a página recarregar não perder tudo
+    event.preventDefault();
+    limparErros;
+
+    // o trim() tira os espaços, quem digita só espações não passa como preenchido
+    const titulo = campoTitulo.value.trim();
+    const descricao = campoDescricao.value.trim();
+    const tipo = campoTipo.value;
+    const prioridade = campoPrioridade.value.trim();
+    const responsavel = campoResponsavel.value.trim();
+    const prazo = campoPrazo.value;
+    const status = campoStatus;
+
+    // começa true e vira false se algum campo estiver errado
+    let formulario = true;
+
+
+});
