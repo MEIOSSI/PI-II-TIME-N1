@@ -15,3 +15,25 @@ const erroPrioridade = document.querySelector("#erroPrioridade");
 const erroResponsavel = document.querySelector("#erroResponsavel");
 const erroPrazo = document.querySelector("#erroPrazo");
 const erroStatus = document.querySelector("#erroStatus");
+
+const painelResultado = document.querySelector("#painelResultado");
+
+const camposComErro = [
+    campoTitulo,
+    campoDescricao,
+    campoTipo,
+    campoPrioridade,
+    campoResponsavel,
+    campoPrazo,
+    campoStatus
+];
+
+const mensagensDeErro = [
+    erroTitulo,
+    erroDescricao,
+    erroTipo,
+    erroPrioridade,
+    erroResponsavel,
+    erroPrazo,
+    erroStatus
+];
