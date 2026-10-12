@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { Demanda, MembroProj, Comentario, criarMembro } from "../Functions/Utils/demandas.types";
+import { Demanda, criarMembro } from "../Functions/Utils/demandas.types";
 
 const router = Router();
 
