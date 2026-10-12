@@ -14,95 +14,91 @@
 
 <body>
 
-<div class="container-fluid px-5">
+<div class="container-fluid p-0">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-
-        <div>
-            <small class="titulo-wireframe">
-                DETALHES DA DEMANDA
-            </small>
-
-            <h5 class="mt-2">
-                005 - demanda de defeito
-            </h5>
+    <header class="d-flex justify-content-between align-items-center p-3">
+        <div class="col-6 proj-header">
+            <div class="d-flex">
+                <a href="#"><img src="../../icons/arrow-left-solid.png " alt="Voltar" class="icon-voltar"></a>
+                <p class="voltar-texto">Voltar</p>
+            </div>
+            <h3 class="ms-4 titulo-projeto">Nome da Demanda</h3>
         </div>
 
         <div class="perfil">
-
-            <button class="btn btn-dark btn-sm" disabled>
-                João da Silva (membro)
-            </button>
+            <ul class="nav me-5">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">João da Silva (membro)</a>
+                </li>
+            </ul>
         </div>
+    </header>
 
-    </div>
-
-    <div class="row g-3">
-
-        <div class="col-md-7">
+    <div class="row g-3 p-3">
+        <div class="col-12 col-md-7">
 
             <!-- INFORMAÇÕES -->
-            <div class="card mb-3">
+            <div class="card mb-3 rounded">
+                <div class="card-header">
+                    <p class="titulo-secao mb-0 p-1">
+                        Informações da demanda
+                    </p>
+                </div>
 
                 <div class="card-body">
-
-                    <h6 class="titulo-secao">
-                        Informações da demanda
-                    </h6>
 
                     <!-- PRIMEIRA LINHA -->
                     <div class="row g-2">
 
                         <div class="col-md-4 campo">
-                            <small>TIPO</small>
+                            <p class="pequeno">Tipo</p>
                             <p>Defeito</p>
                         </div>
 
                         <div class="col-md-4 campo">
-                            <small>PRIORIDADE</small>
+                            <p class="pequeno">Prioridade</p>
                             <p>Alta</p>
                         </div>
 
                         <div class="col-md-4 campo">
-                            <small>STATUS</small>
+                            <p class="pequeno">Status</p>
                             <p>Em andamento</p>
                         </div>
 
                         <div class="col-md-4 campo">
-                            <small>PROJETO</small>
+                            <p class="pequeno">Projeto</p>
                             <p>Portal Financeiro</p>
                         </div>
 
                         <div class="col-md-4 campo">
-                            <small>RESPONSÁVEL</small>
+                            <p class="pequeno">Responsável</p>
                             <p>Ana Ribeiro</p>
                         </div>
 
                         <div class="col-md-4 campo">
-                            <small>PRAZO DE FINALIZAÇÃO</small>
+                            <p class="pequeno">Prazo de finalização</p>
                             <p>18/09/2026</p>
                         </div>
 
                         <div class="col-md-4 campo">
-                            <small>CRIADA EM</small>
+                            <p class="pequeno">Criada em</p>
                             <p>02/09/2026 09:14</p>
                         </div>
 
                         <div class="col-md-4 campo">
-                            <small>ÚLTIMA ATUALIZAÇÃO</small>
+                            <p class="pequeno">Última atualização</p>
                             <p>10/09/2026 16:40</p>
                         </div>
 
                         <div class="col-md-4 campo">
-                            <small>CÓDIGO</small>
+                            <p class="pequeno">Código</p>
                             <p>DEM-1042</p>
                         </div>
 
                     </div>
 
                     <div class="campo mt-2">
-
-                        <small>DESCRIÇÃO</small>
+                        <p class="pequeno">Descrição</p>
 
                         <p>
                             O relatório de fechamento apresenta divergência
@@ -110,63 +106,51 @@
                             mesmo período. Ajustar o arredondamento e cobrir
                             com testes.
                         </p>
-
                     </div>
-
                 </div>
-
             </div>
 
 
-            <div class="card">
+            <div class="card rounded">
+                <div class="card-header">
+                    <p class="titulo-secao mb-0 p-1">
+                        Comentários e notas técnicas
+                    </p>
+                </div>
 
                 <div class="card-body">
 
-                    <h6 class="titulo-secao">
-                        Comentários e notas técnicas
-                    </h6>
-
                     <div class="comentario mb-2">
-
                         <div class="d-flex justify-content-between">
 
                             <strong>João da Silva</strong>
-
-                            <small>
+                            <p class="pequeno">
                                 08/09/2026 11:02
-                            </small>
-
+                            </p>
                         </div>
-
                         <p>
                             Reproduzi o erro no ambiente de homologação
                             com lançamentos estornados em 31/08.
                         </p>
-
                     </div>
 
                     <div class="comentario mb-3">
-
                         <div class="d-flex justify-content-between">
-
                             <strong>Maria Nunes</strong>
 
-                            <small>
+                            <p class="pequeno">
                                 09/09/2026 15:27
-                            </small>
-
+                            </p>
                         </div>
-
                         <p>
                             Sugiro usar arredondamento bancário na função
                             de consolidação antes de somar as parcelas.
                         </p>
-
                     </div>
 
 
                     <!-- NOVO COMENTÁRIO -->
-
+                    <hr>
                     <label class="label">
                         NOVO COMENTÁRIO COMO João da Silva
                     </label>
@@ -177,29 +161,26 @@
                         placeholder="Escreva uma observação ou nota técnica..."
                     ></textarea>
 
-                    <button class="btn btn-secondary btn-sm mt-2">
+                    <button class="btn btn-primary publicar mt-2">
                         Publicar comentário
                     </button>
 
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-md-5">
 
-            <div class="card mb-3">
+            <div class="card mb-3 rounded">
+                <div class="card-header">
+                    <p class="titulo-secao mb-0 p-1">
+                        Ações do ciclo de vida
+                    </p>
+                </div>
 
                 <div class="card-body">
 
-                    <h6 class="titulo-secao">
-                        Ações do ciclo de vida
-                    </h6>
-
-
                     <!-- STATUS -->
-
                     <div class="d-flex align-items-center gap-1 mb-2">
 
                         <span class="status">
@@ -223,11 +204,10 @@
                         <span class="status">
                             Concluída
                         </span>
-
                     </div>
 
 
-                    <button class="btn btn-secondary btn-sm">
+                    <button class="btn btn-primary publicar btn-sm mt-2">
                         Mover para Em revisão
                     </button>
 
@@ -235,13 +215,14 @@
 
             </div>
 
-            <div class="card">
+            <div class="card rounded">
+                <div class="card-header">
+                    <p class="titulo-secao mb-0 p-1">
+                        Histórico de alterações
+                    </p>
+                </div>
 
                 <div class="card-body">
-
-                    <h6 class="titulo-secao">
-                        Histórico de alterações
-                    </h6>
 
 
                     <!-- HISTÓRICO 1 -->
@@ -252,9 +233,9 @@
 
                             <strong>Sistema</strong>
 
-                            <small>
+                            <p class="pequeno">
                                 02/09/2026 09:14
-                            </small>
+                            </p>
 
                         </div>
 
@@ -270,9 +251,9 @@
 
                             <strong>Marina Alves</strong>
 
-                            <small>
+                            <p class="pequeno">
                                 03/09/2026 08:30
-                            </small>
+                            </p>
 
                         </div>
 
@@ -288,9 +269,9 @@
 
                             <strong>Marina Alves</strong>
 
-                            <small>
+                            <p class="pequeno">
                                 03/09/2026 08:31
-                            </small>
+                            </p>
 
                         </div>
 
@@ -306,9 +287,9 @@
 
                             <strong>Ana Ribeiro</strong>
 
-                            <small>
+                            <p class="pequeno">
                                 04/09/2026 10:05
-                            </small>
+                            </p>
 
                         </div>
 
@@ -324,9 +305,9 @@
 
                             <strong>Marina Alves</strong>
 
-                            <small>
+                            <p class="pequeno">
                                 10/09/2026 16:40
-                            </small>
+                            </p>
 
                         </div>
 
