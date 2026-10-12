@@ -1,46 +1,18 @@
-import express, {Request, Response} from "express";
-import path from 'path';    
+import express from "express";
+import path from "path";
+import routes from "./Routes/index.routes";
+
 const app = express();
 const port = 9090;
+
+// Middlewares globais
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
-type tipoDemanda = "" |  "de informação";
-type membroProj = "Ativo" | "Formado" | "Trancado" | "Inativo";
-type prioridadeDemanda = "Ativo" | "Formado" | "Trancado" | "Inativo";
+// Registo de todas as rotas
+app.use(routes);
 
-interface Demanda{
-    id: string,
-    titulo: string,
-    descricao: string,
-    tipo: tipoDemanda,
-    responsavel: membroProj,
-    prioridade: prioridadeDemanda,
-}
-
-let Demandas:Demanda[] = [
-    {
-    id: "string",
-    titulo: "string",
-    descricao: "string",
-    tipo: "",
-    responsavel: "Ativo",
-    prioridade: "Formado",
-    }
-]
-
-app.listen(port, ()=>{
-    console.log(`Server initialized on ${port}`);
+//Inicialização do servidor (SEMPRE no final)
+app.listen(port, () => {
+  console.log(`Servidor iniciado em: http://localhost:${port}`);
 });
-
-app.use("/", (req:Request, res:Response) => {
-    res.sendFile(path.join(__dirname, 'public/Views/login/tela-login/login.html'));
-});
-
-app.use("/cadastrar-usuario", (req:Request, res:Response) => {
-    res.sendFile(path.join(__dirname, 'public/Views/login/tela-cadastro/cadastro.html'))
-})
-
-app.get("/alunos", (req:Request, res:Response)=> {
-   return res.status(200).json(Demandas);
-})
