@@ -1,26 +1,67 @@
 body {
-    background-color: #f5f6f7;
+    background-color: #edf2f7;
     font-family: Arial, sans-serif;
-    font-size: 12px;
-    color: #111;
-}
-
-.titulo-wireframe {
-    font-size: 8px;
-    letter-spacing: 1px;
-    color: #777;
-}
-
-h5 {
     font-size: 14px;
+    color: #111;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
 }
 
-.perfil {
-    padding: 6px 10px;
+header {
+    background-color: #2d72b8;
+    flex: 0 0 auto;
 }
 
-.perfil span {
+.icon-voltar:hover{
+    transform: scale(1.2);
+}
+
+.icon-voltar{
+    width: 25px;
+    transition: filter 0.2s ease;
+    filter: brightness(0) invert(1);
+
+}
+
+.voltar-texto{
     margin-left: 5px;
+    margin-top: 2px;
+    color: white;
+    font-size: 16px;
+}
+
+.titulo-projeto{
+    font-weight: bolder;
+    color: white;
+}
+
+.proj-header a {
+    text-decoration: none;
+    color: black;
+}
+
+.proj-header a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.perfil a {
+    color: white;
+    text-decoration: none;
+    border: 1px solid white;
+}
+
+.perfil a:hover {
+    color: white;
+}
+
+.nav-link{
+    border-radius: 5px;
+}
+
+.itens .nav {
+    align-items: center;
 }
 
 .card {
@@ -29,53 +70,55 @@ h5 {
     background: white;
 }
 
-.card-body {
-    padding: 12px;
+.titulo-secao {
+    font-size: 16px;
+    font-weight: bold;
 }
 
-.titulo-secao {
-    font-size: 11px;
-    font-weight: normal;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 10px;
-    margin-bottom: 8px;
+.pequeno {
+    font-size: 12px;
+    color: #777;
 }
 
 .campo {
     border: 1px solid #bbb;
-    padding: 7px;
-}
-
-.campo small,
-.label {
-    color: #777;
-    font-size: 8px;
-    letter-spacing: 1px;
+    padding: 0.5rem;
 }
 
 .campo p {
-    margin: 5px 0 0;
+    margin: 0px;
 }
 
 .comentario {
     border: 1px solid #bbb;
-    padding: 8px;
+    padding: 0.5rem;
 }
 
 .comentario p {
     margin: 5px 0 0;
 }
 
+.publicar{
+    border: none;
+    background-color:#2d72b8;
+}
+
+.publicar:hover{
+    background-color:#4b97e2;
+}
+
 .status {
-    border: 1px solid #aaa;
+    border: 1px solid #bbb;
+    border-radius: 5px;
     padding: 5px 8px;
-    font-size: 9px;
+    font-size: 14px;
     white-space: nowrap;
 }
 
 .status.ativo {
-    background-color: #0d6efd;
+    background-color: #2d72b8;
     color: white;
+    border: 1px solid #4b97e2;
 }
 
 .aviso {
