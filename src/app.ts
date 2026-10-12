@@ -5,26 +5,27 @@ const port = 9090;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-type cursoAluno = "Engenharia de software" | "Sistemas de informação";
-type situacaoAluno = "Ativo" | "Formado" | "Trancado" | "Inativo";
+type tipoDemanda = "" |  "de informação";
+type membroProj = "Ativo" | "Formado" | "Trancado" | "Inativo";
+type prioridadeDemanda = "Ativo" | "Formado" | "Trancado" | "Inativo";
 
-interface Aluno{
-    ra: number,
-    nome: string,
-    email: string,
-    curso: cursoAluno,
-    semestre: number,
-    situacao: situacaoAluno,
+interface Demanda{
+    id: string,
+    titulo: string,
+    descricao: string,
+    tipo: tipoDemanda,
+    responsavel: membroProj,
+    prioridade: prioridadeDemanda,
 }
 
-let alunos:Aluno[] = [
+let Demandas:Demanda[] = [
     {
-    ra: 1,
-    nome: "murilo",
-    email: "iossimurilo@gmail.com",
-    curso: "Engenharia de software",
-    semestre: 2,
-    situacao: "Ativo",
+    id: "string",
+    titulo: "string",
+    descricao: "string",
+    tipo: "",
+    responsavel: "Ativo",
+    prioridade: "Formado",
     }
 ]
 
@@ -41,16 +42,5 @@ app.use("/cadastrar-usuario", (req:Request, res:Response) => {
 })
 
 app.get("/alunos", (req:Request, res:Response)=> {
-   return res.status(200).json(alunos);
-})
-
-app.post("/alunos", (req:Request, res:Response)=>{  
-    const {ra, nome, email, curso, semestre} = req.body
-
-    //Validações
-    const novoAluno:Aluno = {ra, nome, email, curso, semestre, situacao:"Ativo"};
-
-    alunos.push();
-    return res.status(201).json(novoAluno);
-
+   return res.status(200).json(Demandas);
 })
