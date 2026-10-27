@@ -1,0 +1,139 @@
+body {
+    background-color: #edf2f7;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #111;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+
+header {
+    background-color: #2d72b8;
+    flex: 0 0 auto;
+}
+
+.icon-voltar:hover{
+    transform: scale(1.2);
+}
+
+.icon-voltar{
+    width: 25px;
+    transition: filter 0.2s ease;
+    filter: brightness(0) invert(1);
+
+}
+
+.voltar-texto{
+    margin-left: 5px;
+    margin-top: 2px;
+    color: white;
+    font-size: 16px;
+}
+
+.titulo-projeto{
+    font-weight: bolder;
+    color: white;
+}
+
+.proj-header a {
+    text-decoration: none;
+    color: black;
+}
+
+.proj-header a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.perfil a {
+    color: white;
+    text-decoration: none;
+    border: 1px solid white;
+}
+
+.perfil a:hover {
+    color: white;
+}
+
+.nav-link{
+    border-radius: 5px;
+}
+
+.itens .nav {
+    align-items: center;
+}
+
+.card {
+    border: 1px solid #bbb;
+    border-radius: 0;
+    background: white;
+}
+
+.titulo-secao {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.pequeno {
+    font-size: 12px;
+    color: #777;
+}
+
+.campo {
+    border: 1px solid #bbb;
+    padding: 0.5rem;
+}
+
+.campo p {
+    margin: 0px;
+}
+
+.comentario {
+    border: 1px solid #bbb;
+    padding: 0.5rem;
+}
+
+.comentario p {
+    margin: 5px 0 0;
+}
+
+.publicar{
+    border: none;
+    background-color:#2d72b8;
+}
+
+.publicar:hover{
+    background-color:#4b97e2;
+}
+
+.status {
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    padding: 5px 8px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.status.ativo {
+    background-color: #2d72b8;
+    color: white;
+    border: 1px solid #4b97e2;
+}
+
+.aviso {
+    border: 1px solid #bbb;
+    padding: 8px;
+    color: #777;
+    font-size: 10px;
+}
+
+.historico {
+    border: 1px solid #bbb;
+    padding: 8px;
+    margin-bottom: 5px;
+}
+
+.historico p {
+    margin: 5px 0 0;
+}

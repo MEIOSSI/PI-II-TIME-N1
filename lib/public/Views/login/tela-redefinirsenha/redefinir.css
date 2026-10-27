@@ -1,0 +1,186 @@
+body {
+    min-height: 100vh;
+    display: flex;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 16px;
+    justify-content: center;
+    align-items: center;
+    background-image:
+        radial-gradient(circle 230px at 0 0, #DCEAF9 0, #DCEAF9 99%, transparent 100%),
+        radial-gradient(circle 230px at 100% 0, #DCEAF9 0, #DCEAF9 99%, transparent 100%),
+        radial-gradient(circle 230px at 0 100%, #DCEAF9 0, #DCEAF9 99%, transparent 100%),
+        radial-gradient(circle 230px at 100% 100%, #DCEAF9 0, #DCEAF9 99%, transparent 100%);
+
+}
+
+main {
+    width: 100%;
+    max-width: 550px;
+}
+
+form {
+    width: 100%;
+    max-width: 550px;
+}
+
+.divPai {
+    display:flex;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    max-width: 550px;
+    box-sizing: border-box;
+    box-shadow: 0 8px 24px rgba(44, 62, 80, 0.12);
+    margin: 10px;
+    padding: 40px;
+    border-radius: 15px;
+    background-color: #FEFDFE;
+}
+
+@media (max-width: 576px) {
+    body {
+        background-image:
+            radial-gradient(circle 130px at 0 0, #DCEAF9 0, #DCEAF9 99%, transparent 100%),
+            radial-gradient(circle 130px at 100% 0, #DCEAF9 0, #DCEAF9 99%, transparent 100%),
+            radial-gradient(circle 130px at 0 100%, #DCEAF9 0, #DCEAF9 99%, transparent 100%),
+            radial-gradient(circle 130px at 100% 100%, #DCEAF9 0, #DCEAF9 99%, transparent 100%);
+    }
+
+    .divPai {
+        min-height: auto;
+        width: 100%;
+        padding: 24px;
+    }
+}
+
+.logo {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background-color: #e5f1ff;
+}   
+
+.logo i {
+    font-size: 40px;
+    color: #3276be;
+}
+
+h1{
+    font-weight: bold;
+}
+
+h2{
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.input-group {
+    height: 60px;
+    width: 100%;
+}
+
+#esquecisenha {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px;
+}
+
+#botaoEntrar{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#btnRedefinir{
+    display: flex;
+    border: #3276be;
+    width: 100%;
+    height: 60px;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    color: white;
+    background-color: #3276be;
+}
+
+#btnRedefinir:hover {
+    background-color: #f8f9fa;
+    border: 2px solid #3276be;
+    color: #1f4e79;
+}
+
+
+.txtbtns p {
+    margin: 0;
+}
+
+.txtbtns i {
+    font-size: 20px;
+    color: #1f4e79;
+}
+
+.input-group-text {
+    background-color: #fff;
+    border-right: 0;
+}
+
+#togglesenha1 {
+    border-top: 1px solid #DAE0E7;
+    border-right: 1px solid #DAE0E7;
+    border-left: none;
+    border-bottom: 1px solid #DAE0E7;
+    background-color: #fff;
+    color: 6c757d;
+}
+
+#togglesenha2 {
+    border-top: 1px solid #DAE0E7;
+    border-right: 1px solid #DAE0E7;
+    border-left: none;
+    border-bottom: 1px solid #DAE0E7;
+    background-color: #fff;
+    color: 6c757d;
+}
+
+#togglesenha1,
+#togglesenha1:hover,
+#togglesenha1:active,
+#togglesenha1:focus {
+    background-color: #fff;
+    color: #6c757d;
+    box-shadow: none;
+}
+
+#togglesenha2,
+#togglesenha2:hover,
+#togglesenha2:active,
+#togglesenha2:focus {
+    background-color: #fff;
+    color: #6c757d;
+    box-shadow: none;
+}
+
+.error {
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: px;
+    max-width: 200px;
+}
+
+.campo-invalido {
+    height: 60px;
+    width: 100%;
+    border: #dc2626;
+}
+
+.input-group.is-invalid > .input-group-text,
+.input-group.is-invalid > #togglesenha {
+    border-color: #dc3545;
+}
