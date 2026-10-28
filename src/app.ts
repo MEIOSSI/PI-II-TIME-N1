@@ -1,10 +1,27 @@
 import Express, {Request, Response} from "express";
+import 'dotenv/config';
+import { conectarBanco } from "./Database/db";
 import path from "path";
 const app = Express();
-const port = 9090;
+const PORT = process.env.PORT || 3000;
 
 app.use(Express.json());
 app.use(Express.static(path.join(__dirname, "public")));
+
+async function iniciarServidor() {
+    try {
+        await conectarBanco();
+
+        app.listen(PORT, () => {
+            console.log(`Servidor iniciado em http://localhost:${PORT}`);
+        });
+    } catch (erro) {
+        console.error("Erro ao iniciar a aplicação:", erro);
+        process.exit(1);
+    }
+}
+
+iniciarServidor();
 
 //pseudo-banco
 export type TipoDemanda = "Tarefa" |  "Defeito" | "Melhoria" | "Documentação";
@@ -99,6 +116,6 @@ app.get("/cadastrar-usuario", (req: Request, res: Response) => {
 });
 
 //Inicialização do servidor (SEMPRE no final)
-app.listen(port, () => {
-  console.log(`Servidor iniciado em: http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Servidor iniciado em: http://localhost:${PORT}`);
 });
