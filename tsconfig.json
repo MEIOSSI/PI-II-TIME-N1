@@ -12,6 +12,6 @@
     "esModuleInterop": true
   },
   "compileOnSave": true,
-  "include": ["src/**/*", "lib/public"],
+  "include": ["src/**/*", "lib/public", "public/Views/Views"],
   "exclude": ["node_modules", "lib", "**/*.spec.ts"]
 }
