@@ -88,7 +88,7 @@ let Demandas:Demanda[] = [
     }
 ]
 // fim do pseudo-banco
-
+Demandas // -> isso aqui é inutil, só pro tsc n encher o saco
 //rotas
 app.get("/", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "../../public/Views/login/tela-login/login.html"));
