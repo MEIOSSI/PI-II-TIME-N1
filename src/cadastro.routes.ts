@@ -1,3 +1,4 @@
+// Autor: Leticya
 // rota do cadastro de demandas
 import { Router, Request, Response } from "express";
 
@@ -15,9 +16,45 @@ const tiposValidos = ["Tarefa", "Defeito", "Melhoria", "Documentação"];
 const prioridadesValidas = ["Crítica", "Alta", "Média", "Baixa"];
 // fim do pseudo-banco
 
+//pgt p api de feriados se a data é feriado nacional
+async function ehFeriado(data: string): Promise<boolean> {
+    // a data vem como AAAA-MM-DD, então o ano são os 4 primeiros caracteres
+    const ano = data.substring(0, 4);
+
+    const resposta = await fetch(`https://brasilapi.com.br/api/feriados/v1/${ano}`);
+    
+    if (!resposta.ok) {
+        throw new Error("API de feriados fora do ar");
+    }
+
+    const feriados: any[] = await resposta.json();
+
+    // true se algum feriado tem a mesma data
+    return feriados.some((feriado) => feriado.date === data);
+}
+
+// confere o prazo -o prazo é opcional, mas se vier não pode ser data errada nem feriado-
+// devolve o erro {codigo, mensagem}, ou null se tá tudo certo
+async function validarPrazo(prazo: string): Promise<{ codigo: number; mensagem: string } | null> {
+    if (isNaN(Date.parse(prazo))) {
+        return { codigo: 400, mensagem: "Prazo inválido." };
+    }
+
+    try {
+        if (await ehFeriado(prazo)) {
+            return { codigo: 400, mensagem: "O prazo não pode ser em um feriado nacional." };
+        }
+    } catch (erro) {
+        // a API de fora não respondeu, então não dá p/ saber se é feriado
+        return { codigo: 502, mensagem: "Não foi possível verificar se o prazo é feriado. Tente de novo." };
+    }
+
+    return null;
+}
+
 //rotas
 // POST /api/demandas -quando clica em CADASTRAR na tela-
-router.post("/", (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
     // desmonta o que a tela mandou, cada campo vira uma variável
     const { titulo, descricao, tipo, prioridade, projetoId, prazo } = req.body;
 
@@ -33,7 +70,14 @@ router.post("/", (req: Request, res: Response) => {
         return;
     }
 
-    // TODO: validar o prazo e ver na API se é feriado, ainda n fiz
+     // se mandou prazo, confere se é uma data certa e se não cai em feriado
+    if (prazo) {
+        const erroPrazo = await validarPrazo(prazo);
+        if (erroPrazo) {
+            res.status(erroPrazo.codigo).json({ mensagem: erroPrazo.mensagem });
+            return;
+        }
+    }
 
     const agora = new Date().toISOString();
 
