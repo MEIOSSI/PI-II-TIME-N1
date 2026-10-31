@@ -29,6 +29,15 @@
                 <textarea name="descricao" id="descricao" class="form-control" rows="4" placeholder="Descreva detalhadamente o que você precisa..."></textarea>
                 <div id="erroDescricao" class="invalid-feedback"></div>
             </div>
+
+            <div class="mb-3">
+                <label for="projeto" class="form-label">Projeto:</label>
+                <select name="projeto" id="projeto" class="form-select">
+                    <option value="">Selecione o projeto...</option>
+                    <option value="1">Projeto 1 (provisório)</option>
+                </select>
+                <div id="erroProjeto" class="invalid-feedback"></div>
+            </div>
         </fieldset>
 
         <!--Classificação e Status-->
@@ -76,7 +85,7 @@
             <!--Status-->
             <div class="mb-3">
                 <label for="status" class="form-label">Status:</label>
-                <select name="status" id="status" class="form-select">
+                <select name="status" id="status" class="form-select" disabled>
                     <option value="aberta">Aberta</option>
                     <option value="em_andamento">Em andamento</option>
                     <option value="em_revisao">Em revisão</option>
@@ -103,6 +112,9 @@
         <div id="painelResultado" class="alert alert-success mt-4 d-none">
             <h2 class="h6">Demanda cadastrada com sucesso!</h2>
         </div>
+
+        <!--Erro devolvido pela API-->
+        <div id="painelErro" class="alert alert-danger mt-4 d-none"></div>
   </div>
 </body>
 </html>
