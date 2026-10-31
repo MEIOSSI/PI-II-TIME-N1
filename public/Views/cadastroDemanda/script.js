@@ -1,5 +1,6 @@
 const formulario = document.querySelector("#FormDemandas");
 
+const campoProjeto = document.querySelector("#projeto");
 const campoTitulo = document.querySelector("#titulo");
 const campoDescricao = document.querySelector("#descricao");
 const campoTipo = document.querySelector("#tipo");
@@ -8,6 +9,8 @@ const campoResponsavel = document.querySelector("#responsavel");
 const campoPrazo = document.querySelector("#prazo");
 const campoStatus = document.querySelector("#status");
 
+const erroProjeto = document.querySelector("#erroProjeto");
+const painelErro = document.querySelector("#painelErro");
 const erroTitulo = document.querySelector("#erroTitulo");
 const erroDescricao = document.querySelector("#erroDescricao");
 const erroTipo = document.querySelector("#erroTipo");
@@ -20,6 +23,7 @@ const erroStatus = document.querySelector("#erroStatus");
 const painelResultado = document.querySelector("#painelResultado");
 
 const camposComErro = [
+    campoProjeto,
     campoTitulo,
     campoDescricao,
     campoTipo,
@@ -30,6 +34,7 @@ const camposComErro = [
 ];
 
 const mensagensDeErro = [
+    erroProjeto,
     erroTitulo,
     erroDescricao,
     erroTipo,
@@ -58,12 +63,13 @@ function limparErros() {
 
 // Quando clica em CADASTRAR
 
-formulario.addEventListener("submit", function (event) {
+formulario.addEventListener("submit", async function (event) {
     // p/ quando a página recarregar não perder tudo
     event.preventDefault();
     limparErros();
 
     // o trim() tira os espaços, quem digita só espações não passa como preenchido
+    const projeto = campoProjeto.value;
     const titulo = campoTitulo.value.trim();
     const descricao = campoDescricao.value.trim();
     const tipo = campoTipo.value;
@@ -75,6 +81,12 @@ formulario.addEventListener("submit", function (event) {
     // começa true e vira false se algum campo estiver errado
     let formValido = true;
 
+    // Validar projeto -toda demanda precisa estar ligada a um projeto-
+    if (projeto === "") {
+        mostrarErro(campoProjeto, erroProjeto, "Toda demanda precisa de um projeto!");
+        formValido = false;
+    }
+    
     // Validar título (precisa estar preenchido e ter pelo menos 3 letras)
     if (titulo === "") {
         mostrarErro(campoTitulo, erroTitulo, "Título é obrigatório!");
@@ -106,7 +118,7 @@ formulario.addEventListener("submit", function (event) {
     }
 
     // Validar Responsável -obrigatório e com pelo menos 3 letras-
-    if (responsavel === "") {
+    if (responsavel === "" && responsavel.length < 3) {
         mostrarErro(campoResponsavel, erroResponsavel, "Responsável é obrigatório");
         formValido = false;
     } else if (responsavel.length < 3) {
@@ -144,12 +156,31 @@ formulario.addEventListener("submit", function (event) {
         return;
     }
 
-    // Se der certo, prossegue 
-    const demanda = {titulo, descricao, tipo, prioridade, responsavel, prazo, status};
+    // Se der certo, prossegue
+    const tipos = { tarefa: "Tarefa", defeito: "Defeito", melhoria: "Melhoria", documentacao: "Documentação" };
+    const prioridades = { critica: "Crítica", alta: "Alta", media: "Média", baixa: "Baixa" };
 
-    // Conferir no console
-    console.log(demanda);
-    painelResultado.classList.remove("d-none");
+    const demanda = {
+        titulo,
+        descricao,
+        tipo: tipos[tipo],
+        prioridade: prioridades[prioridade],
+        projetoId: Number(projeto), // o select entrega texto e a API quer número
+        prazo
+    };
+
+    try {
+        await cadastrarDemandaApi(demanda);
+
+        // deu certo
+        painelErro.classList.add("d-none");
+        painelResultado.classList.remove("d-none");
+    } catch (erro) {
+        // erro.message traz a mensagem da API, ou um aviso se o servidor estiver desligado
+        painelErro.innerText = erro.message;
+        painelErro.classList.remove("d-none");
+        painelResultado.classList.add("d-none");
+    } 
 });
 
 // Reset limpa os campos, mas não os erros nem o painel
@@ -157,3 +188,21 @@ formulario.addEventListener("reset", function () {
     limparErros();
     painelResultado.classList.add("d-none");
 });
+
+// manda a demanda p/ a API -igual o cadastrarAlunoApi da aula-
+async function cadastrarDemandaApi(demanda) {
+    const resposta = await fetch("/api/demandas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(demanda)
+    });
+
+    const dados = await resposta.json();
+
+    // se a API recusou -400- joga o erro com a mensagem dela
+    if (!resposta.ok) {
+        throw new Error(dados.mensagem);
+    }
+
+    return dados;
+}
