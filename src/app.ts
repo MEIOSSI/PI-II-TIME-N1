@@ -1,5 +1,6 @@
 import Express, {Request, Response} from "express";
 import path from "path";
+import cadastroRoutes from "./cadastro.routes";
 const app = Express();
 const port = 9090;
 
@@ -97,6 +98,9 @@ app.get("/", (req: Request, res: Response) => {
 app.get("/cadastrar-usuario", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "../../public/Views/login/tela-cadastro/cadastro.html"));
 });
+
+//cadastro demandas 
+app.use("/api/demandas", cadastroRoutes);
 
 //Inicialização do servidor (SEMPRE no final)
 app.listen(port, () => {
