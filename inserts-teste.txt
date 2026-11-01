@@ -1,0 +1,97 @@
+-- USUÁRIOS
+INSERT INTO pi2Usuarios
+    (ID_USUARIO, NOME, EMAIL, SENHA, PERFIL)
+VALUES
+    (1, 'Ana Souza', 'ana@exemplo.com', 'senha-demo-1', 'ADMINISTRADOR');
+
+INSERT INTO pi2Usuarios
+    (ID_USUARIO, NOME, EMAIL, SENHA, PERFIL)
+VALUES
+    (2, 'Bruno Lima', 'bruno@exemplo.com', 'senha-demo-2', 'USUARIO');
+
+INSERT INTO pi2Usuarios
+    (ID_USUARIO, NOME, EMAIL, SENHA, PERFIL)
+VALUES
+    (3, 'Carla Alves', 'carla@exemplo.com', 'senha-demo-3', 'USUARIO');
+
+
+-- PROJETOS
+INSERT INTO pi2Projetos
+    (ID_PROJETO, TITULO, DESCRICAO, CRIADO_POR)
+VALUES
+    (1, 'Sistema de Demandas', 'Projeto de acompanhamento de demandas.', 1);
+
+INSERT INTO pi2Projetos
+    (ID_PROJETO, TITULO, DESCRICAO, CRIADO_POR)
+VALUES
+    (2, 'Portal Acadêmico', 'Melhorias no portal acadêmico.', 1);
+
+
+-- MEMBROS DOS PROJETOS
+INSERT INTO pi2MembrosDosProjetos
+    (PROJETO_ID, USUARIO_ID, PAPEL_NO_PROJETO)
+VALUES
+    (1, 1, 'LIDER');
+
+INSERT INTO pi2MembrosDosProjetos
+    (PROJETO_ID, USUARIO_ID, PAPEL_NO_PROJETO)
+VALUES
+    (1, 2, 'MEMBRO');
+
+INSERT INTO pi2MembrosDosProjetos
+    (PROJETO_ID, USUARIO_ID, PAPEL_NO_PROJETO)
+VALUES
+    (2, 1, 'LIDER');
+
+INSERT INTO pi2MembrosDosProjetos
+    (PROJETO_ID, USUARIO_ID, PAPEL_NO_PROJETO)
+VALUES
+    (2, 3, 'MEMBRO');
+
+
+-- DEMANDAS
+INSERT INTO pi2Demandas
+    (ID_DEMANDA, TITULO, DESCRICAO, TIPO, PRIORIDADE, STATUS,
+     PROJETO_ID, CRIADO_POR, RESPONSAVEL_ID, PRAZO_FINAL)
+VALUES
+    (1, 'Criar tela de login', 'Implementar a tela de login do sistema.',
+     'TAREFA', 'ALTA', 'EM ANDAMENTO', 1, 1, 2, DATE '2026-12-15');
+
+INSERT INTO pi2Demandas
+    (ID_DEMANDA, TITULO, DESCRICAO, TIPO, PRIORIDADE, STATUS,
+     PROJETO_ID, CRIADO_POR, RESPONSAVEL_ID, PRAZO_FINAL)
+VALUES
+    (2, 'Corrigir erro no cadastro', 'O formulário não valida o e-mail.',
+     'DEFEITO', 'CRITICA', 'ABERTA', 1, 2, 3, DATE '2026-12-10');
+
+INSERT INTO pi2Demandas
+    (ID_DEMANDA, TITULO, DESCRICAO, TIPO, PRIORIDADE, STATUS,
+     PROJETO_ID, CRIADO_POR, RESPONSAVEL_ID)
+VALUES
+    (3, 'Atualizar documentação', 'Documentar as funcionalidades do portal.',
+     'DOCUMENTACAO', 'MEDIA', 'ABERTA', 2, 3, 3);
+
+
+-- COMENTÁRIOS
+INSERT INTO pi2Comentarios (DEMANDA_ID, USUARIO_ID, DESCRICAO)
+VALUES (1, 2, 'Já comecei a implementar a tela.');
+
+INSERT INTO pi2Comentarios (DEMANDA_ID, USUARIO_ID, DESCRICAO)
+VALUES (2, 3, 'Consegui reproduzir o problema.');
+
+INSERT INTO pi2Comentarios (DEMANDA_ID, USUARIO_ID, DESCRICAO)
+VALUES (3, 1, 'A documentação pode incluir exemplos de uso.');
+
+
+-- HISTÓRICO DE ALTERAÇÕES
+INSERT INTO pi2HistoricosDeDemandas
+    (DEMANDA_ID, USUARIO_ID, CAMPO_ALTERADO, VALOR_ANTERIOR, VALOR_NOVO)
+VALUES
+    (1, 2, 'STATUS', 'ABERTA', 'EM ANDAMENTO');
+
+INSERT INTO pi2HistoricosDeDemandas
+    (DEMANDA_ID, USUARIO_ID, CAMPO_ALTERADO, VALOR_ANTERIOR, VALOR_NOVO)
+VALUES
+    (2, 3, 'PRIORIDADE', 'ALTA', 'CRITICA');
+
+COMMIT;
