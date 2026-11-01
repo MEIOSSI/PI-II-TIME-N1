@@ -12,6 +12,6 @@
     "esModuleInterop": true
   },
   "compileOnSave": true,
-  "include": ["src/**/*", "lib/public", "public/Views/Views"],
+  "include": ["src/**/*", "lib/public", "public/Views/Views", "teste.cjs"],
   "exclude": ["node_modules", "lib", "**/*.spec.ts"]
 }
