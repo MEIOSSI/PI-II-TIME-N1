@@ -102,3 +102,49 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 export default router;
+
+// PUT /api/demandas/:id -atualiza uma demanda, a tela usa quando está editando-
+router.put("/:id", async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const demanda = demandas.find((item) => item.id === id);
+
+    // se não achou a demanda com esse id, devolve 404
+    if (!demanda) {
+        res.status(404).json({ mensagem: "Demanda não encontrada." });
+        return;
+    }
+
+    const { titulo, descricao, tipo, prioridade, projetoId, prazo } = req.body;
+
+    // mesmas validações do cadastro
+    if (!titulo || !descricao || !tipo || !prioridade || !projetoId) {
+        res.status(400).json({ mensagem: "Título, descrição, tipo, prioridade e projeto são obrigatórios." });
+        return;
+    }
+
+    if (!tiposValidos.includes(tipo) || !prioridadesValidas.includes(prioridade)) {
+        res.status(400).json({ mensagem: "Tipo ou prioridade inválidos." });
+        return;
+    }
+
+    // o feriado também vale na edição
+    if (prazo) {
+        const erroPrazo = await validarPrazo(prazo);
+        if (erroPrazo) {
+            res.status(erroPrazo.codigo).json({ mensagem: erroPrazo.mensagem });
+            return;
+        }
+    }
+
+    demanda.titulo = titulo;
+    demanda.descricao = descricao;
+    demanda.tipo = tipo;
+    demanda.prioridade = prioridade;
+    demanda.projetoId = projetoId;
+    demanda.prazo = prazo;
+    // o status e a data de criação não mudam aqui
+    // as transições de status são outra parte do sistema, com regras e permissões
+    demanda.dataAtualizacao = new Date().toISOString(); // atualiza a data sozinho
+
+    res.status(200).json(demanda);
+});
