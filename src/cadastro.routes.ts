@@ -115,8 +115,6 @@ router.get("/:id", (req: Request, res: Response) => {
     res.status(200).json(demanda);
 });
 
-export default router;
-
 // PUT /api/demandas/:id -atualiza uma demanda, a tela usa quando está editando-
 router.put("/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
@@ -162,3 +160,5 @@ router.put("/:id", async (req: Request, res: Response) => {
 
     res.status(200).json(demanda);
 });
+
+export default router;
