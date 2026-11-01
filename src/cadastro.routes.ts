@@ -101,6 +101,20 @@ router.post("/", async (req: Request, res: Response) => {
     res.status(201).json(novaDemanda);
 });
 
+// GET /api/demandas/:id -busca uma demanda, a tela de edição usa p/ preencher o formulário-
+router.get("/:id", (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const demanda = demandas.find((item) => item.id === id);
+
+    // se não achou a demanda com esse id, devolve 404
+    if (!demanda) {
+        res.status(404).json({ mensagem: "Demanda não encontrada." });
+        return;
+    }
+
+    res.status(200).json(demanda);
+});
+
 export default router;
 
 // PUT /api/demandas/:id -atualiza uma demanda, a tela usa quando está editando-
