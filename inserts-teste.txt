@@ -17,12 +17,12 @@ VALUES
 
 -- PROJETOS
 INSERT INTO pi2Projetos
-    (ID_PROJETO, TITULO, DESCRICAO, CRIADO_POR)
+    (ID_PROJETO, TITULO, DESCRICAO, LIDER)
 VALUES
     (1, 'Sistema de Demandas', 'Projeto de acompanhamento de demandas.', 1);
 
 INSERT INTO pi2Projetos
-    (ID_PROJETO, TITULO, DESCRICAO, CRIADO_POR)
+    (ID_PROJETO, TITULO, DESCRICAO, LIDER)
 VALUES
     (2, 'Portal Acadêmico', 'Melhorias no portal acadêmico.', 1);
 
