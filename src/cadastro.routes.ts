@@ -1,20 +1,46 @@
 // Autor: Leticya
 // rota do cadastro de demandas
 import { Router, Request, Response } from "express";
+import { executar, BIND_OUT, TIPO_NUMERO } from "./Database/executar";
 
 // mini-servidor só pro cadastro, o app.ts que liga ele lá
 const router = Router();
 
-//pseudo-banco
-// as demandas ficam aqui na memória, quando reinicia o servidor some tudo
-// quando o banco ficar pronto isso vira um INSERT
-let demandas: any[] = [];
-let proximoId = 1;
+const tipoParaBanco: Record<string, string> = {
+    "Tarefa": "TAREFA",
+    "Defeito": "DEFEITO",
+    "Melhoria": "MELHORIA",
+    "Documentação": "DOCUMENTACAO"
+};
+const tipoParaTela: Record<string, string> = {
+    "TAREFA": "Tarefa",
+    "DEFEITO": "Defeito",
+    "MELHORIA": "Melhoria",
+    "DOCUMENTACAO": "Documentação"
+};
+const prioridadeParaBanco: Record<string, string> = {
+    "Crítica": "CRITICA",
+    "Alta": "ALTA",
+    "Média": "MEDIA",
+    "Baixa": "BAIXA"
+};
+const prioridadeParaTela: Record<string, string> = {
+    "CRITICA": "Crítica",
+    "ALTA": "Alta",
+    "MEDIA": "Média",
+    "BAIXA": "Baixa"
+};
+const statusParaTela: Record<string, string> = {
+    "ABERTA": "Aberta",
+    "EM ANDAMENTO": "Em andamento",
+    "EM REVISAO": "Em revisão",
+    "CONCLUIDA": "Concluída",
+    "CANCELADA": "Cancelada"
+};
 
 // o que o servidor aceita, se vier outra coisa leva 400
-const tiposValidos = ["Tarefa", "Defeito", "Melhoria", "Documentação"];
-const prioridadesValidas = ["Crítica", "Alta", "Média", "Baixa"];
-// fim do pseudo-banco
+const tiposValidos = Object.keys(tipoParaBanco);
+const prioridadesValidas = Object.keys(prioridadeParaBanco);
 
 //pgt p api de feriados se a data é feriado nacional
 async function ehFeriado(data: string): Promise<boolean> {
@@ -52,9 +78,50 @@ async function validarPrazo(prazo: string): Promise<{ codigo: number; mensagem: 
     return null;
 }
 
+// busca uma demanda no banco pelo id (devolve a linha do banco ou null se não existir)
+// o prazo já volta como texto AAAA-MM-DD, igual o input de data da tela usa
+async function buscarDemanda(id: number): Promise<any | null> {
+    const resultado = await executar(
+        `SELECT ID_DEMANDA, TITULO, DESCRICAO, TIPO, PRIORIDADE, STATUS,
+                TO_CHAR(PRAZO_FINAL, 'YYYY-MM-DD') AS PRAZO_FINAL,
+                PROJETO_ID, DATA_CRIACAO, DATA_ATUALIZACAO
+         FROM pi2Demandas
+         WHERE ID_DEMANDA = :id
+           AND ATIVO = 'S'`,
+        { id }
+    );
+
+    return resultado.rows.length > 0 ? resultado.rows[0] : null;
+}
+
+// transforma a linha do banco (COLUNAS_EM_MAIUSCULO) no JSON que a tela já espera
+function linhaParaDemanda(linha: any) {
+    return {
+        id: linha.ID_DEMANDA,
+        titulo: linha.TITULO,
+        descricao: linha.DESCRICAO,
+        tipo: tipoParaTela[linha.TIPO],
+        prioridade: prioridadeParaTela[linha.PRIORIDADE],
+        status: statusParaTela[linha.STATUS],
+        projetoId: linha.PROJETO_ID,
+        prazo: linha.PRAZO_FINAL,
+        dataCriacao: linha.DATA_CRIACAO,
+        dataAtualizacao: linha.DATA_ATUALIZACAO
+    };
+}
+
 //rotas
 // POST /api/demandas -quando clica em CADASTRAR na tela-
 router.post("/", async (req: Request, res: Response) => {
+    
+    // o app.ts simula o login e deixa o usuário em req.usuario
+    // a coluna CRIADO_POR do banco é obrigatória, então quem cria é quem está logado
+    const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
+
+    if (!usuarioId) {
+        res.status(401).json({ mensagem: "Usuário não autenticado." });
+        return;
+    }
     // desmonta o que a tela mandou, cada campo vira uma variável
     const { titulo, descricao, tipo, prioridade, projetoId, prazo } = req.body;
 
@@ -79,52 +146,63 @@ router.post("/", async (req: Request, res: Response) => {
         }
     }
 
-    const agora = new Date().toISOString();
+        try {
+        // INSERT: status (ABERTA) e as datas não são enviados,
+        // quem decide isso é o próprio banco (DEFAULT da tabela), a pessoa n preenche
+        // RETURNING devolve o id que o banco gerou
+        const resultado = await executar(
+            `INSERT INTO pi2Demandas
+                (TITULO, DESCRICAO, TIPO, PRIORIDADE, PRAZO_FINAL, PROJETO_ID, CRIADO_POR)
+             VALUES
+                (:titulo, :descricao, :tipo, :prioridade,
+                 TO_DATE(:prazo, 'YYYY-MM-DD'), :projetoId, :criadoPor)
+             RETURNING ID_DEMANDA INTO :novoId`,
+            {
+                titulo,
+                descricao,
+                tipo: tipoParaBanco[tipo],
+                prioridade: prioridadeParaBanco[prioridade],
+                prazo: prazo || null,
+                projetoId: Number(projetoId),
+                criadoPor: usuarioId,
+                novoId: { dir: BIND_OUT, type: TIPO_NUMERO }
+            }
+        );
 
-    const novaDemanda = {
-        id: proximoId,
-        titulo,
-        descricao,
-        tipo,
-        prioridade,
-        projetoId,
-        prazo,
-        status: "Aberta",     // toda demanda nasce aberta, quem decide isso é o servidor
-        dataCriacao: agora,   // as datas também são automáticas, a pessoa n preenche
-        dataAtualizacao: agora
-    };
+        const novoId = resultado.outBinds.novoId[0];
+        const novaDemanda = await buscarDemanda(novoId);
 
-    demandas.push(novaDemanda);
-    proximoId++;
-
-    // 201 = criou certinho
-    res.status(201).json(novaDemanda);
+        // 201 = criou certinho
+        res.status(201).json(linhaParaDemanda(novaDemanda));
+    } catch (erro) {
+        console.error("Erro ao cadastrar demanda:", erro);
+        res.status(500).json({ mensagem: "Não foi possível cadastrar a demanda." });
+    }
 });
 
 // GET /api/demandas/:id -busca uma demanda, a tela de edição usa p/ preencher o formulário-
-router.get("/:id", (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
-    const demanda = demandas.find((item) => item.id === id);
-
+    
+    try {
+        const demanda = await buscarDemanda(id)
+    
     // se não achou a demanda com esse id, devolve 404
-    if (!demanda) {
-        res.status(404).json({ mensagem: "Demanda não encontrada." });
-        return;
-    }
+        if (!demanda) {
+            res.status(404).json({ mensagem: "Demanda não encontrada." });
+            return;
+        }
 
-    res.status(200).json(demanda);
+        res.status(200).json(linhaParaDemanda(demanda));
+    } catch (erro) {
+        console.error("Erro ao buscar demanda:", erro);
+        res.status(500).json({mensagem: "Não foi possível consultar a demanda."});
+    }
 });
 
 // PUT /api/demandas/:id -atualiza uma demanda, a tela usa quando está editando-
 router.put("/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
-    const demanda = demandas.find((item) => item.id === id);
-
-    // se não achou a demanda com esse id, devolve 404
-    if (!demanda) {
-        res.status(404).json({ mensagem: "Demanda não encontrada." });
-        return;
-    }
 
     const { titulo, descricao, tipo, prioridade, projetoId, prazo } = req.body;
 
@@ -148,17 +226,42 @@ router.put("/:id", async (req: Request, res: Response) => {
         }
     }
 
-    demanda.titulo = titulo;
-    demanda.descricao = descricao;
-    demanda.tipo = tipo;
-    demanda.prioridade = prioridade;
-    demanda.projetoId = projetoId;
-    demanda.prazo = prazo;
-    // o status e a data de criação não mudam aqui
-    // as transições de status são outra parte do sistema, com regras e permissões
-    demanda.dataAtualizacao = new Date().toISOString(); // atualiza a data sozinho
+     try {
+    
+        const resultado = await executar(
+            `UPDATE pi2Demandas
+             SET TITULO = :titulo,
+                 DESCRICAO = :descricao,
+                 TIPO = :tipo,
+                 PRIORIDADE = :prioridade,
+                 PRAZO_FINAL = TO_DATE(:prazo, 'YYYY-MM-DD'),
+                 PROJETO_ID = :projetoId,
+                 DATA_ATUALIZACAO = SYSTIMESTAMP
+             WHERE ID_DEMANDA = :id
+               AND ATIVO = 'S'`,
+            {
+                titulo,
+                descricao,
+                tipo: tipoParaBanco[tipo],
+                prioridade: prioridadeParaBanco[prioridade],
+                prazo: prazo || null,
+                projetoId: Number(projetoId),
+                id
+            }
+        );
 
-    res.status(200).json(demanda);
+        if (resultado.rowsAffected === 0) {
+            res.status(404).json({ mensagem: "Demanda não encontrada." });
+            return;
+        }
+
+        // busca de novo para devolver já com a data de atualização nova
+        const demanda = await buscarDemanda(id);
+        res.status(200).json(linhaParaDemanda(demanda));
+    } catch (erro) {
+        console.error("Erro ao atualizar demanda:", erro);
+        res.status(500).json({ mensagem: "Não foi possível atualizar a demanda." });
+    }  
 });
 
 export default router;
