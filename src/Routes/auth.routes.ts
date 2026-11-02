@@ -1,6 +1,8 @@
 import { Router, Request, Response } from "express";
 import { validarSenha } from "../Functions/Validators/senha.validator";
 import { validarCadastro } from "../Functions/Validators/cadastro.validator";
+import bcrypt from "bcrypt";
+import { executarConsulta, executarComando } from "../Database/db";
 
 const router = Router();
 
@@ -59,14 +61,49 @@ router.post("/cadastro", async (req: Request, res: Response) => {
             });
         }
 
-        return res.status(200).json({
-            mensagem: "Validações concluídas com sucesso."
+        const usuariosExistentes = await executarConsulta(
+            `SELECT ID_USUARIO
+            FROM pi2Usuarios
+            WHERE EMAIL = :email`,
+            { email: dados.email }
+        );
+
+        if (usuariosExistentes.length > 0) {
+            return res.status(409).json({
+                mensagem: "Este e-mail já está cadastrado."
+            });
+        }
+
+        const senhaHash = await bcrypt.hash(dados.senha, 10);
+
+        await executarComando(
+            `INSERT INTO pi2Usuarios (NOME, EMAIL, SENHA)
+             VALUES (:nome, :email, :senha)`,
+            {
+                nome: dados.nome,
+                email: dados.email,
+                senha: senhaHash
+            }
+        );
+
+        return res.status(201).json({
+            mensagem: "Cadastro realizado com sucesso."
         });
-    } catch (erro) {
-        console.error("Erro ao validar cadastro:", erro);
+    } 
+    
+    catch (erro) {
+        const erroOracle = erro as { errorNum?: number };
+
+        if (erroOracle.errorNum === 1) {
+            return res.status(409).json({
+                mensagem: "Este e-mail já está cadastrado."
+            });
+        }
+
+        console.error("Erro ao realizar cadastro:", erro);
 
         return res.status(500).json({
-            mensagem: "Não foi possível validar o cadastro. Tente novamente."
+            mensagem: "Não foi possível realizar o cadastro. Tente novamente."
         });
     }
 });

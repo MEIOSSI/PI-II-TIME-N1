@@ -72,3 +72,23 @@ export async function fecharBanco(): Promise<void> {
         console.log("Nenhum pool Oracle estava aberto.");
     }
 }
+
+export async function executarComando(
+    sql: string,
+    binds: Record<string, unknown> = {}
+): Promise<number> {
+
+    const pool = oracledb.getPool();
+    const conexao = await pool.getConnection();
+
+    try {
+        const resultado = await conexao.execute(sql, binds, {
+            autoCommit: true
+        });
+
+        return resultado.rowsAffected ?? 0;
+
+    } finally {
+        await conexao.close();
+    }
+}
