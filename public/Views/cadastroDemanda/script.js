@@ -118,11 +118,8 @@ formulario.addEventListener("submit", async function (event) {
         formValido = false;
     }
 
-    // Validar Responsável -obrigatório e com pelo menos 3 letras-
-    if (responsavel === "" && responsavel.length < 3) {
-        mostrarErro(campoResponsavel, erroResponsavel, "Responsável é obrigatório");
-        formValido = false;
-    } else if (responsavel.length < 3) {
+    // Responsável é opcional na criação, mas se preencher precisa ter 3+ letras
+    if (responsavel !== "" && responsavel.length < 3) {
         mostrarErro(campoResponsavel, erroResponsavel, "O responsável deve possuir pelo menos 3 letras");
         formValido = false;
     }
