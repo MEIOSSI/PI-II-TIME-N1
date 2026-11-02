@@ -2,11 +2,14 @@ import Express, { Request, Response, NextFunction } from "express";
 import "dotenv/config";
 import { conectarBanco, executarConsulta } from "./Database/db";
 import path from "path";
+import authRoutes from "./Routes/auth.routes";
+
 
 const app = Express();
 const PORT = process.env.PORT || 3000;
 
 app.use(Express.json());
+app.use("/api/auth", authRoutes);
 app.use(Express.static(path.join(__dirname, "../public")));
 
 // Emulação de login: assume o líder cadastrado no projeto 1.
