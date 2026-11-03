@@ -8,11 +8,15 @@
     <title>Detalhes da Demanda</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="modalDemanda.css">
+    <link rel="stylesheet" href="detalhesDemanda.css">
+    <script defer src="../../api.js"></script>
+    <script defer src="detalhesDemanda.js"></script>
 
 </head>
 
 <body>
+
+<div id="mensagemDetalhes" class="container mt-3" role="alert" hidden></div>
 
 <div class="container-fluid p-0">
 
@@ -22,13 +26,13 @@
                 <a href="#"><img src="../../icons/arrow-left-solid.png " alt="Voltar" class="icon-voltar"></a>
                 <p class="voltar-texto">Voltar</p>
             </div>
-            <h3 class="ms-4 titulo-projeto">Nome da Demanda</h3>
+            <h3 id="tituloDemanda" class="ms-4 titulo-projeto">Carregando demanda...</h3>
         </div>
 
         <div class="perfil">
             <ul class="nav me-5">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">João da Silva (membro)</a>
+                    <a id="usuarioProjeto" class="nav-link" href="#">Carregando usuário...</a>
                 </li>
             </ul>
         </div>
@@ -52,47 +56,47 @@
 
                         <div class="col-md-4 campo">
                             <p class="pequeno">Tipo</p>
-                            <p>Defeito</p>
+                            <p id="tipoDemanda"></p>
                         </div>
 
                         <div class="col-md-4 campo">
                             <p class="pequeno">Prioridade</p>
-                            <p>Alta</p>
+                            <p id="prioridadeDemanda"></p>
                         </div>
 
                         <div class="col-md-4 campo">
                             <p class="pequeno">Status</p>
-                            <p>Em andamento</p>
+                            <p id="statusDemanda"></p>
                         </div>
 
                         <div class="col-md-4 campo">
                             <p class="pequeno">Projeto</p>
-                            <p>Portal Financeiro</p>
+                            <p id="projeto"></p>
                         </div>
 
                         <div class="col-md-4 campo">
                             <p class="pequeno">Responsável</p>
-                            <p>Ana Ribeiro</p>
+                            <p id="responsavelDemanda"></p>
                         </div>
 
                         <div class="col-md-4 campo">
                             <p class="pequeno">Prazo de finalização</p>
-                            <p>18/09/2026</p>
-                        </div>
+                            <p id="dataFinalDemanda"></p>
+                        </div> 
 
                         <div class="col-md-4 campo">
                             <p class="pequeno">Criada em</p>
-                            <p>02/09/2026 09:14</p>
+                            <p id="criacaoDemanda"></p>
                         </div>
 
                         <div class="col-md-4 campo">
                             <p class="pequeno">Última atualização</p>
-                            <p>10/09/2026 16:40</p>
+                            <p id="ultimaAtualizacaoDemanda"></p>
                         </div>
 
                         <div class="col-md-4 campo">
                             <p class="pequeno">Código</p>
-                            <p>DEM-1042</p>
+                            <p id="idDemanda"></p>
                         </div>
 
                     </div>
@@ -100,11 +104,8 @@
                     <div class="campo mt-2">
                         <p class="pequeno">Descrição</p>
 
-                        <p>
-                            O relatório de fechamento apresenta divergência
-                            de centavos quando há lançamentos estornados no
-                            mesmo período. Ajustar o arredondamento e cobrir
-                            com testes.
+                        <p id="descricaoDemanda">
+
                         </p>
                     </div>
                 </div>
@@ -120,7 +121,7 @@
 
                 <div class="card-body">
 
-                    <div class="comentario mb-2">
+                    <!-- <div class="comentario mb-2">
                         <div class="d-flex justify-content-between">
 
                             <strong>João da Silva</strong>
@@ -146,21 +147,21 @@
                             Sugiro usar arredondamento bancário na função
                             de consolidação antes de somar as parcelas.
                         </p>
-                    </div>
+                    </div> -->
 
 
                     <!-- NOVO COMENTÁRIO -->
                     <hr>
-                    <label class="label">
-                        NOVO COMENTÁRIO COMO João da Silva
-                    </label>
+                    <p class="label mb-1">
+                        NOVO COMENTÁRIO COMO <strong id="usuarioLogado">Carregando usuário...</strong>
+                    </p>
 
                     <textarea
                         class="form-control mt-1"
                         rows="3"
                         placeholder="Escreva uma observação ou nota técnica..."
                     ></textarea>
-
+                    <!-- lógica do sistema de comentários-->
                     <button class="btn btn-primary publicar mt-2">
                         Publicar comentário
                     </button>
@@ -183,32 +184,37 @@
                     <!-- STATUS -->
                     <div class="d-flex align-items-center gap-1 mb-2">
 
-                        <span class="status">
+                        <span class="status" data-status="ABERTA">
                             Aberta
                         </span>
 
                         →
 
-                        <span class="status ativo">
+                        <span class="status" data-status="EM ANDAMENTO">
                             Em andamento
                         </span>
 
                         →
 
-                        <span class="status">
+                        <span class="status" data-status="EM REVISAO">
                             Em revisão
                         </span>
 
                         →
 
-                        <span class="status">
+                        <span class="status" data-status="CONCLUIDA">
                             Concluída
+                        </span>
+                        →
+
+                        <span class="status" data-status="CANCELADA">
+                            Cancelada
                         </span>
                     </div>
 
 
-                    <button class="btn btn-primary publicar btn-sm mt-2">
-                        Mover para Em revisão
+                    <button id="btnMoverStatus" class="btn btn-primary publicar btn-sm mt-2">
+                        carregando...
                     </button>
 
                 </div>
@@ -223,100 +229,9 @@
                 </div>
 
                 <div class="card-body">
-
-
-                    <!-- HISTÓRICO 1 -->
-
-                    <div class="historico">
-
-                        <div class="d-flex justify-content-between">
-
-                            <strong>Sistema</strong>
-
-                            <p class="pequeno">
-                                02/09/2026 09:14
-                            </p>
-
-                        </div>
-
-                        <p>
-                            Demanda criada com status Aberta
-                        </p>
-
+                    <div id="listaHistorico">
+                        <p class="text-muted mb-0">Carregando histórico...</p>
                     </div>
-
-                    <div class="historico">
-
-                        <div class="d-flex justify-content-between">
-
-                            <strong>Marina Alves</strong>
-
-                            <p class="pequeno">
-                                03/09/2026 08:30
-                            </p>
-
-                        </div>
-
-                        <p>
-                            Responsável alterado: — → Ana Ribeiro
-                        </p>
-
-                    </div>
-
-                    <div class="historico">
-
-                        <div class="d-flex justify-content-between">
-
-                            <strong>Marina Alves</strong>
-
-                            <p class="pequeno">
-                                03/09/2026 08:31
-                            </p>
-
-                        </div>
-
-                        <p>
-                            Prioridade alterada: Média → Alta
-                        </p>
-
-                    </div>
-
-                    <div class="historico">
-
-                        <div class="d-flex justify-content-between">
-
-                            <strong>Ana Ribeiro</strong>
-
-                            <p class="pequeno">
-                                04/09/2026 10:05
-                            </p>
-
-                        </div>
-
-                        <p>
-                            Status alterado: Aberta → Em andamento
-                        </p>
-
-                    </div>
-
-                    <div class="historico">
-
-                        <div class="d-flex justify-content-between">
-
-                            <strong>Marina Alves</strong>
-
-                            <p class="pequeno">
-                                10/09/2026 16:40
-                            </p>
-
-                        </div>
-
-                        <p>
-                            Prazo alterado: 12/09/2026 → 18/09/2026
-                        </p>
-
-                    </div>
-
                 </div>
 
             </div>

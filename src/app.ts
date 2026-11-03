@@ -1,9 +1,8 @@
 import Express, { Request, Response, NextFunction } from "express";
 import "dotenv/config";
-import { conectarBanco, executarConsulta } from "./Database/db";
+import { conectarBanco, executarConsulta, executarComando } from "./Database/db";
 import path from "path";
 import authRoutes from "./Routes/auth.routes";
-
 
 const app = Express();
 const PORT = process.env.PORT || 3000;
@@ -70,6 +69,8 @@ app.get("/cadastrar-usuario", (_req: Request, res: Response) => {
     );
 });
 
+
+//rotas projetos
 app.get("/projetos", async (req: Request, res: Response) => {
     const reqAutenticada = req as Request & {
         usuario?: { id: number };
@@ -160,6 +161,192 @@ app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
         return res.status(500).json({
             erro: "Não foi possível consultar a tela de demandas."
         });
+    }
+});
+
+
+//rotas detalhes de demanda
+app.get("/demanda/:id" , async (req: Request, res: Response) => {
+
+    try {
+    const idDemanda = Number(req.params.id);
+
+    if(!Number.isInteger(idDemanda) || idDemanda <= 0){
+        return res.status(400).json({msg: "ID é inválido."});
+    }
+
+    const detalhesDemanda = await executarConsulta(
+        `SELECT
+            pi2Demandas.*,
+            pi2Projetos.TITULO AS NOME_PROJETO,
+            pi2Usuarios.NOME AS NOME_RESPONSAVEL
+         FROM pi2Demandas
+         INNER JOIN pi2Projetos
+            ON pi2Demandas.PROJETO_ID = pi2Projetos.ID_PROJETO
+         LEFT JOIN pi2Usuarios
+            ON pi2Demandas.RESPONSAVEL_ID = pi2Usuarios.ID_USUARIO
+         WHERE pi2Demandas.ID_DEMANDA = :id
+           AND pi2Demandas.ATIVO = 'S'`,
+        { id: idDemanda }
+    );
+
+    const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
+
+    if (detalhesDemanda.length > 0 && usuarioId) {
+        const usuarioEpapel = await executarConsulta(
+            `SELECT
+                (SELECT pi2Usuarios.NOME
+                 FROM pi2Usuarios
+                 WHERE pi2Usuarios.ID_USUARIO = :usuarioId) AS NOME_USUARIO_LOGADO,
+                CASE
+                    WHEN pi2Projetos.LIDER = :usuarioId THEN 'LIDER'
+                    ELSE (
+                        SELECT pi2MembrosDosProjetos.PAPEL_NO_PROJETO
+                        FROM pi2MembrosDosProjetos
+                        WHERE pi2MembrosDosProjetos.PROJETO_ID = pi2Demandas.PROJETO_ID
+                          AND pi2MembrosDosProjetos.USUARIO_ID = :usuarioId
+                    )
+                END AS PAPEL_USUARIO_PROJETO
+             FROM pi2Demandas
+             INNER JOIN pi2Projetos
+                ON pi2Demandas.PROJETO_ID = pi2Projetos.ID_PROJETO
+             WHERE pi2Demandas.ID_DEMANDA = :id`,
+            { usuarioId, id: idDemanda }
+        );
+
+        if (usuarioEpapel.length > 0) {
+            Object.assign(detalhesDemanda[0], usuarioEpapel[0]);
+        }
+    }
+
+    return res.json(detalhesDemanda);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ erro: "Erro ao buscar a demanda." });
+    }
+});
+
+app.put("/demanda/:id/status", async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
+    const statusNovo = String(req.body?.status ?? "").trim().toUpperCase();
+
+    if (!Number.isInteger(id) || id <= 0) {
+        return res.status(400).json({ erro: "ID da demanda inválido." });
+    }
+
+    if (!usuarioId) {
+        return res.status(401).json({ erro: "Usuário não autenticado." });
+    }
+
+    const proximoStatus: Record<string, string> = {
+        ABERTA: "EM ANDAMENTO",
+        "EM ANDAMENTO": "EM REVISAO",
+        "EM REVISAO": "CONCLUIDA"
+    };
+
+    try {
+        const resultado = await executarConsulta(
+            `SELECT
+                pi2Demandas.STATUS,
+                pi2Projetos.LIDER,
+                pi2MembrosDosProjetos.PAPEL_NO_PROJETO
+             FROM pi2Demandas
+             INNER JOIN pi2Projetos
+                ON pi2Demandas.PROJETO_ID = pi2Projetos.ID_PROJETO
+             LEFT JOIN pi2MembrosDosProjetos
+                ON pi2MembrosDosProjetos.PROJETO_ID = pi2Demandas.PROJETO_ID
+                AND pi2MembrosDosProjetos.USUARIO_ID = :usuarioId
+             WHERE pi2Demandas.ID_DEMANDA = :id
+                AND pi2Demandas.ATIVO = 'S'`,
+            { id, usuarioId }
+        ) as Array<{
+            STATUS: string;
+            LIDER: number;
+            PAPEL_NO_PROJETO: string | null;
+        }>;
+
+        if (resultado.length === 0) {
+            return res.status(404).json({ erro: "Demanda não encontrada." });
+        }
+
+        const demanda = resultado[0];
+        const statusAtual = demanda.STATUS.trim().toUpperCase();
+        const ehLider = Number(demanda.LIDER) === usuarioId;
+        const ehMembro = demanda.PAPEL_NO_PROJETO === "MEMBRO";
+
+        if (!ehLider && !ehMembro) {
+            return res.status(403).json({ erro: "Você não participa deste projeto." });
+        }
+
+        if (proximoStatus[statusAtual] !== statusNovo) {
+            return res.status(400).json({ erro: "Transição de status inválida." });
+        }
+
+        if (statusAtual === "EM REVISAO" && statusNovo === "CONCLUIDA" && !ehLider) {
+            return res.status(403).json({ erro: "Somente o líder do projeto pode concluir a demanda." });
+        }
+
+        await executarComando(
+            `BEGIN
+                UPDATE pi2Demandas
+                SET STATUS = :statusNovo,
+                    DATA_ATUALIZACAO = SYSTIMESTAMP
+                WHERE ID_DEMANDA = :id
+                  AND STATUS = :statusAtual
+                  AND ATIVO = 'S';
+
+                IF SQL%ROWCOUNT = 0 THEN
+                    RAISE_APPLICATION_ERROR(-20001, 'O status foi alterado.');
+                END IF;
+
+                INSERT INTO pi2HistoricosDeDemandas
+                    (DEMANDA_ID, USUARIO_ID, CAMPO_ALTERADO, VALOR_ANTERIOR, VALOR_NOVO)
+                VALUES
+                    (:id, :usuarioId, 'STATUS', :statusAtual, :statusNovo);
+             END;`,
+            { id, usuarioId, statusAtual, statusNovo }
+        );
+
+        return res.json({ mensagem: "Status atualizado.", status: statusNovo });
+    } catch (error) {
+        if ((error as { errorNum?: number }).errorNum === 20001) {
+            return res.status(409).json({ erro: "O status mudou. Atualize a página." });
+        }
+
+        console.error("Erro ao atualizar status:", error);
+        return res.status(500).json({ erro: "Não foi possível atualizar o status." });
+    }
+});
+
+app.get("/demanda/:id/historico", async (req: Request, res: Response) => {
+    const idDemanda = Number(req.params.id);
+
+    if (!Number.isInteger(idDemanda) || idDemanda <= 0) {
+        return res.status(400).json({ msg: "ID é inválido." });
+    }
+
+    try {
+        const historico = await executarConsulta(
+            `SELECT
+                pi2HistoricosDeDemandas.CAMPO_ALTERADO,
+                pi2HistoricosDeDemandas.VALOR_ANTERIOR,
+                pi2HistoricosDeDemandas.VALOR_NOVO,
+                pi2HistoricosDeDemandas.DATA_ALTERACAO,
+                pi2Usuarios.NOME AS NOME_USUARIO
+             FROM pi2HistoricosDeDemandas
+             INNER JOIN pi2Usuarios
+                ON pi2HistoricosDeDemandas.USUARIO_ID = pi2Usuarios.ID_USUARIO
+             WHERE pi2HistoricosDeDemandas.DEMANDA_ID = :id
+             ORDER BY pi2HistoricosDeDemandas.DATA_ALTERACAO ASC`,
+            { id: idDemanda }
+        );
+
+        return res.json(historico);
+    } catch (error) {
+        console.error("Erro ao buscar histórico da demanda:", error);
+        return res.status(500).json({ erro: "Erro ao buscar o histórico da demanda." });
     }
 });
 
