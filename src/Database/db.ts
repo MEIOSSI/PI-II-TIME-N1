@@ -1,6 +1,8 @@
 const oracledb = require("oracledb");
 import "dotenv/config";
 
+oracledb.fetchAsString = [oracledb.CLOB];
+
 const user = process.env.ORACLE_USER;
 const password = process.env.ORACLE_PASSWORD;
 const connectString = process.env.ORACLE_CONNECT_STRING;
@@ -55,6 +57,24 @@ export async function executarConsulta<
 
         return (resultado.rows ?? []) as T[];
 
+    } finally {
+        await conexao.close();
+    }
+}
+
+export async function executarComando(
+    sql: string,
+    binds: Record<string, unknown> = {}
+): Promise<void> {
+    const pool = oracledb.getPool();
+    const conexao = await pool.getConnection();
+
+    try {
+        await conexao.execute(sql, binds);
+        await conexao.commit();
+    } catch (erro) {
+        await conexao.rollback();
+        throw erro;
     } finally {
         await conexao.close();
     }
