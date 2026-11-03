@@ -1,8 +1,9 @@
 async function carregarProjetos() {
     try {
 
-        const projetos = await listarProjetosApi()
-        await renderizarCardProjeto(projetos);
+        const dados = await listarProjetosApi();
+        await renderizarUsuario(dados.usuario);
+        await renderizarCardProjeto(dados.projetos);
         
     } catch (erro) {
         exibirMensagemLista("danger", erro.message);
@@ -34,7 +35,7 @@ async function renderizarCardProjeto(projetos) {
             <div class="projeto card w-100 p-3">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0 fw-bold" id="nome_projeto">${projeto.TITULO}</h4>
-                    <button class="btn btn-primary irpara">Ir para Dashboard
+                    <button class="btn btn-primary irpara" data-projeto-id="${projeto.ID_PROJETO}">Ir para Dashboard
                         <img class="icon-ir" src="../../icons/arrow-right-solid.png" alt="">
                     </button>
                 </div>
@@ -53,6 +54,16 @@ async function renderizarCardProjeto(projetos) {
 
 }
 
+async function renderizarUsuario(usuario) {
+    const nomeUser = document.getElementById("nomeUsuario")
+    const perfil =document.getElementById("perfilUsuario")
+    const inicialUser =document.getElementById("iniciaisUsuario")
+
+    nomeUser.textContent = usuario.NOME;
+    perfil.textContent = usuario.PERFIL.toLowerCase();
+    inicialUser.textContent =usuario.NOME.trim().charAt(0).toUpperCase();
+}
+
 function exibirMensagemLista(tipo, mensagem) {
   const areaMensagem = document.getElementById("areaMensagem");
 
@@ -65,4 +76,17 @@ function exibirMensagemLista(tipo, mensagem) {
   areaMensagem.innerHTML = mensagem;
 }
 
+document.getElementById("listar_projeto")?.addEventListener("click", (evento) => {
+    const alvo = evento.target;
+    if (!(alvo instanceof Element)) return;
+
+    const botao = alvo.closest(".irpara");
+    if (!(botao instanceof HTMLButtonElement)) return;
+
+    const idProjeto = botao.dataset.projetoId;
+    window.location.href =
+        `../telaDemandas/demandas.html?id=${encodeURIComponent(idProjeto)}`;
+});
+
 window.addEventListener("DOMContentLoaded", carregarProjetos);
+

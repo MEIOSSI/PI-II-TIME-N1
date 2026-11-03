@@ -46,14 +46,13 @@ header {
     text-decoration: underline;
 }
 
-.perfil a {
+.perfil-texto {
     color: white;
-    text-decoration: none;
     border: 1px solid white;
-}
-
-.perfil a:hover {
-    color: white;
+    border-radius: 5px;
+    cursor: default;
+    margin-bottom: 0;
+    padding: 8px 16px;
 }
 
 .nav-link{
