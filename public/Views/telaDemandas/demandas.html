@@ -10,29 +10,28 @@
 
   <!-- CSS próprio -->
   <link rel="stylesheet" href="style.css">
+
+  <script defer src="../../api.js"></script>
+<script defer src="demandas.js"></script>
 </head>
 <body>
     <header class="p-3">        
         <div class="row">
             <div class="col-6 proj-header">
                 <div class="d-flex">
-                    <a href="../telaProjetos/projetos.html"><img src="/icons/arrow-left-solid.png" alt="Voltar" class="icon-voltar"></a>
-                    <p class="voltar-texto">Todos os Projetos</p>
+                    <a href="../telaProjetos/projetos.html"><img src="../../icons/arrow-left-solid.png" alt="Voltar" class="icon-voltar"></a>
+                    <p class="voltar-texto">Dashboard</p>
                 </div>
-                <h3 class="ms-4 titulo-projeto">Nome do Projeto</h3>
+                <h3 class="ms-4 titulo-projeto" id="nomeProjeto"><!--Nome do projeto--></h3>
             </div>
             <div class="col-6 container d-flex justify-content-end align-items-center itens">
-                <ul class="nav">
-                    <li class="nav-item">
-                        <p class="integrantes">2 integrantes</p>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Infos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link me-5" href="#">Histórico de alterações</a>
-                    </li>
-                </ul>
+                <div class="perfil">
+                    <ul class="nav me-5">
+                        <li class="nav-item perfil-texto">
+                            <p id="nomeUsuario"><!--Usuário--></p><p id="perfilUsuario"><!--PERFIL--></p>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </header>
@@ -79,80 +78,11 @@
                         <p class="titulo-demanda">Aberta</p>
                     </div>
                     <!--card de demanda, será inserido conforme demandas são criadas apenas-->
-                    <div class="card-body rounded-bottom">
+                    <div class="card-body rounded-bottom" data-status="ABERTA">
+                        <!--botão de nova demanda, apenas para lider e adm-->
                         <div class="btn-nova-demanda">
                             <button type="button" class="btn btn-primary aplicar mb-3"><span class="fw-bold">+ </span>Nova Demanda</button>
                         </div>
-                        <article class="card mb-3 shadow-sm demanda-card critica">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda de defeito</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-defeito">Defeito</div>
-                                    <div class="prioridade-critica">Crítica</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
-                        <article class="card mb-3 shadow-sm demanda-card critica">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda de defeito</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-defeito">Defeito</div>
-                                    <div class="prioridade-critica">Crítica</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
-                        <article class="card mb-3 shadow-sm demanda-card critica">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda de defeito</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-defeito">Defeito</div>
-                                    <div class="prioridade-critica">Crítica</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
-                        <article class="card mb-3 shadow-sm demanda-card critica">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda de defeito</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-defeito">Defeito</div>
-                                    <div class="prioridade-critica">Crítica</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
-                        <article class="card mb-3 shadow-sm demanda-card critica">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda de defeito</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-defeito">Defeito</div>
-                                    <div class="prioridade-critica">Crítica</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
-                        <article class="card mb-3 shadow-sm demanda-card critica">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda de defeito</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-defeito">Defeito</div>
-                                    <div class="prioridade-critica">Crítica</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
-                        <article class="card mb-3 shadow-sm demanda-card critica">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda de defeito</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-defeito">Defeito</div>
-                                    <div class="prioridade-critica">Crítica</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
                     </div>
                 </section>
             </div>
@@ -163,17 +93,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <p class="titulo-demanda">Em Andamento</p>
                     </div>
-                    <div class="card-body rounded-bottom">
-                        <article class="card mb-3 shadow-sm demanda-card baixa">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">Demanda de Melhoria</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-melhoria">Melhoria</div>
-                                    <div class="prioridade-baixa">Baixa</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Souza Almeida</p>
-                            </div>
-                        </article>
+                    <div class="card-body rounded-bottom" data-status="EM ANDAMENTO">
                     </div>
                 </section>
             </div>
@@ -184,17 +104,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <p class="titulo-demanda">Em Revisão</p>
                     </div>
-                    <div class="card-body rounded-bottom">
-                        <article class="card mb-3 shadow-sm demanda-card media">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda de documentação</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-documentacao">Documentação</div>
-                                    <div class="prioridade-media">Média</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Santos Almeida</p>
-                            </div>
-                        </article>
+                    <div class="card-body rounded-bottom" data-status="EM REVISAO">
                     </div>
                 </section>
             </div>
@@ -205,17 +115,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <p class="titulo-demanda">Concluída</p>
                     </div>
-                    <div class="card-body rounded-bottom">
-                        <article class="card mb-3 shadow-sm demanda-card alta">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda de tarefa</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-tarefa">Tarefa</div>
-                                    <div class="prioridade-alta">Alta</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
+                    <div class="card-body rounded-bottom" data-status="CONCLUIDA">
                     </div>
                 </section>
             </div>
@@ -226,47 +126,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <p class="titulo-demanda">Cancelada</p>
                     </div>
-                    <div class="card-body rounded-bottom">
-                        <article class="card mb-3 shadow-sm demanda-card baixa">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda cancelada</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-defeito">Defeito</div>
-                                    <div class="prioridade-baixa">Baixo</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
-                        <article class="card mb-3 shadow-sm demanda-card baixa">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda cancelada</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-defeito">Defeito</div>
-                                    <div class="prioridade-baixa">Baixo</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
-                        <article class="card mb-3 shadow-sm demanda-card baixa">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda cancelada</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-defeito">Defeito</div>
-                                    <div class="prioridade-baixa">Baixo</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
-                        <article class="card mb-3 shadow-sm demanda-card baixa">
-                            <div class="card-body">
-                                <div class="mb-2 nome-demanda">demanda cancelada</div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <div class="tipo-defeito">Defeito</div>
-                                    <div class="prioridade-baixa">Baixo</div>
-                                </div>
-                                <p class="small text-muted mb-0">Mario Silva Almeida</p>
-                            </div>
-                        </article>
+                    <div class="card-body rounded-bottom" data-status="CANCELADA">
                     </div>
                 </section>
             </div>
