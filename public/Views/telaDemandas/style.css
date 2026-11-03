@@ -60,25 +60,17 @@ header {
     text-decoration: underline;
 }
 
-.itens a {
+.itens .perfil-texto {
     color: white;
-    text-decoration: none;
     border: 1px solid white;
-    transition: transform 0.3s ease;
-}
-
-.itens .nav-link:hover {
-    color: white;
-    transform: scale(1.1);
+    border-radius: 5px;
+    margin-bottom: 0;
+    padding: 8px 16px;
+    cursor: default;
 }
 
 .itens li {
     margin-left: 20px;
-}
-
-.integrantes{
-    color:white;
-    margin: 0 10px;
 }
 
 .content-area {
@@ -158,6 +150,10 @@ main {
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
+}
+
+.demanda-card {
+    cursor: pointer;
 }
 
 .titulo-demanda {
@@ -299,4 +295,5 @@ main {
     .coluna-card > .card-body {
         overflow: visible;
     }
+
 }

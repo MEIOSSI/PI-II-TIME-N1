@@ -67,6 +67,7 @@ app.get("/cadastrar-usuario", (_req: Request, res: Response) => {
     );
 });
 
+//rota da tela de projetos
 app.get("/projetos", async (req: Request, res: Response) => {
     const reqAutenticada = req as Request & {
         usuario?: { id: number };
@@ -99,7 +100,22 @@ app.get("/projetos", async (req: Request, res: Response) => {
             { usuarioId }
         );
 
-        return res.json(projetos);
+        const usuarios = await executarConsulta(
+            `SELECT ID_USUARIO, NOME, PERFIL
+            FROM pi2Usuarios
+            WHERE ID_USUARIO = :usuarioId`,
+            { usuarioId }
+        );
+
+        if (usuarios.length === 0) {
+            return res.status(404).json({ erro: "Usuário não encontrado." });
+        }
+
+        return res.json({
+            usuario: usuarios[0],
+            projetos
+        });
+
     } catch (erro) {
         console.error("Erro ao consultar projetos do usuário:", erro);
         return res.status(500).json({
@@ -108,11 +124,22 @@ app.get("/projetos", async (req: Request, res: Response) => {
     }
 });
 
+//rota da tela de demandas
 app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
     const idProjeto = Number(req.params.id);
 
     if (!Number.isInteger(idProjeto) || idProjeto <= 0) {
         return res.status(400).json({ erro: "ID inválido." });
+    }
+
+    const reqAutenticada = req as Request & {
+        usuario?: { id: number };
+    };
+
+    const usuarioId = reqAutenticada.usuario?.id;
+
+    if (!usuarioId) {
+        return res.status(401).json({ erro: "Usuário não autenticado." });
     }
 
     try {
@@ -133,15 +160,15 @@ app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
             { idProjeto }
         );
 
-        const qntMembros = await executarConsulta(
-            `SELECT COUNT(*) AS QUANTIDADE_MEMBROS
-             FROM pi2MembrosDosProjetos
-             WHERE PROJETO_ID = :idProjeto`,
-            { idProjeto }
+        const usuarios = await executarConsulta(
+            `SELECT ID_USUARIO, NOME, PERFIL
+            FROM pi2Usuarios
+            WHERE ID_USUARIO = :usuarioId`,
+            { usuarioId }
         );
 
         const nomeProjeto = await executarConsulta(
-            `SELECT TITULO AS NOME_PROJETO
+            `SELECT TITULO
              FROM pi2Projetos
              WHERE ID_PROJETO = :idProjeto`,
             { idProjeto }
@@ -149,7 +176,7 @@ app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
 
         return res.status(200).json({
             demandas,
-            qntMembros,
+            usuario: usuarios[0],
             nomeProjeto
         });
     } catch (erro) {

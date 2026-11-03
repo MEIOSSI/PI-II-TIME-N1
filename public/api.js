@@ -7,6 +7,13 @@ async function listarProjetosApi() {
     return await tratarRespostaApi(resposta);
 }
 
+async function listarDemandasApi() {
+  let url = `${API_BASE_URL}/projetos/${encodeURIComponent(idProjeto)}/demandas`;
+
+  const resposta = await fetch(url);
+  return await tratarRespostaApi(resposta);
+}
+
 async function tratarRespostaApi(resposta) {
   const tipoConteudo = resposta.headers.get("content-type") || "";
 
