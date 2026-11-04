@@ -9,7 +9,7 @@ if (!idProjeto) {
 
 async function carregarDemandas() {
     try {
-        const dados = await listarDemandasApi();
+        const dados = await listarDemandasApi(idProjeto);
 
         renderizarNomeProjeto(dados.nomeProjeto?.[0]?.TITULO); // ?.[0]  tenta pegar o primeiro resultado, sem gerar erro se a lista estiver ausente.
         //?.TITULO tenta ler a propriedade TITULO, também sem gerar erro se o resultado não existir.
