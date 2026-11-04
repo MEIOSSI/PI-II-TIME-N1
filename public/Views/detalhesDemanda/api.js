@@ -1,45 +1,35 @@
+//Por: Murilo Lopes - 26894964
+
 const API_BASE_URL = "http://localhost:3000";
 
-// Tela de projetos
-async function listarProjetosApi() {
-  const url = `${API_BASE_URL}/projetos`;
-  const resposta = await fetch(url);
-  return tratarRespostaApi(resposta);
-}
-
-// Demandas de um projeto
-async function listarDemandasApi(idProjeto) {
-  const url = `${API_BASE_URL}/projetos/${encodeURIComponent(idProjeto)}/demandas`;
-  const resposta = await fetch(url);
-  return tratarRespostaApi(resposta);
-}
-
-// Detalhes da demanda
+// Busca na API os dados principais de uma demanda pelo ID.
 async function detalhesDemandaApi(id) {
   const url = `${API_BASE_URL}/demanda/${encodeURIComponent(id)}`;
   const resposta = await fetch(url);
   return tratarRespostaApi(resposta);
 }
 
+// Busca na API o histórico de alterações de uma demanda pelo ID.
 async function historicoDemandaApi(id) {
   const url = `${API_BASE_URL}/demanda/${encodeURIComponent(id)}/historico`;
   const resposta = await fetch(url);
   return tratarRespostaApi(resposta);
 }
 
+// Envia à API a solicitação para atualizar o status da demanda.
 async function alterarStatusDemandaApi(id, status) {
-  const resposta = await fetch(
-    `${API_BASE_URL}/demanda/${encodeURIComponent(id)}/status`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status })
-    }
-  );
+  const url = `${API_BASE_URL}/demanda/${encodeURIComponent(id)}/status`;
+
+  const resposta = await fetch(url, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status })
+  });
 
   return tratarRespostaApi(resposta);
 }
 
+// Converte a resposta da API em dados e transforma respostas de erro em exceções.
 async function tratarRespostaApi(resposta) {
   const tipoConteudo = resposta.headers.get("content-type") || "";
 
@@ -58,4 +48,4 @@ async function tratarRespostaApi(resposta) {
   }
 
   return dados;
-}
+} 

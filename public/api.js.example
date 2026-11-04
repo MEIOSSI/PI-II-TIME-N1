@@ -1,0 +1,27 @@
+//Por: Murilo Lopes - 26894964
+
+const API_BASE_URL = "http://localhost:3000"; //url base da API
+
+//insira aqui as funções de comunicação com api de sua tela, mas separe em outro arquivo.
+
+
+//função padrão para identificar se a resposta do servidor é um JSON
+async function tratarRespostaApi(resposta) {
+  const tipoConteudo = resposta.headers.get("content-type") || "";
+
+  if (!tipoConteudo.includes("application/json")) {
+    throw new Error(
+      `A API respondeu ${resposta.status} com ${tipoConteudo || "conteúdo desconhecido"}. ` +
+      `Confira se o servidor está rodando em ${API_BASE_URL} e abra a tela pelo Express.`
+    );
+  }
+
+  const dados = await resposta.json();
+
+  if (!resposta.ok) {
+    const mensagem = dados.erro || dados.mensagem || dados.msg || "Erro na requisição.";
+    throw new Error(mensagem);
+  }
+
+  return dados;
+} 
