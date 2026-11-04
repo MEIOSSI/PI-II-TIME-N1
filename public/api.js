@@ -2,19 +2,17 @@ const API_BASE_URL = "http://localhost:3000";
 
 // Tela de projetos
 async function listarProjetosApi() {
-  const url = `${API_BASE_URL}/projetos`;
-  const resposta = await fetch(url);
+  const resposta = await fetch(`${API_BASE_URL}/projetos`);
   return tratarRespostaApi(resposta);
 }
 
-// Demandas de um projeto
 async function listarDemandasApi(idProjeto) {
   const url = `${API_BASE_URL}/projetos/${encodeURIComponent(idProjeto)}/demandas`;
   const resposta = await fetch(url);
   return tratarRespostaApi(resposta);
 }
 
-// Detalhes da demanda
+//tela detalhes de demanda
 async function detalhesDemandaApi(id) {
   const url = `${API_BASE_URL}/demanda/${encodeURIComponent(id)}`;
   const resposta = await fetch(url);
@@ -28,14 +26,13 @@ async function historicoDemandaApi(id) {
 }
 
 async function alterarStatusDemandaApi(id, status) {
-  const resposta = await fetch(
-    `${API_BASE_URL}/demanda/${encodeURIComponent(id)}/status`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status })
-    }
-  );
+  const url = `${API_BASE_URL}/demanda/${encodeURIComponent(id)}/status`;
+
+  const resposta = await fetch(url, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status })
+  });
 
   return tratarRespostaApi(resposta);
 }
@@ -58,4 +55,4 @@ async function tratarRespostaApi(resposta) {
   }
 
   return dados;
-}
+} 
