@@ -1,97 +1,203 @@
 -- USUÁRIOS
+-- Senha em texto: AnaDemo@123
 INSERT INTO pi2Usuarios
-    (ID_USUARIO, NOME, EMAIL, SENHA, PERFIL)
+    (id_usuario, nome, email, senha, perfil)
 VALUES
-    (1, 'Ana Souza', 'ana@exemplo.com', 'senha-demo-1', 'ADMINISTRADOR');
+    (1, 'Ana Souza', 'ana@exemplo.com', '$2a$10$radYLnCvFHmQSmuSkaYR.u9u7GmQ0Coc0tUn1/6AD6R4rDHiLYoPS', 'ADMINISTRADOR');
 
+-- Senha em texto: BrunoDemo@123
 INSERT INTO pi2Usuarios
-    (ID_USUARIO, NOME, EMAIL, SENHA, PERFIL)
+    (id_usuario, nome, email, senha, perfil)
 VALUES
-    (2, 'Bruno Lima', 'bruno@exemplo.com', 'senha-demo-2', 'USUARIO');
+    (2, 'Bruno Lima', 'bruno@exemplo.com', '$2a$10$5JNXdDYDLEBEPFHEwWGgGuMoaYptPJj9CdTVpDCVXFVYPc9fr7lUW', 'LIDER_DE_PROJETO');
 
+-- Senha em texto: CarlaDemo@123
 INSERT INTO pi2Usuarios
-    (ID_USUARIO, NOME, EMAIL, SENHA, PERFIL)
+    (id_usuario, nome, email, senha, perfil)
 VALUES
-    (3, 'Carla Alves', 'carla@exemplo.com', 'senha-demo-3', 'USUARIO');
+    (3, 'Carla Alves', 'carla@exemplo.com', '$2a$10$GN8uAZLDLASVhTM1u31hWuSnOfSbXzJChD67aLFss1CXKFSesebJm', 'MEMBRO_DA_EQUIPE');
+
+-- Senha em texto: DiegoDemo@123
+INSERT INTO pi2Usuarios
+    (id_usuario, nome, email, senha, perfil)
+VALUES
+    (4, 'Diego Martins', 'diego@exemplo.com', '$2a$10$LzeNZJJgrHSAZtSwVsn5V.laCejfn8ni5j51q6YMDOVL3bZlX0gby', 'MEMBRO_DA_EQUIPE');
+
+-- Senha em texto: EduardoDemo@123
+INSERT INTO pi2Usuarios
+    (id_usuario, nome, email, senha, perfil)
+VALUES
+    (5, 'Eduardo Costa', 'eduardo@exemplo.com', '$2a$10$9JY9YebiLvQJfhdUJRbfF.3jgXCEr1C5WNnf4ilikRD7LM2nk6qki', 'LIDER_DE_PROJETO');
+
+-- Senha em texto: FernandaDemo@123
+INSERT INTO pi2Usuarios
+    (id_usuario, nome, email, senha, perfil)
+VALUES
+    (6, 'Fernanda Rocha', 'fernanda@exemplo.com', '$2a$10$DsO10VCvZoh8JK8XSigN5.fArkQ7mzNBc4zGAUwI6CqrngoWqR6lW', 'MEMBRO_DA_EQUIPE');
 
 
 -- PROJETOS
 INSERT INTO pi2Projetos
-    (ID_PROJETO, TITULO, DESCRICAO, LIDER)
+    (id_projeto, titulo, descricao, lider, criado_por)
 VALUES
-    (1, 'Sistema de Demandas', 'Projeto de acompanhamento de demandas.', 1);
+    (1, 'Sistema de Demandas', 'Projeto de acompanhamento de demandas.', 2, 1);
 
 INSERT INTO pi2Projetos
-    (ID_PROJETO, TITULO, DESCRICAO, LIDER)
+    (id_projeto, titulo, descricao, lider, criado_por)
 VALUES
-    (2, 'Portal Acadêmico', 'Melhorias no portal acadêmico.', 1);
+    (2, 'Portal Acadêmico', 'Melhorias no portal acadêmico.', 5, 1);
+
+INSERT INTO pi2Projetos
+    (id_projeto, titulo, descricao, lider, criado_por)
+VALUES
+    (3, 'Aplicativo Mobile', 'Aplicativo para acompanhamento de atividades.', 2, 5);
 
 
 -- MEMBROS DOS PROJETOS
 INSERT INTO pi2MembrosDosProjetos
-    (PROJETO_ID, USUARIO_ID, PAPEL_NO_PROJETO)
+    (projeto_id, usuario_id, papel_no_projeto)
 VALUES
-    (1, 1, 'LIDER');
+    (1, 3, 'MEMBRO_DA_EQUIPE');
 
 INSERT INTO pi2MembrosDosProjetos
-    (PROJETO_ID, USUARIO_ID, PAPEL_NO_PROJETO)
+    (projeto_id, usuario_id, papel_no_projeto)
 VALUES
-    (1, 2, 'MEMBRO');
+    (1, 4, 'MEMBRO_DA_EQUIPE');
 
 INSERT INTO pi2MembrosDosProjetos
-    (PROJETO_ID, USUARIO_ID, PAPEL_NO_PROJETO)
+    (projeto_id, usuario_id, papel_no_projeto)
 VALUES
-    (2, 1, 'LIDER');
+    (2, 3, 'MEMBRO_DA_EQUIPE');
 
 INSERT INTO pi2MembrosDosProjetos
-    (PROJETO_ID, USUARIO_ID, PAPEL_NO_PROJETO)
+    (projeto_id, usuario_id, papel_no_projeto)
 VALUES
-    (2, 3, 'MEMBRO');
+    (2, 6, 'MEMBRO_DA_EQUIPE');
+
+INSERT INTO pi2MembrosDosProjetos
+    (projeto_id, usuario_id, papel_no_projeto)
+VALUES
+    (3, 4, 'MEMBRO_DA_EQUIPE');
+
+INSERT INTO pi2MembrosDosProjetos
+    (projeto_id, usuario_id, papel_no_projeto)
+VALUES
+    (3, 6, 'MEMBRO_DA_EQUIPE');
 
 
 -- DEMANDAS
 INSERT INTO pi2Demandas
-    (ID_DEMANDA, TITULO, DESCRICAO, TIPO, PRIORIDADE, STATUS,
-     PROJETO_ID, CRIADO_POR, RESPONSAVEL_ID, PRAZO_FINAL)
+    (id_demanda, titulo, descricao, tipo, prioridade, status,
+     projeto_id, criado_por, responsavel_id, prazo_final)
 VALUES
     (1, 'Criar tela de login', 'Implementar a tela de login do sistema.',
-     'TAREFA', 'ALTA', 'EM ANDAMENTO', 1, 1, 2, DATE '2026-12-15');
+     'TAREFA', 'ALTA', 'EM ANDAMENTO', 1, 1, 3, DATE '2026-12-15');
 
 INSERT INTO pi2Demandas
-    (ID_DEMANDA, TITULO, DESCRICAO, TIPO, PRIORIDADE, STATUS,
-     PROJETO_ID, CRIADO_POR, RESPONSAVEL_ID, PRAZO_FINAL)
+    (id_demanda, titulo, descricao, tipo, prioridade, status,
+     projeto_id, criado_por, responsavel_id, prazo_final)
 VALUES
     (2, 'Corrigir erro no cadastro', 'O formulário não valida o e-mail.',
-     'DEFEITO', 'CRITICA', 'ABERTA', 1, 2, 3, DATE '2026-12-10');
+     'DEFEITO', 'CRITICA', 'ABERTA', 1, 2, 4, DATE '2026-12-10');
 
 INSERT INTO pi2Demandas
-    (ID_DEMANDA, TITULO, DESCRICAO, TIPO, PRIORIDADE, STATUS,
-     PROJETO_ID, CRIADO_POR, RESPONSAVEL_ID)
+    (id_demanda, titulo, descricao, tipo, prioridade, status,
+     projeto_id, criado_por, responsavel_id, prazo_final)
 VALUES
-    (3, 'Atualizar documentação', 'Documentar as funcionalidades do portal.',
-     'DOCUMENTACAO', 'MEDIA', 'ABERTA', 2, 3, 3);
+    (3, 'Adicionar filtros ao painel', 'Permitir filtrar os itens por prioridade.',
+     'MELHORIA', 'MEDIA', 'EM REVISAO', 2, 5, 6, DATE '2026-12-20');
+
+INSERT INTO pi2Demandas
+    (id_demanda, titulo, descricao, tipo, prioridade, status,
+     projeto_id, criado_por, responsavel_id)
+VALUES
+    (4, 'Escrever documentação de implantação', 'Documentar como publicar o sistema.',
+     'DOCUMENTACAO', 'BAIXA', 'CONCLUIDA', 2, 3, 6);
+
+INSERT INTO pi2Demandas
+    (id_demanda, titulo, descricao, tipo, prioridade, status,
+     projeto_id, criado_por, responsavel_id, prazo_final)
+VALUES
+    (5, 'Corrigir encerramento de sessão', 'O aplicativo falha ao encerrar a sessão.',
+     'DEFEITO', 'BAIXA', 'CANCELADA', 3, 4, 4, DATE '2026-12-12');
+
+INSERT INTO pi2Demandas
+    (id_demanda, titulo, descricao, tipo, prioridade, status,
+     projeto_id, criado_por, responsavel_id)
+VALUES
+    (6, 'Adicionar exportação de dados', 'Permitir exportar os dados do painel.',
+     'TAREFA', 'MEDIA', 'ABERTA', 3, 2, 6);
+
+INSERT INTO pi2Demandas
+    (id_demanda, titulo, descricao, tipo, prioridade, status,
+     projeto_id, criado_por, responsavel_id, prazo_final)
+VALUES
+    (7, 'Melhorar indicador de carregamento', 'Exibir progresso durante a busca.',
+     'MELHORIA', 'ALTA', 'CONCLUIDA', 1, 1, 3, DATE '2026-12-08');
+
+INSERT INTO pi2Demandas
+    (id_demanda, titulo, descricao, tipo, prioridade, status,
+     projeto_id, criado_por, responsavel_id, prazo_final)
+VALUES
+    (8, 'Documentar endpoints da API', 'Registrar os endpoints e seus parâmetros.',
+     'DOCUMENTACAO', 'CRITICA', 'EM REVISAO', 3, 6, 4, DATE '2026-12-22');
 
 
 -- COMENTÁRIOS
-INSERT INTO pi2Comentarios (DEMANDA_ID, USUARIO_ID, DESCRICAO)
-VALUES (1, 2, 'Já comecei a implementar a tela.');
+INSERT INTO pi2Comentarios (demanda_id, usuario_id, texto)
+VALUES (1, 3, 'Já comecei a implementar a tela.');
 
-INSERT INTO pi2Comentarios (DEMANDA_ID, USUARIO_ID, DESCRICAO)
-VALUES (2, 3, 'Consegui reproduzir o problema.');
+INSERT INTO pi2Comentarios (demanda_id, usuario_id, texto)
+VALUES (2, 4, 'Consegui reproduzir o problema.');
 
-INSERT INTO pi2Comentarios (DEMANDA_ID, USUARIO_ID, DESCRICAO)
-VALUES (3, 1, 'A documentação pode incluir exemplos de uso.');
+INSERT INTO pi2Comentarios (demanda_id, usuario_id, texto)
+VALUES (3, 6, 'Os filtros já estão prontos para revisão.');
+
+INSERT INTO pi2Comentarios (demanda_id, usuario_id, texto)
+VALUES (4, 3, 'A documentação foi publicada.');
+
+INSERT INTO pi2Comentarios (demanda_id, usuario_id, texto)
+VALUES (5, 4, 'A demanda foi cancelada após revisão do escopo.');
+
+INSERT INTO pi2Comentarios (demanda_id, usuario_id, texto)
+VALUES (6, 6, 'Vou iniciar a exportação na próxima etapa.');
+
+INSERT INTO pi2Comentarios (demanda_id, usuario_id, texto)
+VALUES (7, 1, 'O indicador ficou mais claro.');
+
+INSERT INTO pi2Comentarios (demanda_id, usuario_id, texto)
+VALUES (8, 6, 'Os endpoints principais estão documentados.');
 
 
 -- HISTÓRICO DE ALTERAÇÕES
 INSERT INTO pi2HistoricosDeDemandas
-    (DEMANDA_ID, USUARIO_ID, CAMPO_ALTERADO, VALOR_ANTERIOR, VALOR_NOVO)
+    (demanda_id, usuario_id, campo_alterado, valor_anterior, valor_novo)
 VALUES
-    (1, 2, 'STATUS', 'ABERTA', 'EM ANDAMENTO');
+    (1, 3, 'status', 'ABERTA', 'EM ANDAMENTO');
 
 INSERT INTO pi2HistoricosDeDemandas
-    (DEMANDA_ID, USUARIO_ID, CAMPO_ALTERADO, VALOR_ANTERIOR, VALOR_NOVO)
+    (demanda_id, usuario_id, campo_alterado, valor_anterior, valor_novo)
 VALUES
-    (2, 3, 'PRIORIDADE', 'ALTA', 'CRITICA');
+    (3, 6, 'status', 'EM ANDAMENTO', 'EM REVISAO');
+
+INSERT INTO pi2HistoricosDeDemandas
+    (demanda_id, usuario_id, campo_alterado, valor_anterior, valor_novo)
+VALUES
+    (4, 5, 'status', 'EM REVISAO', 'CONCLUIDA');
+
+INSERT INTO pi2HistoricosDeDemandas
+    (demanda_id, usuario_id, campo_alterado, valor_anterior, valor_novo)
+VALUES
+    (5, 4, 'status', 'EM ANDAMENTO', 'CANCELADA');
+
+INSERT INTO pi2HistoricosDeDemandas
+    (demanda_id, usuario_id, campo_alterado, valor_anterior, valor_novo)
+VALUES
+    (7, 1, 'prioridade', 'MEDIA', 'ALTA');
+
+INSERT INTO pi2HistoricosDeDemandas
+    (demanda_id, usuario_id, campo_alterado, valor_anterior, valor_novo)
+VALUES
+    (8, 6, 'status', 'ABERTA', 'EM REVISAO');
 
 COMMIT;
