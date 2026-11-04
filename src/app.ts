@@ -1,3 +1,6 @@
+//Este arquivo contém multiplos autores.
+// verifique o autor  no topo de cada trecho.
+
 import Express, { Request, Response, NextFunction } from "express";
 import "dotenv/config";
 import { conectarBanco, executarConsulta, executarComando } from "./Database/db";
@@ -70,6 +73,7 @@ app.get("/cadastrar-usuario", (_req: Request, res: Response) => {
 });
 
 //rota da tela de projetos
+//por Valentina Bastos - 26893594
 app.get("/projetos", async (req: Request, res: Response) => {
     const reqAutenticada = req as Request & {
         usuario?: { id: number };
@@ -127,6 +131,7 @@ app.get("/projetos", async (req: Request, res: Response) => {
 });
 
 //rota da tela de demandas
+//por Valentina Bastos - 26893594
 app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
     const idProjeto = Number(req.params.id);
 
@@ -191,6 +196,7 @@ app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
 
 
 //rotas detalhes de demanda
+//por Murilo Lopes - 26894964
 app.get("/demanda/:id" , async (req: Request, res: Response) => {
 
     try {
@@ -252,6 +258,7 @@ app.get("/demanda/:id" , async (req: Request, res: Response) => {
     }
 });
 
+//por Murilo Lopes - 26894964
 app.put("/demanda/:id/status", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
@@ -345,6 +352,7 @@ app.put("/demanda/:id/status", async (req: Request, res: Response) => {
     }
 });
 
+//por Murilo Lopes - 26894964
 app.get("/demanda/:id/historico", async (req: Request, res: Response) => {
     const idDemanda = Number(req.params.id);
 
@@ -375,6 +383,7 @@ app.get("/demanda/:id/historico", async (req: Request, res: Response) => {
     }
 });
 
+//por Murilo Lopes - 26894964
 async function iniciarServidor() {
     try {
         await conectarBanco();

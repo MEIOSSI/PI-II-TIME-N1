@@ -1,30 +1,22 @@
+//Por: Murilo Lopes - 26894964
+
 const API_BASE_URL = "http://localhost:3000";
 
-// Tela de projetos
-async function listarProjetosApi() {
-  const resposta = await fetch(`${API_BASE_URL}/projetos`);
-  return tratarRespostaApi(resposta);
-}
-
-async function listarDemandasApi(idProjeto) {
-  const url = `${API_BASE_URL}/projetos/${encodeURIComponent(idProjeto)}/demandas`;
-  const resposta = await fetch(url);
-  return tratarRespostaApi(resposta);
-}
-
-//tela detalhes de demanda
+// Busca na API os dados principais de uma demanda pelo ID.
 async function detalhesDemandaApi(id) {
   const url = `${API_BASE_URL}/demanda/${encodeURIComponent(id)}`;
   const resposta = await fetch(url);
   return tratarRespostaApi(resposta);
 }
 
+// Busca na API o histórico de alterações de uma demanda pelo ID.
 async function historicoDemandaApi(id) {
   const url = `${API_BASE_URL}/demanda/${encodeURIComponent(id)}/historico`;
   const resposta = await fetch(url);
   return tratarRespostaApi(resposta);
 }
 
+// Envia à API a solicitação para atualizar o status da demanda.
 async function alterarStatusDemandaApi(id, status) {
   const url = `${API_BASE_URL}/demanda/${encodeURIComponent(id)}/status`;
 
@@ -37,6 +29,7 @@ async function alterarStatusDemandaApi(id, status) {
   return tratarRespostaApi(resposta);
 }
 
+// Converte a resposta da API em dados e transforma respostas de erro em exceções.
 async function tratarRespostaApi(resposta) {
   const tipoConteudo = resposta.headers.get("content-type") || "";
 

@@ -1,3 +1,5 @@
+//por Valentina Bastos - 26893594
+
 const parametros = new URLSearchParams(window.location.search);
 const idProjeto = parametros.get("id");
 
