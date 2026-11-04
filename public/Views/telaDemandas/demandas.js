@@ -15,6 +15,7 @@ async function carregarDemandas() {
         //?.TITULO tenta ler a propriedade TITULO, também sem gerar erro se o resultado não existir.
         renderizarDemandas(dados.demandas);
         renderizarUsuario(dados.usuario);
+        renderizarBotaoNovaDemanda(dados.usuario.PERFIL);
     } catch (erro) {
         exibirMensagemLista("danger", erro.message);
     }
@@ -49,6 +50,19 @@ function renderizarDemandas(demandas) {
             </article>
         `);
     });
+}
+
+function renderizarBotaoNovaDemanda(perfil){
+    const container = document.getElementById("botaodemanda");
+    const perfilNormalizado = perfil?.trim().toUpperCase();
+
+    if (perfilNormalizado === "LIDER" || perfilNormalizado === "ADM" || perfilNormalizado === "ADMINISTRADOR") {
+        container.innerHTML = `
+            <div class="btn-nova-demanda">
+                <button type="button" class="btn btn-primary aplicar mb-3"><span class="fw-bold">+ </span>Nova Demanda</button>
+            </div>
+        `;
+    }
 }
 
 function renderizarNomeProjeto(nome) {
