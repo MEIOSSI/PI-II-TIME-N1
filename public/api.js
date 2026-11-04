@@ -1,6 +1,6 @@
 const API_BASE_URL = "http://localhost:3000";
 
-//tela projetos
+// Tela de projetos
 async function listarProjetosApi() {
   const resposta = await fetch(`${API_BASE_URL}/projetos`);
   return tratarRespostaApi(resposta);
@@ -37,7 +37,6 @@ async function alterarStatusDemandaApi(id, status) {
   return tratarRespostaApi(resposta);
 }
 
-//função de tratar as resposta da api (verifica se é json)
 async function tratarRespostaApi(resposta) {
   const tipoConteudo = resposta.headers.get("content-type") || "";
 
@@ -51,8 +50,7 @@ async function tratarRespostaApi(resposta) {
   const dados = await resposta.json();
 
   if (!resposta.ok) {
-    const mensagem =
-      dados.erro || dados.mensagem || dados.msg || "Erro na requisição.";
+    const mensagem = dados.erro || dados.mensagem || dados.msg || "Erro na requisição.";
     throw new Error(mensagem);
   }
 
