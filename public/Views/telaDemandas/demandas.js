@@ -7,12 +7,13 @@ if (!idProjeto) {
     console.error("ID do projeto não foi informado.");
 }
 
-async function carregarDemandas() {
+async function carregarDemandas(dadosRecebidos = null) {
     try {
-        const dados = await listarDemandasApi(idProjeto);
+        const dados = dadosRecebidos ?? await listarDemandasApi(idProjeto);
 
         renderizarNomeProjeto(dados.nomeProjeto?.[0]?.TITULO); // ?.[0]  tenta pegar o primeiro resultado, sem gerar erro se a lista estiver ausente.
         //?.TITULO tenta ler a propriedade TITULO, também sem gerar erro se o resultado não existir.
+        document.querySelectorAll("[data-status] .demanda-card").forEach((card) => card.remove());
         renderizarDemandas(dados.demandas);
         renderizarUsuario(dados.usuario);
         renderizarBotaoNovaDemanda(dados.usuario.PERFIL);
@@ -139,6 +140,61 @@ function criarLinhaPrioridade(PRIORIDADE){
 
 }
 
+async function aplicarFiltros(){
+    try {
+        const prioridade = document.querySelector('input[name="prioridade"]:checked')?.value ?? "";
+        const tipo = document.querySelector('input[name="tipo"]:checked')?.value ?? "";
+        const apenasMinhasDemandas = document.querySelector('input[name="minhas-demandas"]').checked;
+
+        const dados = await listarDemandasApi(idProjeto);
+        const idUserLogado = Number(dados.usuario.ID_USUARIO);
+
+
+        const demandasFiltradas = dados.demandas.filter((demanda) => {
+            const prioridadeCorresponde =
+                !prioridade || demanda.PRIORIDADE === prioridade; //só entra na lista ou se não tem prioridade selecionada ou se a prioridade for igual a do filtro
+
+            const tipoCorresponde =
+                !tipo || demanda.TIPO === tipo; // mesma coisa só que com tipo
+
+            const demandaEhMinha =
+                !apenasMinhasDemandas || Number(demanda.RESPONSAVEL_ID) === idUserLogado; // só entra se for demanda do user logado
+
+            return prioridadeCorresponde && tipoCorresponde && demandaEhMinha; // só entra na demandasFiltradas se ambos forem true
+            });
+
+        await carregarDemandas({ ...dados, demandas: demandasFiltradas });
+
+    } catch (erro) {
+        exibirMensagemLista("danger", erro.message);
+    }
+}
+
+function limparFiltros() {
+  const prioridadeInputs = document.querySelectorAll('input[name="prioridade"]');
+  const tipoInputs = document.querySelectorAll('input[name="tipo"]');
+  const minhasDemandasInput = document.querySelector('input[name="minhas-demandas"]');
+  const campoBusca = document.querySelector('input[type="search"]');
+
+  prioridadeInputs.forEach((input) => {
+    input.checked = false;
+  });
+
+  tipoInputs.forEach((input) => {
+    input.checked = false;
+  });
+
+  if (minhasDemandasInput) {
+    minhasDemandasInput.checked = false;
+  }
+
+  if (campoBusca) {
+    campoBusca.value = "";
+  }
+
+  carregarDemandas();
+}
+
 function exibirMensagemLista(tipo, mensagem) {
   const areaMensagem = document.getElementById("areaMensagem");
 
@@ -151,4 +207,8 @@ function exibirMensagemLista(tipo, mensagem) {
   areaMensagem.innerHTML = mensagem;
 }
 
-window.addEventListener("DOMContentLoaded", carregarDemandas);
+document.addEventListener("DOMContentLoaded", () => {
+    const botaoLimpar = document.querySelector(".limpar");
+
+    carregarDemandas();
+});

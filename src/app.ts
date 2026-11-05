@@ -157,6 +157,7 @@ app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
                 d.TIPO,
                 d.PRIORIDADE,
                 d.STATUS,
+                d.RESPONSAVEL_ID,
                 u.NOME AS RESPONSAVEL
              FROM pi2Demandas d
              LEFT JOIN pi2Usuarios u
