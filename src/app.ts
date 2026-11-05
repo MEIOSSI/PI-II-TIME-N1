@@ -307,7 +307,7 @@ app.put("/demanda/:id/status", async (req: Request, res: Response) => {
         const demanda = resultado[0];
         const statusAtual = demanda.STATUS.trim().toUpperCase();
         const ehLider = Number(demanda.LIDER) === usuarioId;
-        const ehMembro = demanda.PAPEL_NO_PROJETO === "MEMBRO";
+        const ehMembro = demanda.PAPEL_NO_PROJETO === "MEMBRO_DA_EQUIPE";
 
         if (!ehLider && !ehMembro) {
             return res.status(403).json({ erro: "Você não participa deste projeto." });
@@ -337,7 +337,7 @@ app.put("/demanda/:id/status", async (req: Request, res: Response) => {
                 INSERT INTO pi2HistoricosDeDemandas
                     (DEMANDA_ID, USUARIO_ID, CAMPO_ALTERADO, VALOR_ANTERIOR, VALOR_NOVO)
                 VALUES
-                    (:id, :usuarioId, 'STATUS', :statusAtual, :statusNovo);
+                    (:id, :usuarioId, 'status', :statusAtual, :statusNovo);
              END;`,
             { id, usuarioId, statusAtual, statusNovo }
         );

@@ -57,7 +57,7 @@ function renderizarBotaoNovaDemanda(perfil){
     const container = document.getElementById("botaodemanda");
     const perfilNormalizado = perfil?.trim().toUpperCase();
 
-    if (perfilNormalizado === "LIDER" || perfilNormalizado === "ADM" || perfilNormalizado === "ADMINISTRADOR") {
+    if (perfilNormalizado === "LIDER_DE_PROJETO" || perfilNormalizado === "ADMINISTRADOR") {
         container.innerHTML = `
             <div class="btn-nova-demanda">
                 <button type="button" class="btn btn-primary aplicar mb-3"><span class="fw-bold">+ </span>Nova Demanda</button>
