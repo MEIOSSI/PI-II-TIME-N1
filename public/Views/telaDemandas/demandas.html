@@ -9,14 +9,14 @@ por Valentina Bastos - 26893594
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>demandas</title>
       <!-- Bootstrap via CDN -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"rel="stylesheet">
 
-  <!-- CSS próprio -->
-  <link rel="stylesheet" href="style.css">
+    <!-- CSS próprio -->
+    <link rel="stylesheet" href="style.css">
 
-  <script defer src="api.js"></script>
-<script defer src="demandas.js"></script>
+    <script defer src="api.js"></script>
+    <script defer src="demandas.js"></script>
 </head>
 <body>
     <header class="p-3">        
@@ -30,8 +30,8 @@ por Valentina Bastos - 26893594
             </div>
             <div class="col-6 container d-flex justify-content-end align-items-center itens">
                 <div class="perfil">
-                    <ul class="nav me-5">
-                        <li class="nav-item perfil-texto">
+                    <ul class="nav me-5 d-flex">
+                        <li class="nav-item perfil-texto text-center">
                             <p id="nomeUsuario"><!--Usuário--></p><p id="perfilUsuario"><!--PERFIL--></p>
                         </li>
                     </ul>
@@ -42,34 +42,42 @@ por Valentina Bastos - 26893594
 
     <div class="d-flex layout">
         <aside class="sidebar">
-            <input type="search" class="form-control" placeholder="Pesquisar demandas">
+            <div class="row">
+                <div class="col-12 col-md-9 pe-0 me-0">
+                    <!--barra de pesquisa-->
+                    <input type="search" class="form-control" placeholder="Pesquisar demandas" id="pesquisaDemandas">     
+                </div>
+                <div class="col-12 col-md-3">
+                    <button type="button" class="btn btn-primary aplicar" id="btnPesquisarDemanda" onclick=pesquisarDemandas()><img src="../../icons/magnifying-glass-solid.png" alt="" width="25px"></button>
+                </div>
+            </div>
             <form action="">
                 <h6 class="mb-3 mt-3">Filtros</h6>
 
                 <div class="label">
-                    <input class = "mt-3" type="checkbox" name="minhas-demandas" value="minhas-demandas">
+                    <input class = "mt-3" type="checkbox" name="minhas-demandas" value="minhas-demandas" id="minhasDemandas">
                     <label class="mb-3" for="minhas-demandas">Apenas minhas demandas</label>
                 </div>
 
                 <p class="mb-3 pt-3 label">Prioridade</p>
                 <div class="d-flex flex-column gap-2 mb-3 filtros">
-                    <div><input type="checkbox" name="prioridade" value="critica"> Crítica </div>
-                    <div><input type="checkbox" name="prioridade" value="alta"> Alta </div>
-                    <div><input type="checkbox" name="prioridade" value="media"> Média </div>
-                    <div><input type="checkbox" name="prioridade" value="baixa"> Baixa </div>
+                    <div><input type="radio" name="prioridade" value="CRITICA"> Crítica </div>
+                    <div><input type="radio" name="prioridade" value="ALTA"> Alta </div>
+                    <div><input type="radio" name="prioridade" value="MEDIA"> Média </div>
+                    <div><input type="radio" name="prioridade" value="BAIXA"> Baixa </div>
                 </div>
 
                 <p class="mb-3 pt-3 label">Tipo</p>
                 <div class="d-flex flex-column gap-2 mb-3 filtros">
-                    <div><input type="checkbox" name="tipo" value="tarefa"> Tarefa </div>
-                    <div><input type="checkbox" name="tipo" value="defeito"> Defeito </div>
-                    <div><input type="checkbox" name="tipo" value="melhoria"> Melhoria </div>
-                    <div><input type="checkbox" name="tipo" value="documentacao"> Documentação </div>
+                    <div><input type="radio" name="tipo" value="TAREFA"> Tarefa </div>
+                    <div><input type="radio" name="tipo" value="DEFEITO"> Defeito </div>
+                    <div><input type="radio" name="tipo" value="MELHORIA"> Melhoria </div>
+                    <div><input type="radio" name="tipo" value="DOCUMENTACAO"> Documentação </div>
                 </div>
 
                 <div class="d-flex gap-2 mb-3 pt-3 botoes">
-                    <button type="button" class="btn btn-outline-secondary limpar">Limpar Filtros</button>
-                    <button type="button" class="btn btn-primary aplicar">Aplicar</button>       
+                    <button type="button" class="btn btn-outline-secondary limpar" onclick=limparFiltros()>Limpar Filtros</button>
+                    <button type="button" class="btn btn-primary aplicar" onclick=aplicarFiltros()>Aplicar</button>       
                 </div>
             </form>
         </aside>
@@ -84,9 +92,7 @@ por Valentina Bastos - 26893594
                     <!--card de demanda, será inserido conforme demandas são criadas apenas-->
                     <div class="card-body rounded-bottom" data-status="ABERTA">
                         <!--botão de nova demanda, apenas para lider e adm-->
-                        <div class="btn-nova-demanda">
-                            <button type="button" class="btn btn-primary aplicar mb-3"><span class="fw-bold">+ </span>Nova Demanda</button>
-                        </div>
+                        <div id="botaodemanda"></div>
                     </div>
                 </section>
             </div>
