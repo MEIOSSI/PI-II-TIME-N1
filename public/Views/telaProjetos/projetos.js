@@ -62,7 +62,19 @@ async function renderizarUsuario(usuario) {
     const inicialUser =document.getElementById("iniciaisUsuario")
 
     nomeUser.textContent = usuario.NOME;
-    perfil.textContent = usuario.PERFIL.toLowerCase();
+
+        if (usuario.PERFIL === "ADMINISTRADOR"){
+        perfil.textContent = "Administrador";
+    }
+
+        if (usuario.PERFIL === "LIDER_DE_PROJETO"){
+        perfil.textContent = "Líder";
+    }
+
+        if (usuario.PERFIL === "MEMBRO_DA_EQUIPE"){
+        perfil.textContent = "Membro";
+    }
+    
     inicialUser.textContent =usuario.NOME.trim().charAt(0).toUpperCase();
 }
 
