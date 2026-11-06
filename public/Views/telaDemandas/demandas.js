@@ -7,14 +7,16 @@ if (!idProjeto) {
     console.error("ID do projeto não foi informado.");
 }
 
-async function carregarDemandas() {
+async function carregarDemandas(dadosRecebidos = null) {
     try {
-        const dados = await listarDemandasApi(idProjeto);
+        const dados = dadosRecebidos ?? await listarDemandasApi(idProjeto);
 
         renderizarNomeProjeto(dados.nomeProjeto?.[0]?.TITULO); // ?.[0]  tenta pegar o primeiro resultado, sem gerar erro se a lista estiver ausente.
         //?.TITULO tenta ler a propriedade TITULO, também sem gerar erro se o resultado não existir.
+        document.querySelectorAll("[data-status] .demanda-card").forEach((card) => card.remove());
         renderizarDemandas(dados.demandas);
         renderizarUsuario(dados.usuario);
+        renderizarBotaoNovaDemanda(dados.usuario.PERFIL);
     } catch (erro) {
         exibirMensagemLista("danger", erro.message);
     }
@@ -38,7 +40,7 @@ function renderizarDemandas(demandas) {
             ${criarLinhaPrioridade(demanda.PRIORIDADE)}
                 <div class="card-body">
                     <div class="mb-2 nome-demanda">${demanda.TITULO}</div>
-                    <div class="d-flex gap-2 mb-2">
+                    <div class="d-flex flex-wrap gap-2 mb-2">
                         ${criarBadgeTipo(demanda.TIPO)}
                         ${criarBadgePrioridade(demanda.PRIORIDADE)}
                     </div>
@@ -51,8 +53,29 @@ function renderizarDemandas(demandas) {
     });
 }
 
+function renderizarBotaoNovaDemanda(perfil){
+    const container = document.getElementById("botaodemanda");
+    const perfilNormalizado = perfil?.trim().toUpperCase();
+
+    if (perfilNormalizado === "LIDER_DE_PROJETO" || perfilNormalizado === "ADMINISTRADOR") {
+        container.innerHTML = `
+            <div class="btn-nova-demanda">
+                <a class="btn btn-primary aplicar mb-3" id="novaDemanda" href="../cadastroDemanda/index.html?id=${encodeURIComponent(idProjeto)}">
+                    <span class="fw-bold">+ </span>Nova Demanda
+                </a>
+            </div>
+        `;
+    }
+}
+
 function renderizarNomeProjeto(nome) {
-    document.getElementById("nomeProjeto").textContent = nome || "Demanda sem nome";
+    nomeProjeto = document.getElementById("nomeProjeto");
+
+    if(nome){
+        nomeProjeto.textContent = nome
+    } else {
+        nomeProjeto.textContent = "Projeto não existe"
+    }
 }
 
 function renderizarUsuario(usuario) {
@@ -60,7 +83,18 @@ function renderizarUsuario(usuario) {
     const perfil =document.getElementById("perfilUsuario")
 
     nomeUser.textContent = usuario.NOME;
-    perfil.textContent = usuario.PERFIL.toLowerCase();
+
+    if (usuario.PERFIL === "ADMINISTRADOR"){
+        perfil.textContent = "Administrador";
+    }
+
+        if (usuario.PERFIL === "LIDER_DE_PROJETO"){
+        perfil.textContent = "Líder";
+    }
+
+        if (usuario.PERFIL === "MEMBRO_DA_EQUIPE"){
+        perfil.textContent = "Membro";
+    }
 }
 
 function criarBadgePrioridade(PRIORIDADE){
@@ -125,6 +159,65 @@ function criarLinhaPrioridade(PRIORIDADE){
 
 }
 
+async function aplicarFiltros() {
+    try {
+        const prioridade =
+            document.querySelector('input[name="prioridade"]:checked')?.value ?? "";
+        const tipo =
+            document.querySelector('input[name="tipo"]:checked')?.value ?? "";
+        const apenasMinhasDemandas =
+            document.querySelector('input[name="minhas-demandas"]').checked;
+
+        const dados = await listarDemandasApi(
+            idProjeto,
+            prioridade,
+            tipo,
+            apenasMinhasDemandas
+        );
+
+        await carregarDemandas(dados);
+    } catch (erro) {
+        exibirMensagemLista("danger", erro.message);
+    }
+}
+
+async function pesquisarDemandas() {
+    try {
+        const pesquisa = document.getElementById("pesquisaDemandas").value;
+        const dados = await listarDemandasApi(idProjeto, "", "", false, pesquisa);
+
+        await carregarDemandas(dados);
+    } catch (erro) {
+        exibirMensagemLista("danger", erro.message);
+    }
+}
+
+function limparFiltros() {
+  const prioridadeInputs = document.querySelectorAll('input[name="prioridade"]');
+  const tipoInputs = document.querySelectorAll('input[name="tipo"]');
+
+  const minhasDemandasInput = document.getElementById("minhasDemandas");
+  const campoBusca = document.getElementById("pesquisaDemandas");
+
+  prioridadeInputs.forEach((input) => {
+    input.checked = false;
+  });
+
+  tipoInputs.forEach((input) => {
+    input.checked = false;
+  });
+
+  if (minhasDemandasInput) {
+    minhasDemandasInput.checked = false;
+  }
+
+  if (campoBusca) {
+    campoBusca.value = "";
+  }
+
+  carregarDemandas();
+}
+
 function exibirMensagemLista(tipo, mensagem) {
   const areaMensagem = document.getElementById("areaMensagem");
 
@@ -137,4 +230,6 @@ function exibirMensagemLista(tipo, mensagem) {
   areaMensagem.innerHTML = mensagem;
 }
 
-window.addEventListener("DOMContentLoaded", carregarDemandas);
+document.addEventListener("DOMContentLoaded", () => {
+    carregarDemandas();
+});

@@ -134,6 +134,10 @@ app.get("/projetos", async (req: Request, res: Response) => {
 //por Valentina Bastos - 26893594
 app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
     const idProjeto = Number(req.params.id);
+    const prioridade = String(req.query.prioridade ?? "")
+    const tipo = String(req.query.tipo ?? "");
+    const apenasMinhasDemandas = req.query.apenasMinhasDemandas === "true";
+    const pesquisa = String(req.query.pesquisa ?? "").trim();
 
     if (!Number.isInteger(idProjeto) || idProjeto <= 0) {
         return res.status(400).json({ erro: "ID inválido." });
@@ -150,22 +154,43 @@ app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
     }
 
     try {
-        const demandas = await executarConsulta(
-            `SELECT
-                d.ID_DEMANDA,
-                d.TITULO,
-                d.TIPO,
-                d.PRIORIDADE,
-                d.STATUS,
-                u.NOME AS RESPONSAVEL
-             FROM pi2Demandas d
-             LEFT JOIN pi2Usuarios u
-                ON d.RESPONSAVEL_ID = u.ID_USUARIO
-             WHERE d.PROJETO_ID = :idProjeto
-               AND d.ATIVO = 'S'
-             ORDER BY d.ID_DEMANDA`,
-            { idProjeto }
-        );
+        let sql = `SELECT
+            d.ID_DEMANDA,
+            d.TITULO,
+            d.TIPO,
+            d.PRIORIDADE,
+            d.STATUS,
+            d.RESPONSAVEL_ID,
+            u.NOME AS RESPONSAVEL
+        FROM pi2Demandas d
+        LEFT JOIN pi2Usuarios u
+            ON d.RESPONSAVEL_ID = u.ID_USUARIO
+        WHERE d.PROJETO_ID = :idProjeto
+        AND d.ATIVO = 'S'`;
+
+        const parametros: Record<string, string | number> = { idProjeto };
+
+            if (prioridade) {
+            sql += " AND d.PRIORIDADE = :prioridade";
+            parametros.prioridade = prioridade;
+        }
+
+        if (tipo) {
+            sql += " AND d.TIPO = :tipo";
+            parametros.tipo = tipo;
+        }
+
+        if (apenasMinhasDemandas) {
+            sql += " AND d.RESPONSAVEL_ID = :usuarioId";
+            parametros.usuarioId = usuarioId;
+        }
+
+        if (pesquisa) {
+            sql += " AND UPPER(d.TITULO) LIKE :pesquisa";
+            parametros.pesquisa = `%${pesquisa.toUpperCase()}%`;
+        }
+
+        sql += " ORDER BY d.ID_DEMANDA";
 
         const usuarios = await executarConsulta(
             `SELECT ID_USUARIO, NOME, PERFIL
@@ -180,6 +205,8 @@ app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
              WHERE ID_PROJETO = :idProjeto`,
             { idProjeto }
         );
+
+       const demandas = await executarConsulta(sql, parametros);
 
         return res.status(200).json({
             demandas,
@@ -306,7 +333,7 @@ app.put("/demanda/:id/status", async (req: Request, res: Response) => {
         const demanda = resultado[0];
         const statusAtual = demanda.STATUS.trim().toUpperCase();
         const ehLider = Number(demanda.LIDER) === usuarioId;
-        const ehMembro = demanda.PAPEL_NO_PROJETO === "MEMBRO";
+        const ehMembro = demanda.PAPEL_NO_PROJETO === "MEMBRO_DA_EQUIPE";
 
         if (!ehLider && !ehMembro) {
             return res.status(403).json({ erro: "Você não participa deste projeto." });
@@ -336,7 +363,7 @@ app.put("/demanda/:id/status", async (req: Request, res: Response) => {
                 INSERT INTO pi2HistoricosDeDemandas
                     (DEMANDA_ID, USUARIO_ID, CAMPO_ALTERADO, VALOR_ANTERIOR, VALOR_NOVO)
                 VALUES
-                    (:id, :usuarioId, 'STATUS', :statusAtual, :statusNovo);
+                    (:id, :usuarioId, 'status', :statusAtual, :statusNovo);
              END;`,
             { id, usuarioId, statusAtual, statusNovo }
         );

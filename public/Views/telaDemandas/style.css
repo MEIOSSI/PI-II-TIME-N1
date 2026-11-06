@@ -69,8 +69,17 @@ header {
     border: 1px solid white;
     border-radius: 5px;
     margin-bottom: 0;
-    padding: 8px 16px;
     cursor: default;
+}
+
+.perfil-texto p{
+    margin: 0;
+    padding: 0.5rem;
+}
+
+#nomeUsuario {
+    font-weight: bold;
+    padding-bottom: 0px;
 }
 
 .itens li {
@@ -117,6 +126,10 @@ header {
 
 .aplicar:hover{
     background-color:#4b97e2;
+}
+
+#novaDemanda{
+    width: 100%;
 }
 
 main {
@@ -291,13 +304,18 @@ main {
         flex: 0 0 auto;
         overflow: visible;
     }
-
-    .coluna-card {
+    
+    .coluna-card > .card-body {
+        overflow: visible;
         max-height: none;
     }
 
-    .coluna-card > .card-body {
-        overflow: visible;
+    #btnPesquisarDemanda{
+        margin-top: 0.5rem;
+    }
+
+    .coluna-demanda{
+        margin-bottom: 1rem;
     }
 
 }
