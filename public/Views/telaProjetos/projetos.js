@@ -37,9 +37,9 @@ async function renderizarCardProjeto(projetos) {
             <div class="projeto card w-100 p-3">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0 fw-bold" id="nome_projeto">${projeto.TITULO}</h4>
-                    <button class="btn btn-primary irpara" data-projeto-id="${projeto.ID_PROJETO}">Ir para Dashboard
+                    <a class="btn btn-primary irpara" href="../telaDemandas/demandas.html?id=${encodeURIComponent(projeto.ID_PROJETO)}">Ir para Dashboard
                         <img class="icon-ir" src="../../icons/arrow-right-solid.png" alt="">
-                    </button>
+                    </a>
                 </div>
                 <div class="row">
                     <p class="p-3">
@@ -78,17 +78,4 @@ function exibirMensagemLista(tipo, mensagem) {
   areaMensagem.innerHTML = mensagem;
 }
 
-document.getElementById("listar_projeto")?.addEventListener("click", (evento) => {
-    const alvo = evento.target;
-    if (!(alvo instanceof Element)) return;
-
-    const botao = alvo.closest(".irpara");
-    if (!(botao instanceof HTMLButtonElement)) return;
-
-    const idProjeto = botao.dataset.projetoId;
-    window.location.href =
-        `../telaDemandas/demandas.html?id=${encodeURIComponent(idProjeto)}`;
-});
-
 window.addEventListener("DOMContentLoaded", carregarProjetos);
-

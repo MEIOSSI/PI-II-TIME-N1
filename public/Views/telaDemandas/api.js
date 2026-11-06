@@ -2,9 +2,15 @@
 
 const API_BASE_URL = "http://localhost:3000";
 
-async function listarDemandasApi(idProjeto) {
-  const url = `${API_BASE_URL}/projetos/${encodeURIComponent(idProjeto)}/demandas`;
-  const resposta = await fetch(url);
+async function listarDemandasApi(idProjeto, prioridade = "", tipo = "", apenasMinhasDemandas = false, pesquisa = "") {
+  const url = new URL(`${API_BASE_URL}/projetos/${encodeURIComponent(idProjeto)}/demandas`);
+
+  if (prioridade) url.searchParams.set("prioridade", prioridade);
+  if (tipo) url.searchParams.set("tipo", tipo);
+  if (apenasMinhasDemandas) url.searchParams.set("apenasMinhasDemandas", "true");
+  if (pesquisa.trim()) url.searchParams.set("pesquisa", pesquisa.trim());
+
+  const resposta = await fetch(url.toString());
   return tratarRespostaApi(resposta);
 }
 

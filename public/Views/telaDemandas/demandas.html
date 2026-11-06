@@ -30,8 +30,8 @@ por Valentina Bastos - 26893594
             </div>
             <div class="col-6 container d-flex justify-content-end align-items-center itens">
                 <div class="perfil">
-                    <ul class="nav me-5">
-                        <li class="nav-item perfil-texto">
+                    <ul class="nav me-5 d-flex">
+                        <li class="nav-item perfil-texto text-center">
                             <p id="nomeUsuario"><!--Usuário--></p><p id="perfilUsuario"><!--PERFIL--></p>
                         </li>
                     </ul>
@@ -44,17 +44,18 @@ por Valentina Bastos - 26893594
         <aside class="sidebar">
             <div class="row">
                 <div class="col-12 col-md-9 pe-0 me-0">
+                    <!--barra de pesquisa-->
                     <input type="search" class="form-control" placeholder="Pesquisar demandas" id="pesquisaDemandas">     
                 </div>
                 <div class="col-12 col-md-3">
-                    <button type="button" class="btn btn-primary aplicar"><img src="../../icons/magnifying-glass-solid.png" alt="" width="25px"></button>
+                    <button type="button" class="btn btn-primary aplicar" id="btnPesquisarDemanda" onclick=pesquisarDemandas()><img src="../../icons/magnifying-glass-solid.png" alt="" width="25px"></button>
                 </div>
             </div>
             <form action="">
                 <h6 class="mb-3 mt-3">Filtros</h6>
 
                 <div class="label">
-                    <input class = "mt-3" type="checkbox" name="minhas-demandas" value="minhas-demandas">
+                    <input class = "mt-3" type="checkbox" name="minhas-demandas" value="minhas-demandas" id="minhasDemandas">
                     <label class="mb-3" for="minhas-demandas">Apenas minhas demandas</label>
                 </div>
 

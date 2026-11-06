@@ -40,7 +40,7 @@ function renderizarDemandas(demandas) {
             ${criarLinhaPrioridade(demanda.PRIORIDADE)}
                 <div class="card-body">
                     <div class="mb-2 nome-demanda">${demanda.TITULO}</div>
-                    <div class="d-flex gap-2 mb-2">
+                    <div class="d-flex flex-wrap gap-2 mb-2">
                         ${criarBadgeTipo(demanda.TIPO)}
                         ${criarBadgePrioridade(demanda.PRIORIDADE)}
                     </div>
@@ -60,14 +60,22 @@ function renderizarBotaoNovaDemanda(perfil){
     if (perfilNormalizado === "LIDER_DE_PROJETO" || perfilNormalizado === "ADMINISTRADOR") {
         container.innerHTML = `
             <div class="btn-nova-demanda">
-                <button type="button" class="btn btn-primary aplicar mb-3"><span class="fw-bold">+ </span>Nova Demanda</button>
+                <a class="btn btn-primary aplicar mb-3" id="novaDemanda" href="../cadastroDemanda/index.html?id=${encodeURIComponent(idProjeto)}">
+                    <span class="fw-bold">+ </span>Nova Demanda
+                </a>
             </div>
         `;
     }
 }
 
 function renderizarNomeProjeto(nome) {
-    document.getElementById("nomeProjeto").textContent = nome || "Demanda sem nome";
+    nomeProjeto = document.getElementById("nomeProjeto");
+
+    if(nome){
+        nomeProjeto.textContent = nome
+    } else {
+        nomeProjeto.textContent = "Projeto não existe"
+    }
 }
 
 function renderizarUsuario(usuario) {
@@ -75,7 +83,18 @@ function renderizarUsuario(usuario) {
     const perfil =document.getElementById("perfilUsuario")
 
     nomeUser.textContent = usuario.NOME;
-    perfil.textContent = usuario.PERFIL.toLowerCase();
+
+    if (usuario.PERFIL === "ADMINISTRADOR"){
+        perfil.textContent = "Administrador";
+    }
+
+        if (usuario.PERFIL === "LIDER_DE_PROJETO"){
+        perfil.textContent = "Líder";
+    }
+
+        if (usuario.PERFIL === "MEMBRO_DA_EQUIPE"){
+        perfil.textContent = "Membro";
+    }
 }
 
 function criarBadgePrioridade(PRIORIDADE){
@@ -140,31 +159,34 @@ function criarLinhaPrioridade(PRIORIDADE){
 
 }
 
-async function aplicarFiltros(){
+async function aplicarFiltros() {
     try {
-        const prioridade = document.querySelector('input[name="prioridade"]:checked')?.value ?? "";
-        const tipo = document.querySelector('input[name="tipo"]:checked')?.value ?? "";
-        const apenasMinhasDemandas = document.querySelector('input[name="minhas-demandas"]').checked;
+        const prioridade =
+            document.querySelector('input[name="prioridade"]:checked')?.value ?? "";
+        const tipo =
+            document.querySelector('input[name="tipo"]:checked')?.value ?? "";
+        const apenasMinhasDemandas =
+            document.querySelector('input[name="minhas-demandas"]').checked;
 
-        const dados = await listarDemandasApi(idProjeto);
-        const idUserLogado = Number(dados.usuario.ID_USUARIO);
+        const dados = await listarDemandasApi(
+            idProjeto,
+            prioridade,
+            tipo,
+            apenasMinhasDemandas
+        );
 
+        await carregarDemandas(dados);
+    } catch (erro) {
+        exibirMensagemLista("danger", erro.message);
+    }
+}
 
-        const demandasFiltradas = dados.demandas.filter((demanda) => {
-            const prioridadeCorresponde =
-                !prioridade || demanda.PRIORIDADE === prioridade; //só entra na lista ou se não tem prioridade selecionada ou se a prioridade for igual a do filtro
+async function pesquisarDemandas() {
+    try {
+        const pesquisa = document.getElementById("pesquisaDemandas").value;
+        const dados = await listarDemandasApi(idProjeto, "", "", false, pesquisa);
 
-            const tipoCorresponde =
-                !tipo || demanda.TIPO === tipo; // mesma coisa só que com tipo
-
-            const demandaEhMinha =
-                !apenasMinhasDemandas || Number(demanda.RESPONSAVEL_ID) === idUserLogado; // só entra se for demanda do user logado
-
-            return prioridadeCorresponde && tipoCorresponde && demandaEhMinha; // só entra na demandasFiltradas se ambos forem true
-            });
-
-        await carregarDemandas({ ...dados, demandas: demandasFiltradas });
-
+        await carregarDemandas(dados);
     } catch (erro) {
         exibirMensagemLista("danger", erro.message);
     }
@@ -173,8 +195,9 @@ async function aplicarFiltros(){
 function limparFiltros() {
   const prioridadeInputs = document.querySelectorAll('input[name="prioridade"]');
   const tipoInputs = document.querySelectorAll('input[name="tipo"]');
-  const minhasDemandasInput = document.querySelector('input[name="minhas-demandas"]');
-  const campoBusca = document.querySelector('input[type="search"]');
+
+  const minhasDemandasInput = document.getElementById("minhasDemandas");
+  const campoBusca = document.getElementById("pesquisaDemandas");
 
   prioridadeInputs.forEach((input) => {
     input.checked = false;
@@ -208,7 +231,5 @@ function exibirMensagemLista(tipo, mensagem) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const botaoLimpar = document.querySelector(".limpar");
-
     carregarDemandas();
 });
