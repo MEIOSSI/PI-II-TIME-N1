@@ -6,6 +6,7 @@ import "dotenv/config";
 import { conectarBanco, executarConsulta, executarComando } from "./Database/db";
 import path from "path";
 import authRoutes from "./Routes/auth.routes";
+import cadastroRoutes from "./Routes/cadastro.routes";
 
 const app = Express();
 const PORT = process.env.PORT || 3000;
@@ -77,6 +78,10 @@ app.get("/cadastrar-usuario", (_req: Request, res: Response) => {
         path.join(__dirname, "../public/Views/login/tela-cadastro/cadastro.html")
     );
 });
+
+//rota do cadastro de demandas
+//por Leticya Fernandes - 26896423
+app.use("/api/demandas", cadastroRoutes);
 
 //rota da tela de projetos
 //por Valentina Bastos - 26893594
