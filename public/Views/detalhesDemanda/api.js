@@ -16,6 +16,13 @@ async function historicoDemandaApi(id) {
   return tratarRespostaApi(resposta);
 }
 
+// Busca os comentários já salvos para uma demanda.
+async function comentariosDemandaApi(id) {
+  const url = `${API_BASE_URL}/demanda/${encodeURIComponent(id)}/comentarios`;
+  const resposta = await fetch(url);
+  return tratarRespostaApi(resposta);
+}
+
 // Envia à API a solicitação para atualizar o status da demanda.
 async function alterarStatusDemandaApi(id, status) {
   const url = `${API_BASE_URL}/demanda/${encodeURIComponent(id)}/status`;
