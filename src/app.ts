@@ -7,9 +7,154 @@ import { conectarBanco, executarConsulta, executarComando } from "./Database/db"
 import path from "path";
 import authRoutes from "./Routes/auth.routes";
 import cadastroRoutes from "./Routes/cadastro.routes";
+import { createServer } from "node:http";
+import { Server } from "socket.io";
 
 const app = Express();
 const PORT = process.env.PORT || 3000;
+const servidor = createServer(app); // -> transforma o app (que é um servidor express em http)
+const io = new Server(servidor); //-> usa esse servidor http para um servidor que é compativel com a biblioteca socket.io
+
+type RespostaSocket = {
+    ok: boolean;
+    erro?: string;
+};
+
+async function usuarioPodeAcessarDemanda(idDemanda: number, usuarioId: number): Promise<boolean> {
+    const resultado = await executarConsulta(
+        `SELECT COUNT(*) AS PODE_ACESSAR
+         FROM pi2Demandas d
+         INNER JOIN pi2Projetos p
+            ON p.ID_PROJETO = d.PROJETO_ID
+           AND p.ATIVO = 'S'
+         INNER JOIN pi2Usuarios u
+            ON u.ID_USUARIO = :usuarioId
+           AND u.ATIVO = 'S'
+         WHERE d.ID_DEMANDA = :idDemanda
+           AND d.ATIVO = 'S'
+           AND (
+                p.LIDER = :usuarioId
+                OR u.PERFIL = 'ADMINISTRADOR'
+                OR EXISTS (
+                    SELECT 1
+                    FROM pi2MembrosDosProjetos mp
+                    WHERE mp.PROJETO_ID = p.ID_PROJETO
+                      AND mp.USUARIO_ID = :usuarioId
+                )
+           )`,
+        { idDemanda, usuarioId }
+    ) as Array<{ PODE_ACESSAR: number }>;
+
+    return Number(resultado[0]?.PODE_ACESSAR ?? 0) > 0;
+}
+
+io.use(async (socket, next) => {
+    if (process.env.NODE_ENV === "production") {
+        return next(new Error("Autenticação não configurada."));
+    }
+
+    try {
+        const lideres = await executarConsulta(
+            `SELECT LIDER
+             FROM pi2Projetos
+             WHERE ID_PROJETO = :idProjeto
+               AND ATIVO = 'S'`,
+            { idProjeto: 1 }
+        ) as Array<{ LIDER: number }>;
+
+        if (lideres.length === 0) {
+            return next(new Error("Usuário simulado não encontrado."));
+        }
+
+        socket.data.usuario = {
+            id: Number(lideres[0].LIDER),
+            papel: "LIDER"
+        };
+
+        next();
+    } catch (erro) {
+        next(erro instanceof Error ? erro : new Error("Falha na autenticação."));
+    }
+});
+
+io.on("connection", (socket) => {
+    socket.on("entrar-demanda", async (idRecebido: unknown, responder?: (resposta: RespostaSocket) => void) => {
+        const responderAck = typeof responder === "function" ? responder : undefined;
+        const idDemanda = Number(idRecebido);
+        const usuarioId = Number(socket.data.usuario?.id);
+
+        if (!Number.isInteger(idDemanda) || idDemanda <= 0) {
+            responderAck?.({ ok: false, erro: "ID da demanda inválido." });
+            return;
+        }
+
+        try {
+            if (!await usuarioPodeAcessarDemanda(idDemanda, usuarioId)) {
+                responderAck?.({ ok: false, erro: "Você não participa desta demanda." });
+                return;
+            }
+
+            await socket.join(`demanda:${idDemanda}`);
+            responderAck?.({ ok: true });
+        } catch (erro) {
+            console.error("Erro ao autorizar entrada na sala da demanda:", erro);
+            responderAck?.({ ok: false, erro: "Não foi possível entrar na sala da demanda." });
+        }
+    });
+
+    socket.on("novo-comentario", async (dados: unknown, responder?: (resposta: RespostaSocket) => void) => {
+        const responderAck = typeof responder === "function" ? responder : undefined;
+        const responderErro = (erro: string) => responderAck?.({ ok: false, erro });
+
+        if (typeof dados !== "object" || dados === null) {
+            responderErro("Dados do comentário inválidos.");
+            return;
+        }
+    
+        const comentario = dados as Record<string, unknown>;
+        const idDemanda = Number(comentario.idDemanda);
+        const usuarioId = Number(socket.data.usuario?.id);
+        const texto = typeof comentario.texto === "string"
+            ? comentario.texto.trim()
+            : "";
+
+        if (!Number.isInteger(idDemanda) || idDemanda <= 0 || !texto) {
+            responderErro("Informe um comentário válido.");
+            return;
+        }
+
+        const salaDemanda = `demanda:${idDemanda}`;
+        if (!socket.rooms.has(salaDemanda)) {
+            responderErro("Entre na sala da demanda antes de comentar.");
+            return;
+        }
+
+        try {
+            if (!await usuarioPodeAcessarDemanda(idDemanda, usuarioId)) {
+                responderErro("Você não participa desta demanda.");
+                return;
+            }
+
+            await executarComando(
+                `INSERT INTO pi2Comentarios (demanda_id, usuario_id, texto)
+                 VALUES (:idDemanda, :usuarioId, :texto)`,
+                { idDemanda, usuarioId, texto }
+            );
+
+            io.to(salaDemanda).emit("comentario-criado", {
+                idDemanda,
+                usuarioId,
+                texto
+            });
+            responderAck?.({ ok: true });
+        } catch (erro) {
+            console.error("Erro ao salvar comentário:", erro);
+            responderErro("Não foi possível salvar o comentário. Tente novamente.");
+        }
+    }); // evento de publicar o comentário
+
+}) // inicia o servidor socket.io
+
 
 app.use(Express.json());
 app.use("/api/auth", authRoutes);
@@ -445,6 +590,47 @@ app.put("/demanda/:id/status", async (req: Request, res: Response) => {
 });
 
 //por Murilo Lopes - 26894964
+app.get("/demanda/:id/comentarios", async (req: Request, res: Response) => {
+    const idDemanda = Number(req.params.id);
+    const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
+
+    if (!Number.isInteger(idDemanda) || idDemanda <= 0) {
+        return res.status(400).json({ erro: "ID da demanda inválido." });
+    }
+
+    if (!usuarioId) {
+        return res.status(401).json({ erro: "Usuário não autenticado." });
+    }
+
+    try {
+        if (!await usuarioPodeAcessarDemanda(idDemanda, usuarioId)) {
+            return res.status(403).json({ erro: "Você não participa desta demanda." });
+        }
+
+        const comentarios = await executarConsulta(
+            `SELECT
+                c.ID_COMENTARIO,
+                c.DEMANDA_ID,
+                c.USUARIO_ID,
+                u.NOME AS NOME_USUARIO,
+                c.TEXTO,
+                FROM_TZ(CAST(c.DATA_CRIACAO AS TIMESTAMP), 'UTC') AS DATA_CRIACAO
+             FROM pi2Comentarios c
+             INNER JOIN pi2Usuarios u
+                ON u.ID_USUARIO = c.USUARIO_ID
+             WHERE c.DEMANDA_ID = :idDemanda
+             ORDER BY c.DATA_CRIACAO ASC, c.ID_COMENTARIO ASC`,
+            { idDemanda }
+        );
+
+        return res.json(comentarios);
+    } catch (erro) {
+        console.error("Erro ao buscar comentários da demanda:", erro);
+        return res.status(500).json({ erro: "Não foi possível carregar os comentários." });
+    }
+});
+
+//por Murilo Lopes - 26894964
 app.get("/demanda/:id/historico", async (req: Request, res: Response) => {
     const idDemanda = Number(req.params.id);
 
@@ -480,7 +666,7 @@ async function iniciarServidor() {
     try {
         await conectarBanco();
 
-        app.listen(PORT, () => {
+        servidor.listen(PORT, () => {
             console.log(`Servidor iniciado em http://localhost:${PORT}`);
         });
     } catch (erro) {

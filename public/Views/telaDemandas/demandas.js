@@ -37,7 +37,7 @@ function renderizarDemandas(demandas) {
         if (!coluna) return;
 
         coluna.insertAdjacentHTML("beforeend", `
-            ${criarLinhaPrioridade(demanda.PRIORIDADE)}
+            ${criarLinhaPrioridade(demanda.PRIORIDADE, demanda.ID_DEMANDA)}
                 <div class="card-body">
                     <div class="mb-2 nome-demanda">${demanda.TITULO}</div>
                     <div class="d-flex flex-wrap gap-2 mb-2">
@@ -138,25 +138,24 @@ function criarBadgeTipo(TIPO){
      return `<div class="tipo-tarefa">ERRO</div>`
 }
 
-function criarLinhaPrioridade(PRIORIDADE){
+function criarLinhaPrioridade(PRIORIDADE, idDemanda){
     if (PRIORIDADE === "CRITICA"){
-        return `<article class="card mb-3 shadow-sm demanda-card critica">`
+        return `<article class="card mb-3 shadow-sm demanda-card critica" data-demanda-id="${encodeURIComponent(idDemanda)}">`
     }
 
     if (PRIORIDADE === "ALTA"){
-        return `<article class="card mb-3 shadow-sm demanda-card alta">`
+        return `<article class="card mb-3 shadow-sm demanda-card alta" data-demanda-id="${encodeURIComponent(idDemanda)}">`
     }
 
         if (PRIORIDADE === "MEDIA"){
-        return `<article class="card mb-3 shadow-sm demanda-card media">`
+        return `<article class="card mb-3 shadow-sm demanda-card media" data-demanda-id="${encodeURIComponent(idDemanda)}">`
     }
 
         if (PRIORIDADE === "BAIXA"){
-        return `<article class="card mb-3 shadow-sm demanda-card baixa">`
+        return `<article class="card mb-3 shadow-sm demanda-card baixa" data-demanda-id="${encodeURIComponent(idDemanda)}">`
     }
 
-    return `<article class="card mb-3 shadow-sm demanda-card critica">`
-
+    return `<article class="card mb-3 shadow-sm demanda-card critica" data-demanda-id="${encodeURIComponent(idDemanda)}">`
 }
 
 async function aplicarFiltros() {
@@ -231,5 +230,14 @@ function exibirMensagemLista(tipo, mensagem) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("click", (evento) => {
+        if (!(evento.target instanceof Element)) return;
+
+        const card = evento.target.closest(".demanda-card[data-demanda-id]");
+        if (!card) return;
+
+        window.location.href = `/detalhes/${card.dataset.demandaId}`;
+    });
+
     carregarDemandas();
 });
