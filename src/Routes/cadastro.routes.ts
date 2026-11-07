@@ -1,3 +1,6 @@
+// Autor: Leticya
+// RA: 26896423
+
 // rota do cadastro de demandas
 import { Router, Request, Response } from "express";
 import { executar, BIND_OUT, TIPO_NUMERO } from "../Database/executar";
