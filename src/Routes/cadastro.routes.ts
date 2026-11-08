@@ -203,6 +203,11 @@ router.post("/", async (req: Request, res: Response) => {
 // GET /api/demandas/:id -busca uma demanda, a tela de edição usa p/ preencher o formulário-
 router.get("/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
+
+    if (!Number.isInteger(id)) {
+        res.status(400).json({ mensagem: "Id inválido." });
+        return;
+    }
     
     try {
         const demanda = await buscarDemanda(id)
@@ -223,6 +228,11 @@ router.get("/:id", async (req: Request, res: Response) => {
 // PUT /api/demandas/:id -atualiza uma demanda, a tela usa quando está editando-
 router.put("/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
+
+    if (!Number.isInteger(id)) {
+        res.status(400).json({ mensagem: "Id inválido." });
+        return;
+    }
 
     // quem está logado é quem faz a alteração (vai pro histórico)
     const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
