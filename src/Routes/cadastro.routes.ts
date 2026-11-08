@@ -129,12 +129,29 @@ async function registrarHistorico(
     );
 }
 
+// confere se o usuário pode criar/editar demandas desse projeto
+// Administrador pode em qualquer projeto, Líder só nos projetos em que é o líder
+// o Membro da Equipe não cria nem edita demanda (ele só muda o status das dele, na tela do Murilo)
+async function podeGerenciarProjeto(usuarioId: number, projetoId: number): Promise<boolean> {
+    const resultado = await executar(
+        `SELECT
+            (SELECT COUNT(*) FROM pi2Usuarios
+              WHERE ID_USUARIO = :usuarioId AND PERFIL = 'ADMINISTRADOR' AND ATIVO = 'S') AS EH_ADMIN,
+            (SELECT COUNT(*) FROM pi2Projetos
+              WHERE ID_PROJETO = :projetoId AND LIDER = :usuarioId AND ATIVO = 'S') AS EH_LIDER
+         FROM DUAL`,
+        { usuarioId, projetoId }
+    );
+
+    const linha = resultado.rows[0];
+    return Number(linha.EH_ADMIN) > 0 || Number(linha.EH_LIDER) > 0;
+}
+
 //rotas
 // POST /api/demandas -quando clica em CADASTRAR na tela-
 router.post("/", async (req: Request, res: Response) => {
     
     // o app.ts simula o login e deixa o usuário em req.usuario
-    // a coluna CRIADO_POR do banco é obrigatória, então quem cria é quem está logado
     // quem está logado é quem faz a alteração (vai pro histórico)
     const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
 
@@ -167,6 +184,13 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
         try {
+
+        // só Administrador ou o Líder do projeto cadastra demanda
+        if (!await podeGerenciarProjeto(usuarioId, Number(projetoId))) {
+            res.status(403).json({ mensagem: "Você não tem permissão para cadastrar demandas neste projeto." });
+            return;
+        }
+
         // INSERT: status (ABERTA) e as datas não são enviados,
         // quem decide isso é o próprio banco (DEFAULT da tabela), a pessoa n preenche
         // RETURNING devolve o id que o banco gerou
@@ -274,6 +298,13 @@ router.put("/:id", async (req: Request, res: Response) => {
         return;
     }
     
+        // só Administrador ou o Líder do projeto edita (inclusive do projeto novo, se mudou de projeto)
+        if (!await podeGerenciarProjeto(usuarioId, Number(antes.PROJETO_ID))
+            || !await podeGerenciarProjeto(usuarioId, Number(projetoId))) {
+            res.status(403).json({ mensagem: "Você não tem permissão para editar esta demanda." });
+            return;
+        }
+
         const resultado = await executar(
             `UPDATE pi2Demandas
              SET TITULO = :titulo,
