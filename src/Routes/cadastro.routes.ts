@@ -202,6 +202,14 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 });
 
+// quem está logado é quem faz a alteração (vai pro histórico)
+const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
+
+if (!usuarioId) {
+    res.status(401).json({ mensagem: "Usuário não autenticado." });
+    return;
+}
+
 // PUT /api/demandas/:id -atualiza uma demanda, a tela usa quando está editando-
 router.put("/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
