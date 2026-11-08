@@ -236,7 +236,15 @@ router.put("/:id", async (req: Request, res: Response) => {
         }
     }
 
-     try {
+    try {
+
+        // guarda como a demanda estava ANTES de editar, pra comparar depois
+        const antes = await buscarDemanda(id);
+
+        if (!antes) {
+        res.status(404).json({ mensagem: "Demanda não encontrada." });
+        return;
+    }
     
         const resultado = await executar(
             `UPDATE pi2Demandas
