@@ -112,12 +112,30 @@ function linhaParaDemanda(linha: any) {
     };
 }
 
+// grava uma linha no histórico: quem mudou, qual campo, valor antigo e valor novo
+async function registrarHistorico(
+    demandaId: number,
+    usuarioId: number,
+    campo: string,
+    valorAntes: string | null,
+    valorNovo: string | null
+) {
+    await executar(
+        `INSERT INTO pi2HistoricosDeDemandas
+            (DEMANDA_ID, USUARIO_ID, CAMPO_ALTERADO, VALOR_ANTERIOR, VALOR_NOVO, DATA_ALTERACAO)
+         VALUES
+            (:demandaId, :usuarioId, :campo, :valorAntes, :valorNovo, SYSTIMESTAMP)`,
+        { demandaId, usuarioId, campo, valorAntes, valorNovo }
+    );
+}
+
 //rotas
 // POST /api/demandas -quando clica em CADASTRAR na tela-
 router.post("/", async (req: Request, res: Response) => {
     
     // o app.ts simula o login e deixa o usuário em req.usuario
     // a coluna CRIADO_POR do banco é obrigatória, então quem cria é quem está logado
+    // quem está logado é quem faz a alteração (vai pro histórico)
     const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
 
     if (!usuarioId) {
@@ -185,6 +203,11 @@ router.post("/", async (req: Request, res: Response) => {
 // GET /api/demandas/:id -busca uma demanda, a tela de edição usa p/ preencher o formulário-
 router.get("/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
+
+    if (!Number.isInteger(id)) {
+        res.status(400).json({ mensagem: "Id inválido." });
+        return;
+    }
     
     try {
         const demanda = await buscarDemanda(id)
@@ -205,6 +228,19 @@ router.get("/:id", async (req: Request, res: Response) => {
 // PUT /api/demandas/:id -atualiza uma demanda, a tela usa quando está editando-
 router.put("/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
+
+    if (!Number.isInteger(id)) {
+        res.status(400).json({ mensagem: "Id inválido." });
+        return;
+    }
+
+    // quem está logado é quem faz a alteração (vai pro histórico)
+    const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
+
+    if (!usuarioId) {
+        res.status(401).json({ mensagem: "Usuário não autenticado." });
+        return;
+    }
 
     const { titulo, descricao, tipo, prioridade, projetoId, prazo } = req.body;
 
@@ -228,7 +264,15 @@ router.put("/:id", async (req: Request, res: Response) => {
         }
     }
 
-     try {
+    try {
+
+        // guarda como a demanda estava ANTES de editar, pra comparar depois
+        const antes = await buscarDemanda(id);
+
+        if (!antes) {
+        res.status(404).json({ mensagem: "Demanda não encontrada." });
+        return;
+    }
     
         const resultado = await executar(
             `UPDATE pi2Demandas
@@ -257,9 +301,31 @@ router.put("/:id", async (req: Request, res: Response) => {
             return;
         }
 
+        // se a prioridade mudou, registra no histórico
+        if (antes.PRIORIDADE !== prioridadeParaBanco[prioridade]) {
+            await registrarHistorico(id, usuarioId, "prioridade", antes.PRIORIDADE, prioridadeParaBanco[prioridade]);
+        }
+
+        // mesma coisa pro título e pro tipo
+        if (antes.TITULO !== titulo) {
+            await registrarHistorico(id, usuarioId, "titulo", antes.TITULO, titulo);
+        }
+
+        if (antes.TIPO !== tipoParaBanco[tipo]) {
+            await registrarHistorico(id, usuarioId, "tipo", antes.TIPO, tipoParaBanco[tipo]);
+        }
+
+        // prazo pode ser vazio, então compara tratando null
+        const prazoNovo = prazo || null;
+
+        if ((antes.PRAZO_FINAL ?? null) !== prazoNovo) {
+            await registrarHistorico(id, usuarioId, "prazo_final", antes.PRAZO_FINAL ?? null, prazoNovo);
+        }
+
         // busca de novo para devolver já com a data de atualização nova
         const demanda = await buscarDemanda(id);
         res.status(200).json(linhaParaDemanda(demanda));
+
     } catch (erro) {
         console.error("Erro ao atualizar demanda:", erro);
         res.status(500).json({ mensagem: "Não foi possível atualizar a demanda." });
