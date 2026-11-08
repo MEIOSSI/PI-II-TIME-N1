@@ -242,6 +242,12 @@ app.get("/view/projetos", (_req: Request, res: Response) => {
     );
 });
 
+app.get("/usuarios", (_req: Request, res: Response) => {
+    return res.sendFile(
+        path.join(__dirname, "../public/Views/usuarios/usuarios.html")
+    );
+});
+
 //rota do cadastro de demandas
 //por Leticya Fernandes - 26896423
 app.use("/api/demandas", cadastroRoutes);
