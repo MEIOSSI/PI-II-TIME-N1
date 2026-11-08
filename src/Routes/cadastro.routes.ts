@@ -291,6 +291,11 @@ router.put("/:id", async (req: Request, res: Response) => {
             return;
         }
 
+        // se a prioridade mudou, registra no histórico
+        if (antes.PRIORIDADE !== prioridadeParaBanco[prioridade]) {
+            await registrarHistorico(id, usuarioId, "prioridade", antes.PRIORIDADE, prioridadeParaBanco[prioridade]);
+        }
+
         // busca de novo para devolver já com a data de atualização nova
         const demanda = await buscarDemanda(id);
         res.status(200).json(linhaParaDemanda(demanda));
