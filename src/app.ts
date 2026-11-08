@@ -224,6 +224,24 @@ app.get("/cadastrar-usuario", (_req: Request, res: Response) => {
     );
 });
 
+app.get("/demandas", (_req: Request, res: Response) => {
+    return res.sendFile(
+        path.join(__dirname, "../public/Views/telaDemandas/demandas.html")
+    );
+});
+
+app.get("/dashboard", (_req: Request, res: Response) => {
+    return res.sendFile(
+        path.join(__dirname, "../public/Views/dashboard/dashboard.html")
+    );
+});
+
+app.get("/view/projetos", (_req: Request, res: Response) => {
+    return res.sendFile(
+        path.join(__dirname, "../public/Views/telaProjetos/projetos.html")
+    );
+});
+
 //rota do cadastro de demandas
 //por Leticya Fernandes - 26896423
 app.use("/api/demandas", cadastroRoutes);
