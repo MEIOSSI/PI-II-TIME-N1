@@ -249,6 +249,40 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 });
 
+// GET /api/demandas/projeto/:id/membros -lista o líder e os membros do projeto, pro select de responsável-
+router.get("/projeto/:id/membros", async (req: Request, res: Response) => {
+    const projetoId = Number(req.params.id);
+
+    if (!Number.isInteger(projetoId) || projetoId <= 0) {
+        res.status(400).json({ mensagem: "Id do projeto inválido." });
+        return;
+    }
+
+    try {
+        const resultado = await executar(
+            `SELECT u.ID_USUARIO, u.NOME
+               FROM pi2Usuarios u
+              WHERE u.ATIVO = 'S'
+                AND (
+                    u.ID_USUARIO = (SELECT LIDER FROM pi2Projetos
+                                     WHERE ID_PROJETO = :projetoId AND ATIVO = 'S')
+                    OR u.ID_USUARIO IN (SELECT USUARIO_ID FROM pi2MembrosDosProjetos
+                                         WHERE PROJETO_ID = :projetoId)
+                )
+              ORDER BY u.NOME`,
+            { projetoId }
+        );
+
+        res.status(200).json(resultado.rows.map((linha: any) => ({
+            id: linha.ID_USUARIO,
+            nome: linha.NOME
+        })));
+    } catch (erro) {
+        console.error("Erro ao buscar membros do projeto:", erro);
+        res.status(500).json({ mensagem: "Não foi possível consultar os membros do projeto." });
+    }
+});
+
 // PUT /api/demandas/:id -atualiza uma demanda, a tela usa quando está editando-
 router.put("/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
