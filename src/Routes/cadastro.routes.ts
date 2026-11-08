@@ -296,6 +296,22 @@ router.put("/:id", async (req: Request, res: Response) => {
             await registrarHistorico(id, usuarioId, "prioridade", antes.PRIORIDADE, prioridadeParaBanco[prioridade]);
         }
 
+        // mesma coisa pro título e pro tipo
+        if (antes.TITULO !== titulo) {
+            await registrarHistorico(id, usuarioId, "titulo", antes.TITULO, titulo);
+        }
+
+        if (antes.TIPO !== tipoParaBanco[tipo]) {
+            await registrarHistorico(id, usuarioId, "tipo", antes.TIPO, tipoParaBanco[tipo]);
+        }
+
+        // prazo pode ser vazio, então compara tratando null
+        const prazoNovo = prazo || null;
+
+        if ((antes.PRAZO_FINAL ?? null) !== prazoNovo) {
+            await registrarHistorico(id, usuarioId, "prazo_final", antes.PRAZO_FINAL ?? null, prazoNovo);
+        }
+
         // busca de novo para devolver já com a data de atualização nova
         const demanda = await buscarDemanda(id);
         res.status(200).json(linhaParaDemanda(demanda));
