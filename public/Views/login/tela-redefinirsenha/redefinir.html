@@ -1,3 +1,4 @@
+<!--// por: Vitor Hugo Turati Ianagui - 26025950-->
 <!DOCTYPE html>
 <html lang="pt-Br">
 <head>
@@ -18,15 +19,31 @@
                 </div>
                 <div>
                     
-                    <h1>Redefinir senha</h1>
+                    <h1>Alterar senha</h1>
                 
                 </div>
                 <div class="txtentrar">
 
-                    <p>Redefina sua senha.</p>
+                    <p>Alterar senha senha.</p>
 
                 </div>
                 <div>
+
+                                        <!-- E-mail e senha atual: identificam o usuário no backend -->
+                    <label for="email" class="form-label"><h2>E-mail</h2></label><br>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="email" class="form-control" id="email" placeholder="Ex: seunome@email.com">
+                    </div>
+                    <span class="error" id="erroEmail"></span>
+
+                    <label for="senhaatual" class="form-label"><h2>Senha atual</h2></label><br>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="senhaatual" placeholder="Digite sua senha atual">
+                    </div>
+                    <span class="error" id="erroSenhaatual"></span>
+
 
                     <label for="novasenha" class="form-label"><h2>Nova senha</h2></label><br>
                     
