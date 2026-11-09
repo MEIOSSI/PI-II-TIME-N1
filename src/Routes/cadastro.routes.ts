@@ -440,7 +440,7 @@ router.put("/:id", async (req: Request, res: Response) => {
             await registrarHistorico(id, usuarioId, "prazo_final", antes.PRAZO_FINAL ?? null, prazoNovo);
         }
 
-                // se trocou o responsável, registra no histórico com o NOME das pessoas
+        // se trocou o responsável, registra no histórico com o NOME das pessoas
         // (a constraint do banco só aceita "RESPONSAVEL" em maiúsculo)
         const responsavelAntes = antes.RESPONSAVEL_ID ?? null;
 
