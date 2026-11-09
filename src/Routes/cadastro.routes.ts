@@ -86,7 +86,7 @@ async function buscarDemanda(id: number): Promise<any | null> {
     const resultado = await executar(
         `SELECT ID_DEMANDA, TITULO, DESCRICAO, TIPO, PRIORIDADE, STATUS,
                 TO_CHAR(PRAZO_FINAL, 'YYYY-MM-DD') AS PRAZO_FINAL,
-                PROJETO_ID, DATA_CRIACAO, DATA_ATUALIZACAO
+                PROJETO_ID, RESPONSAVEL_ID, DATA_CRIACAO, DATA_ATUALIZACAO
          FROM pi2Demandas
          WHERE ID_DEMANDA = :id
            AND ATIVO = 'S'`,
@@ -106,6 +106,7 @@ function linhaParaDemanda(linha: any) {
         prioridade: prioridadeParaTela[linha.PRIORIDADE],
         status: statusParaTela[linha.STATUS],
         projetoId: linha.PROJETO_ID,
+        responsavelId: linha.RESPONSAVEL_ID,
         prazo: linha.PRAZO_FINAL,
         dataCriacao: linha.DATA_CRIACAO,
         dataAtualizacao: linha.DATA_ATUALIZACAO
@@ -129,12 +130,59 @@ async function registrarHistorico(
     );
 }
 
+// confere se o usuário pode criar/editar demandas desse projeto
+// Administrador pode em qualquer projeto, Líder só nos projetos em que é o líder
+// o Membro da Equipe não cria nem edita demanda (ele só muda o status das dele, na tela do Murilo)
+async function podeGerenciarProjeto(usuarioId: number, projetoId: number): Promise<boolean> {
+    const resultado = await executar(
+        `SELECT
+            (SELECT COUNT(*) FROM pi2Usuarios
+              WHERE ID_USUARIO = :usuarioId AND PERFIL = 'ADMINISTRADOR' AND ATIVO = 'S') AS EH_ADMIN,
+            (SELECT COUNT(*) FROM pi2Projetos
+              WHERE ID_PROJETO = :projetoId AND LIDER = :usuarioId AND ATIVO = 'S') AS EH_LIDER
+         FROM DUAL`,
+        { usuarioId, projetoId }
+    );
+
+    const linha = resultado.rows[0];
+    return Number(linha.EH_ADMIN) > 0 || Number(linha.EH_LIDER) > 0;
+}
+
+// confere se o usuário é líder ou membro do projeto (só eles podem ser responsáveis)
+async function participaDoProjeto(usuarioId: number, projetoId: number): Promise<boolean> {
+    const resultado = await executar(
+        `SELECT
+            (SELECT COUNT(*) FROM pi2Projetos
+              WHERE ID_PROJETO = :projetoId AND LIDER = :usuarioId AND ATIVO = 'S') AS EH_LIDER,
+            (SELECT COUNT(*) FROM pi2MembrosDosProjetos
+              WHERE PROJETO_ID = :projetoId AND USUARIO_ID = :usuarioId) AS EH_MEMBRO
+         FROM DUAL`,
+        { usuarioId, projetoId }
+    );
+
+    const linha = resultado.rows[0];
+    return Number(linha.EH_LIDER) > 0 || Number(linha.EH_MEMBRO) > 0;
+}
+
+// devolve o nome do usuário (o histórico guarda o nome e não o id, pra aparecer certo na tela)
+async function nomeDoUsuario(usuarioId: number | null): Promise<string | null> {
+    if (!usuarioId) {
+        return null;
+    }
+
+    const resultado = await executar(
+        `SELECT NOME FROM pi2Usuarios WHERE ID_USUARIO = :usuarioId`,
+        { usuarioId }
+    );
+
+    return resultado.rows.length > 0 ? resultado.rows[0].NOME : null;
+}
+
 //rotas
 // POST /api/demandas -quando clica em CADASTRAR na tela-
 router.post("/", async (req: Request, res: Response) => {
     
     // o app.ts simula o login e deixa o usuário em req.usuario
-    // a coluna CRIADO_POR do banco é obrigatória, então quem cria é quem está logado
     // quem está logado é quem faz a alteração (vai pro histórico)
     const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
 
@@ -143,7 +191,7 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
     // desmonta o que a tela mandou, cada campo vira uma variável
-    const { titulo, descricao, tipo, prioridade, projetoId, prazo } = req.body;
+    const { titulo, descricao, tipo, prioridade, projetoId, prazo, responsavelId } = req.body;
 
     // se faltar algo obrigatório já devolve 400 e para por aqui
     if (!titulo || !descricao || !tipo || !prioridade || !projetoId) {
@@ -167,15 +215,30 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
         try {
+
+        // só Administrador ou o Líder do projeto cadastra demanda
+        if (!await podeGerenciarProjeto(usuarioId, Number(projetoId))) {
+            res.status(403).json({ mensagem: "Você não tem permissão para cadastrar demandas neste projeto." });
+            return;
+        }
+
+        // o responsável é opcional, mas se vier precisa ser líder ou membro do projeto
+        const idResponsavel = responsavelId ? Number(responsavelId) : null;
+
+        if (idResponsavel && !await participaDoProjeto(idResponsavel, Number(projetoId))) {
+            res.status(400).json({ mensagem: "O responsável precisa participar do projeto." });
+            return;
+        }
+
         // INSERT: status (ABERTA) e as datas não são enviados,
         // quem decide isso é o próprio banco (DEFAULT da tabela), a pessoa n preenche
         // RETURNING devolve o id que o banco gerou
         const resultado = await executar(
             `INSERT INTO pi2Demandas
-                (TITULO, DESCRICAO, TIPO, PRIORIDADE, PRAZO_FINAL, PROJETO_ID, CRIADO_POR)
+                (TITULO, DESCRICAO, TIPO, PRIORIDADE, PRAZO_FINAL, PROJETO_ID, RESPONSAVEL_ID, CRIADO_POR)
              VALUES
                 (:titulo, :descricao, :tipo, :prioridade,
-                 TO_DATE(:prazo, 'YYYY-MM-DD'), :projetoId, :criadoPor)
+                TO_DATE(:prazo, 'YYYY-MM-DD'), :projetoId, :responsavelId, :criadoPor)
              RETURNING ID_DEMANDA INTO :novoId`,
             {
                 titulo,
@@ -184,6 +247,7 @@ router.post("/", async (req: Request, res: Response) => {
                 prioridade: prioridadeParaBanco[prioridade],
                 prazo: prazo || null,
                 projetoId: Number(projetoId),
+                responsavelId: idResponsavel,
                 criadoPor: usuarioId,
                 novoId: { dir: BIND_OUT, type: TIPO_NUMERO }
             }
@@ -225,6 +289,40 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 });
 
+// GET /api/demandas/projeto/:id/membros -lista o líder e os membros do projeto, pro select de responsável-
+router.get("/projeto/:id/membros", async (req: Request, res: Response) => {
+    const projetoId = Number(req.params.id);
+
+    if (!Number.isInteger(projetoId) || projetoId <= 0) {
+        res.status(400).json({ mensagem: "Id do projeto inválido." });
+        return;
+    }
+
+    try {
+        const resultado = await executar(
+            `SELECT u.ID_USUARIO, u.NOME
+               FROM pi2Usuarios u
+              WHERE u.ATIVO = 'S'
+                AND (
+                    u.ID_USUARIO = (SELECT LIDER FROM pi2Projetos
+                                     WHERE ID_PROJETO = :projetoId AND ATIVO = 'S')
+                    OR u.ID_USUARIO IN (SELECT USUARIO_ID FROM pi2MembrosDosProjetos
+                                         WHERE PROJETO_ID = :projetoId)
+                )
+              ORDER BY u.NOME`,
+            { projetoId }
+        );
+
+        res.status(200).json(resultado.rows.map((linha: any) => ({
+            id: linha.ID_USUARIO,
+            nome: linha.NOME
+        })));
+    } catch (erro) {
+        console.error("Erro ao buscar membros do projeto:", erro);
+        res.status(500).json({ mensagem: "Não foi possível consultar os membros do projeto." });
+    }
+});
+
 // PUT /api/demandas/:id -atualiza uma demanda, a tela usa quando está editando-
 router.put("/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
@@ -242,7 +340,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         return;
     }
 
-    const { titulo, descricao, tipo, prioridade, projetoId, prazo } = req.body;
+    const { titulo, descricao, tipo, prioridade, projetoId, responsavelId, prazo } = req.body;
 
     // mesmas validações do cadastro
     if (!titulo || !descricao || !tipo || !prioridade || !projetoId) {
@@ -274,6 +372,24 @@ router.put("/:id", async (req: Request, res: Response) => {
         return;
     }
     
+        // só Administrador ou o Líder do projeto edita (inclusive do projeto novo, se mudou de projeto)
+        if (!await podeGerenciarProjeto(usuarioId, Number(antes.PROJETO_ID))
+            || !await podeGerenciarProjeto(usuarioId, Number(projetoId))) {
+            res.status(403).json({ mensagem: "Você não tem permissão para editar esta demanda." });
+            return;
+        }
+
+        // o responsável é opcional, mas se vier precisa ser líder ou membro do projeto
+        // se a tela não mandou responsavelId, mantém o que já estava
+        const idResponsavel = responsavelId === undefined
+            ? (antes.RESPONSAVEL_ID ?? null)
+            : (responsavelId ? Number(responsavelId) : null);
+
+        if (idResponsavel && !await participaDoProjeto(idResponsavel, Number(projetoId))) {
+            res.status(400).json({ mensagem: "O responsável precisa participar do projeto." });
+            return;
+        }
+
         const resultado = await executar(
             `UPDATE pi2Demandas
              SET TITULO = :titulo,
@@ -282,6 +398,7 @@ router.put("/:id", async (req: Request, res: Response) => {
                  PRIORIDADE = :prioridade,
                  PRAZO_FINAL = TO_DATE(:prazo, 'YYYY-MM-DD'),
                  PROJETO_ID = :projetoId,
+                 RESPONSAVEL_ID = :responsavelId,
                  DATA_ATUALIZACAO = SYSTIMESTAMP
              WHERE ID_DEMANDA = :id
                AND ATIVO = 'S'`,
@@ -292,6 +409,7 @@ router.put("/:id", async (req: Request, res: Response) => {
                 prioridade: prioridadeParaBanco[prioridade],
                 prazo: prazo || null,
                 projetoId: Number(projetoId),
+                responsavelId: idResponsavel,
                 id
             }
         );
@@ -320,6 +438,20 @@ router.put("/:id", async (req: Request, res: Response) => {
 
         if ((antes.PRAZO_FINAL ?? null) !== prazoNovo) {
             await registrarHistorico(id, usuarioId, "prazo_final", antes.PRAZO_FINAL ?? null, prazoNovo);
+        }
+
+        // se trocou o responsável, registra no histórico com o NOME das pessoas
+        // (a constraint do banco só aceita "RESPONSAVEL" em maiúsculo)
+        const responsavelAntes = antes.RESPONSAVEL_ID ?? null;
+
+        if (responsavelAntes !== idResponsavel) {
+            await registrarHistorico(
+                id,
+                usuarioId,
+                "RESPONSAVEL",
+                await nomeDoUsuario(responsavelAntes),
+                await nomeDoUsuario(idResponsavel)
+            );
         }
 
         // busca de novo para devolver já com a data de atualização nova
