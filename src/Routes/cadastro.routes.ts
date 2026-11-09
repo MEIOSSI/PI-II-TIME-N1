@@ -264,6 +264,36 @@ router.post("/", async (req: Request, res: Response) => {
     }
 });
 
+// Autor: Camille
+// RA: 26895813
+
+// GET /api/demandas - lista todas as demandas cadastradas
+router.get("/", async (req: Request, res: Response) => {
+    try {
+        const resultado = await executar(
+            `SELECT ID_DEMANDA, TITULO, DESCRICAO, TIPO, PRIORIDADE, STATUS,
+                    TO_CHAR(PRAZO_FINAL, 'YYYY-MM-DD') AS PRAZO_FINAL,
+                    PROJETO_ID, DATA_CRIACAO, DATA_ATUALIZACAO
+             FROM pi2Demandas
+             WHERE ATIVO = 'S'
+             ORDER BY DATA_CRIACAO DESC`
+        );
+
+        // transforma cada linha do banco no formato que a tela espera
+        const demandas = resultado.rows.map((linha: any) =>
+            linhaParaDemanda(linha)
+        );
+
+        res.status(200).json(demandas);
+
+    } catch (erro) {
+        console.error("Erro ao listar demandas:", erro);
+        res.status(500).json({
+            mensagem: "Não foi possível listar as demandas."
+        });
+    }
+});
+
 // GET /api/demandas/:id -busca uma demanda, a tela de edição usa p/ preencher o formulário-
 router.get("/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
