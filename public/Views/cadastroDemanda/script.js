@@ -127,12 +127,6 @@ formulario.addEventListener("submit", async function (event) {
         formValido = false;
     }
 
-    // Responsável é opcional na criação, mas se preencher precisa ter 3+ letras
-    if (responsavel !== "" && responsavel.length < 3) {
-        mostrarErro(campoResponsavel, erroResponsavel, "O responsável deve possuir pelo menos 3 letras");
-        formValido = false;
-    }
-
     // Validar prazo (precisa ser hoje ou data futura)
     if (prazo === "") {
         mostrarErro(campoPrazo, erroPrazo, "Prazo é obrigatório!");
@@ -169,7 +163,8 @@ formulario.addEventListener("submit", async function (event) {
         tipo: tipos[tipo],
         prioridade: prioridades[prioridade],
         projetoId: Number(projeto), // o select entrega texto e a API quer número
-        prazo
+        prazo,
+        responsavelId: responsavel ? Number(responsavel) : null
     };
 
 try {
@@ -239,6 +234,10 @@ async function carregarDemanda() {
         }
 
         campoProjeto.value = dados.projetoId;
+
+        await carregarMembros(dados.projetoId);
+        campoResponsavel.value = dados.responsavelId ?? "";
+
         campoTitulo.value = dados.titulo;
         campoDescricao.value = dados.descricao;
         campoTipo.value = Object.keys(tipos).find((chave) => tipos[chave] === dados.tipo);
@@ -254,7 +253,7 @@ async function carregarDemanda() {
 
         // status e responsável não se alteram por essa tela
         campoStatus.disabled = true;
-        campoResponsavel.disabled = true;
+        
     } catch (erro) {
         painelErro.innerText = erro.message;
         painelErro.classList.remove("d-none");
@@ -282,7 +281,37 @@ async function carregarProjetos() {
     }
 }
 
-// primeiro carrega os projetos, depois preenche a edição (senão o select ainda estaria vazio)
+ // busca os membros do projeto escolhido e preenche o select de responsável
+async function carregarMembros(projetoId) {
+    campoResponsavel.innerHTML = '<option value="">Sem responsável por enquanto</option>';
+
+    if (!projetoId) {
+        return;
+    }
+
+    try {
+        const resposta = await fetch(`/api/demandas/projeto/${projetoId}/membros`);
+        const membros = await resposta.json().catch(() => []);
+
+        if (!resposta.ok) {
+            throw new Error("Não foi possível carregar os membros do projeto.");
+        }
+
+        membros.forEach((membro) => {
+            campoResponsavel.add(new Option(membro.nome, membro.id));
+        });
+    } catch (erro) {
+        painelErro.innerText = erro.message;
+        painelErro.classList.remove("d-none");
+    }
+}
+
+// quando troca o projeto, recarrega a lista de responsáveis
+campoProjeto.addEventListener("change", function () {
+    carregarMembros(campoProjeto.value);
+});
+
+// primeiro carrega os projetos, depois preenche a edição
 async function iniciar() {
     await carregarProjetos();
 
