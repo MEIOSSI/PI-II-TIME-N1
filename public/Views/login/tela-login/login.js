@@ -1,3 +1,4 @@
+// por: Vitor Hugo Turati Ianagui - 26025950
 const form = document.querySelector('form');
 const campologin = document.querySelector('#login')
 const camposenha = document.querySelector('#senha')
@@ -44,31 +45,64 @@ function limparErros() {
     erroSenha.textContent = "";
 }
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    
     limparErros();
 
     const valorLogin = campologin.value.trim().toLowerCase();
-
+    const valorSenha = camposenha.value;
+    let formularioValido = true;
 
     if (!valorLogin) {
         mostrarErros(campologin, erroLogin, "Informe seu login.");
+        formularioValido = false;
     }
 
-    const possuiMaiuscula = /[A-Z]/.test(camposenha.value);
-    const possuiMinuscula = /[a-z]/.test(camposenha.value);
-    const possuiNumero = /[0-9]/.test(camposenha.value);
-    const possuiEspecial = /[_|@|!]/.test(camposenha.value);
-
-    if (!camposenha.value) {
-        mostrarErros(camposenha, erroSenha, "Digite sua senha.")
-    } else if (camposenha.value.length < 8) {
-        mostrarErros(camposenha, erroSenha, "A senha deve conter pelo menos 8 caracteres.")
-    } else if (!possuiNumero) {
-        mostrarErros(camposenha, erroSenha, "Sua senha precisa de um número")
+    // No login só verificamos se a senha foi digitada;
+    // a comparação com o hash é feita no backend
+    if (!valorSenha) {
+        mostrarErros(camposenha, erroSenha, "Digite sua senha.");
+        formularioValido = false;
     }
-        
+
+    if (!formularioValido) {
+        return;
+    }
+
+    try {
+        const resposta = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: valorLogin, senha: valorSenha })
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+            const mensagens = resultado.erros || [];
+
+            mensagens.forEach((mensagem) => {
+                if (mensagem.toLowerCase().includes("e-mail")) {
+                    mostrarErros(campologin, erroLogin, mensagem);
+                } else {
+                    mostrarErros(camposenha, erroSenha, mensagem);
+                }
+            });
+
+            // 401: e-mail ou senha incorretos
+            if (mensagens.length === 0) {
+                mostrarErros(camposenha, erroSenha, resultado.mensagem || "Não foi possível entrar.");
+            }
+            return;
+        }
+
+        // Guarda os dados do usuário (sem senha) para as próximas telas
+        sessionStorage.setItem("usuario", JSON.stringify(resultado.usuario));
+        window.location.href = "/Views/telaProjetos/projetos.html";
+    } catch (erro) {
+        console.error("Erro ao realizar login:", erro);
+        alert("Não foi possível conectar ao servidor. Tente novamente.");
+    }
 })
 
 

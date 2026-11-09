@@ -1,3 +1,4 @@
+// por: Vitor Hugo Turati Ianagui - 26025950
 const form = document.querySelector('form')
 const campoNome = document.querySelector('#nomecompleto')
 const campoCPF = document.querySelector('#cpf')
