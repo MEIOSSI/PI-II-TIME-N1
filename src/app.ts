@@ -1,7 +1,7 @@
 //Este arquivo contém multiplos autores.
 // verifique o autor  no topo de cada trecho.
 
-import Express, { Request, Response, NextFunction } from "express";
+import Express, { Request, Response } from "express";
 import "dotenv/config";
 import { conectarBanco, executarConsulta, executarComando } from "./Database/db";
 import path from "path";
@@ -9,6 +9,7 @@ import authRoutes from "./Routes/auth.routes";
 import cadastroRoutes from "./Routes/cadastro.routes";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
+import { carregarUsuarioDaSessao, usuarioDaSessao } from "./Functions/Utils/session";
 
 const app = Express();
 const PORT = process.env.PORT || 3000;
@@ -49,32 +50,10 @@ async function usuarioPodeAcessarDemanda(idDemanda: number, usuarioId: number): 
 }
 
 io.use(async (socket, next) => {
-    if (process.env.NODE_ENV === "production") {
-        return next(new Error("Autenticação não configurada."));
-    }
-
-    try {
-        const lideres = await executarConsulta(
-            `SELECT LIDER
-             FROM pi2Projetos
-             WHERE ID_PROJETO = :idProjeto
-               AND ATIVO = 'S'`,
-            { idProjeto: 1 }
-        ) as Array<{ LIDER: number }>;
-
-        if (lideres.length === 0) {
-            return next(new Error("Usuário simulado não encontrado."));
-        }
-
-        socket.data.usuario = {
-            id: Number(lideres[0].LIDER),
-            papel: "LIDER"
-        };
-
-        next();
-    } catch (erro) {
-        next(erro instanceof Error ? erro : new Error("Falha na autenticação."));
-    }
+    const usuario = usuarioDaSessao(socket.handshake.headers.cookie);
+    if (!usuario) return next(new Error("Usuário não autenticado."));
+    socket.data.usuario = usuario;
+    next();
 });
 
 io.on("connection", (socket) => {
@@ -144,6 +123,7 @@ io.on("connection", (socket) => {
             io.to(salaDemanda).emit("comentario-criado", {
                 idDemanda,
                 usuarioId,
+                nomeUsuario: socket.data.usuario.nome,
                 texto
             });
             responderAck?.({ ok: true });
@@ -157,6 +137,7 @@ io.on("connection", (socket) => {
 
 
 app.use(Express.json());
+app.use(carregarUsuarioDaSessao);
 app.use("/api/auth", authRoutes);
 app.use(Express.static(path.join(__dirname, "../public")));
 
@@ -164,35 +145,6 @@ app.get("/detalhes/:id", (_req: Request, res: Response) => {
     res.sendFile(
         path.join(__dirname, "../public/Views/detalhesDemanda/detalhesDemanda.html")
     );
-});
-
-// Emulação de login: assume o líder cadastrado no projeto 1.
-// Esta simulação não é ativada em produção.
-app.use(async (req: Request, _res: Response, next: NextFunction) => {
-    if (process.env.NODE_ENV === "production") {
-        return next();
-    }
-
-    try {
-        const lideres = await executarConsulta(
-            `SELECT LIDER
-             FROM pi2Projetos
-             WHERE ID_PROJETO = :idProjeto
-               AND ATIVO = 'S'`,
-            { idProjeto: 1 }
-        ) as Array<{ LIDER: number }>;
-
-        if (lideres.length > 0) {
-            (req as Request & { usuario?: { id: number; papel: string } }).usuario = {
-                id: Number(lideres[0].LIDER),
-                papel: "LIDER"
-            };
-        }
-    } catch (erro) {
-        console.error("Erro ao simular login do líder do projeto 1:", erro);
-    }
-
-    next();
 });
 
 app.get("/api/usuarios", async (_req: Request, res: Response) => {

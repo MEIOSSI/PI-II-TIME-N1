@@ -6,6 +6,7 @@ import { validarLogin } from "../Functions/Validators/login.validator";
 import { validarRedefinicao } from "../Functions/Validators/redefinicao.validator";
 import { compararSenha, gerarHashSenha } from "../Functions/Utils/senha.hash";
 import { executarConsulta, executarComando } from "../Database/db";
+import { criarSessao, encerrarSessao } from "../Functions/Utils/session";
 
 const router = Router();
 
@@ -157,20 +158,34 @@ router.post("/login", async (req: Request, res: Response) => {
             return res.status(401).json({ mensagem: MENSAGEM_CREDENCIAIS_INVALIDAS });
         }
 
+        const usuarioSessao = {
+            id: Number(usuario.ID_USUARIO),
+            nome: usuario.NOME,
+            email: usuario.EMAIL,
+            perfil: usuario.PERFIL
+        };
+        criarSessao(usuarioSessao, res);
+
         // Nunca devolver o hash
         return res.status(200).json({
             mensagem: "Login realizado com sucesso.",
-            usuario: {
-                id: Number(usuario.ID_USUARIO),
-                nome: usuario.NOME,
-                email: usuario.EMAIL,
-                perfil: usuario.PERFIL
-            }
+            usuario: usuarioSessao
         });
     } catch (erro) {
         console.error("Erro ao realizar login:", erro);
         return res.status(500).json({ mensagem: "Não foi possível realizar o login. Tente novamente." });
     }
+});
+
+router.get("/sessao", (req: Request, res: Response) => {
+    const usuario = (req as Request & { usuario?: { id: number; nome: string; email: string; perfil: string } }).usuario;
+    if (!usuario) return res.status(401).json({ mensagem: "Usuário não autenticado." });
+    return res.json({ usuario });
+});
+
+router.post("/logout", (req: Request, res: Response) => {
+    encerrarSessao(req.headers.cookie, res);
+    return res.status(200).json({ mensagem: "Logout realizado com sucesso." });
 });
 
 // por: Vitor Hugo Turati Ianagui - <26025950>

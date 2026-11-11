@@ -24,8 +24,10 @@ const erroStatus = document.querySelector("#erroStatus");
 // Painel exibido quando a demanda é cadastrada com sucesso
 const painelResultado = document.querySelector("#painelResultado");
 
-// se a URL tiver ?id=9 a tela abre em modo edição, senão é um cadastro novo
-const idDemanda = new URLSearchParams(window.location.search).get("id");
+// ?id identifica uma demanda para edição; ?projetoId pré-seleciona o projeto no cadastro.
+const parametrosUrl = new URLSearchParams(window.location.search);
+const idDemanda = parametrosUrl.get("id");
+const projetoInicialId = parametrosUrl.get("projetoId");
 const modoEdicao = idDemanda !== null;
 
 // traduz o valor do select (tipo/prioridade) pro nome que a API usa
@@ -319,6 +321,9 @@ async function iniciar() {
         document.querySelector("h1").innerText = "Editar demanda";
         document.querySelector("button[type='submit']").innerText = "Salvar";
         await carregarDemanda();
+    } else if (projetoInicialId && Array.from(campoProjeto.options).some(opcao => opcao.value === projetoInicialId)) {
+        campoProjeto.value = projetoInicialId;
+        await carregarMembros(projetoInicialId);
     }
 }
 

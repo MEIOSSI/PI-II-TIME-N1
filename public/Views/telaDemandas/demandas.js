@@ -60,7 +60,7 @@ function renderizarBotaoNovaDemanda(perfil){
     if (perfilNormalizado === "LIDER_DE_PROJETO" || perfilNormalizado === "ADMINISTRADOR") {
         container.innerHTML = `
             <div class="btn-nova-demanda">
-                <a class="btn btn-primary aplicar mb-3" id="novaDemanda" href="../cadastroDemanda/index.html?id=${encodeURIComponent(idProjeto)}">
+                <a class="btn btn-primary aplicar mb-3" id="novaDemanda" href="../cadastroDemanda/index.html?projetoId=${encodeURIComponent(idProjeto)}">
                     <span class="fw-bold">+ </span>Nova Demanda
                 </a>
             </div>
