@@ -1,0 +1,287 @@
+/* CONFIGURAÇÕES GERAIS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f3f6fb;
+    color: #1e293b;
+}
+
+
+/* CABEÇALHO */
+.cabecalho {
+    width: 100%;
+    min-height: 80px;
+    background-color: #2874b9;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 12px 28px;
+    border-bottom: 2px solid #1d5f9b;
+}
+
+.projeto {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.voltar {
+    color: #e0edfa;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.projeto h2 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+
+/* BOTÕES DO CABEÇALHO */
+.acoes {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.acoes span {
+    font-size: 14px;
+    color: #e0edfa;
+}
+
+.acoes button {
+    background-color: transparent;
+    color: white;
+
+    border: 1px solid #d4e5f5;
+    border-radius: 20px;
+
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.acoes button:hover {
+    background-color: #1d5f9b;
+}
+
+
+/* CONTEÚDO PRINCIPAL */
+.conteudo {
+    padding: 40px 3%;
+}
+
+.conteudo h1 {
+    font-size: 36px;
+    color: #172f5c;
+    margin-bottom: 12px;
+}
+
+.subtitulo {
+    font-size: 18px;
+    color: #7890b5;
+    margin-bottom: 32px;
+}
+
+
+/* GRADE DOS CARDS */
+.equipe {
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 24px;
+}
+
+
+/* CARDS DOS INTEGRANTES */
+.card {
+    background-color: #ffffff;
+
+    border: 1px solid #e4ebf5;
+    border-radius: 12px;
+
+    padding: 28px 32px;
+
+    min-height: 230px;
+
+    box-shadow: 0 2px 6px rgba(30, 64, 120, 0.04);
+
+    transition: transform 0.2s,
+                box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+
+    box-shadow: 0 6px 16px rgba(30, 64, 120, 0.10);
+}
+
+
+/* FOTO / INICIAL E INFORMAÇÕES */
+.perfil {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+
+    margin-bottom: 24px;
+}
+
+.perfil h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #172f5c;
+
+    margin-bottom: 10px;
+}
+
+.cargo {
+    font-size: 18px;
+    color: #7890b5;
+}
+
+
+/* AVATAR COM A INICIAL */
+.avatar {
+    width: 90px;
+    height: 90px;
+
+    min-width: 90px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 40px;
+    font-weight: bold;
+    color: white;
+}
+
+
+/* CORES DOS AVATARES */
+.azul {
+    background-color: #2474c8;
+}
+
+.azul-claro {
+    background-color: #2797e8;
+}
+
+.verde {
+    background-color: #20b486;
+}
+
+.roxo {
+    background-color: #8b5bd9;
+}
+
+.laranja {
+    background-color: #ff9f32;
+}
+
+.ciano {
+    background-color: #16b7bd;
+}
+
+
+/* RESPONSABILIDADES */
+.responsabilidade {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #7890b5;
+}
+
+
+/* RESPONSIVIDADE PARA TABLETS */
+@media (max-width: 1100px) {
+
+    .equipe {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+        padding: 24px;
+    }
+
+    .perfil {
+        gap: 18px;
+    }
+
+    .perfil h2 {
+        font-size: 19px;
+    }
+
+}
+
+
+/* RESPONSIVIDADE PARA CELULARES */
+@media (max-width: 700px) {
+
+    .cabecalho {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .acoes {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .conteudo {
+        padding: 24px 16px;
+    }
+
+    .conteudo h1 {
+        font-size: 26px;
+    }
+
+    .subtitulo {
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    .equipe {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .card {
+        min-height: auto;
+        padding: 22px;
+    }
+
+    .avatar {
+        width: 65px;
+        height: 65px;
+        min-width: 65px;
+        font-size: 30px;
+    }
+
+    .perfil {
+        gap: 16px;
+    }
+
+    .perfil h2 {
+        font-size: 18px;
+    }
+
+    .cargo,
+    .responsabilidade {
+        font-size: 15px;
+    }
+
+}
