@@ -1,13 +1,10 @@
-// por: Vitor Hugo Turati Ianagui - <RA>
+// por: Vitor Hugo Turati Ianagui - <26025950>
 // Funções de hash de senha (bcrypt). O banco guarda só o hash, nunca a senha.
 
 import bcrypt from "bcryptjs";
 
-// Custo 10: o mesmo dos hashes de teste
 const CUSTO_HASH = 10;
 
-// Usado quando o e-mail não existe: a comparação roda do mesmo jeito,
-// então o tempo de resposta não revela se o e-mail está cadastrado.
 const HASH_FICTICIO = bcrypt.hashSync("senha-ficticia", CUSTO_HASH);
 
 export async function gerarHashSenha(senha: string): Promise<string> {
