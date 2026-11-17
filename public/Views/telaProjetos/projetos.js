@@ -5,7 +5,8 @@ async function carregarProjetos() {
 
         const dados = await listarProjetosApi();
         await renderizarUsuario(dados.usuario);
-        await renderizarCardProjeto(dados.projetos);
+        const ehAdministrador = dados.usuario.PERFIL === "ADMINISTRADOR";
+        await renderizarCardProjeto(dados.projetos, ehAdministrador);
         
     } catch (erro) {
         exibirMensagemLista("danger", erro.message);
@@ -13,7 +14,7 @@ async function carregarProjetos() {
     
 }
 
-async function renderizarCardProjeto(projetos) {
+async function renderizarCardProjeto(projetos, ehAdministrador) {
     const projetoListado = document.getElementById("listar_projeto");
 
     if (!projetoListado) {
@@ -37,9 +38,12 @@ async function renderizarCardProjeto(projetos) {
             <div class="projeto card w-100 p-3">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0 fw-bold" id="nome_projeto">${projeto.TITULO}</h4>
-                    <a class="btn btn-primary irpara" href="../telaDemandas/demandas.html?id=${encodeURIComponent(projeto.ID_PROJETO)}">Ir para Dashboard
-                        <img class="icon-ir" src="../../icons/arrow-right-solid.png" alt="">
-                    </a>
+                    <div class="d-flex flex-wrap gap-2">
+                        ${ehAdministrador ? `<a class="btn btn-outline-primary" href="/projetos/${encodeURIComponent(projeto.ID_PROJETO)}/usuarios">Ver integrantes</a>` : ""}
+                        <a class="btn btn-primary irpara" href="../telaDemandas/demandas.html?id=${encodeURIComponent(projeto.ID_PROJETO)}">Ir para Dashboard
+                            <img class="icon-ir" src="../../icons/arrow-right-solid.png" alt="">
+                        </a>
+                    </div>
                 </div>
                 <div class="row">
                     <p class="p-3">
