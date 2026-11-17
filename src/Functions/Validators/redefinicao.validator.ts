@@ -1,4 +1,4 @@
-// por: Vitor Hugo Turati Ianagui - <RA>
+// por: Vitor Hugo Turati Ianagui - <26025950>
 
 import { validarSenha } from "./senha.validator";
 import { REGEX_EMAIL } from "./login.validator";

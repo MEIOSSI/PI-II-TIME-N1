@@ -18,7 +18,7 @@ type UsuarioBanco = {
     PERFIL: string;
 };
 
-// por: Vitor Hugo Turati Ianagui - <RA>
+// por: Vitor Hugo Turati Ianagui - <26025950>
 async function buscarUsuarioAtivoPorEmail(email: string): Promise<UsuarioBanco | undefined> {
     const usuarios = await executarConsulta<UsuarioBanco>(
         `SELECT ID_USUARIO, NOME, EMAIL, SENHA, PERFIL
