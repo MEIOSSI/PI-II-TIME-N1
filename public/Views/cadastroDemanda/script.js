@@ -217,49 +217,77 @@ async function enviarDemandaApi(demanda) {
 
 // tira acento e maiúsculas pra comparar textos (ex.: "Em revisão" e "em revisao")
 function normalizar(texto) {
-    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    // A API pode não retornar o status em alguns registros antigos.
+    // Converte valores ausentes em texto vazio antes de remover acentos.
+    return (typeof texto === "string" ? texto : "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
 }
 
-// modo edição: busca a demanda na API e preenche o formulário
-async function carregarDemanda() {
-    try {
-        const resposta = await fetch(`/api/demandas/${idDemanda}`);
-        const dados = await resposta.json();
-
-        if (!resposta.ok) {
-            throw new Error(dados.mensagem);
-        }
+// modo edição: aplica no formulário os dados já carregados da API
+async function preencherDemanda(dados) {
+        // Aceita respostas envolvidas em "demanda"/"data" e nomes de coluna Oracle.
+        // A busca ignora caixa e underscores (ex.: projetoId, PROJETO_ID).
+        const envelope = Object.keys(dados).find((chave) => ["demanda", "data"].includes(chave.toLowerCase()));
+        const registroRecebido = envelope ? dados[envelope] : dados;
+        const registro = Array.isArray(registroRecebido)
+            ? registroRecebido[0] ?? {}
+            : registroRecebido;
+        const campo = (...nomes) => {
+            const chaves = Object.keys(registro);
+            for (const nome of nomes) {
+                const chave = chaves.find((item) => item.replace(/_/g, "").toLowerCase() === nome.replace(/_/g, "").toLowerCase());
+                if (chave !== undefined && registro[chave] !== null) return registro[chave];
+            }
+            return undefined;
+        };
+        const projetoId = campo("projetoId", "PROJETO_ID", "ID_PROJETO");
+        const status = campo("status", "STATUS");
 
         // o select só tem o projeto 1 fixo, então cria a opção se a demanda for de outro projeto
-        if (!campoProjeto.querySelector(`option[value="${dados.projetoId}"]`)) {
-            campoProjeto.add(new Option(`Projeto ${dados.projetoId}`, dados.projetoId));
+        if (!campoProjeto.querySelector(`option[value="${projetoId}"]`)) {
+            campoProjeto.add(new Option(`Projeto ${projetoId}`, projetoId));
         }
 
-        campoProjeto.value = dados.projetoId;
+        campoProjeto.value = projetoId ?? "";
 
-        await carregarMembros(dados.projetoId);
-        campoResponsavel.value = dados.responsavelId ?? "";
-
-        campoTitulo.value = dados.titulo;
-        campoDescricao.value = dados.descricao;
-        campoTipo.value = Object.keys(tipos).find((chave) => tipos[chave] === dados.tipo);
-        campoPrioridade.value = Object.keys(prioridades).find((chave) => prioridades[chave] === dados.prioridade);
-        campoPrazo.value = dados.prazo || "";
+        campoTitulo.value = campo("titulo", "TITULO") ?? "";
+        campoDescricao.value = campo("descricao", "DESCRICAO") ?? "";
+        const tipo = campo("tipo", "TIPO");
+        const prioridade = campo("prioridade", "PRIORIDADE");
+        campoTipo.value = Object.keys(tipos).find((chave) => normalizar(tipos[chave]) === normalizar(tipo)
+            || normalizar(chave) === normalizar(tipo));
+        campoPrioridade.value = Object.keys(prioridades).find((chave) => normalizar(prioridades[chave]) === normalizar(prioridade)
+            || normalizar(chave) === normalizar(prioridade));
+        campoPrazo.value = campo("prazo", "PRAZO_FINAL") ?? "";
 
         // o status vem como "Em andamento": acha a opção do select com o mesmo texto
         for (const opcao of campoStatus.options) {
-            if (normalizar(opcao.text) === normalizar(dados.status)) {
+            if (normalizar(opcao.text) === normalizar(status)
+                || normalizar(opcao.value) === normalizar(status)) {
                 campoStatus.value = opcao.value;
             }
         }
 
         // status e responsável não se alteram por essa tela
         campoStatus.disabled = true;
+
+        await carregarMembros(projetoId);
+        campoResponsavel.value = campo("responsavelId", "RESPONSAVEL_ID") ?? "";
         
-    } catch (erro) {
-        painelErro.innerText = erro.message;
-        painelErro.classList.remove("d-none");
+}
+
+async function buscarDemandaParaEdicao() {
+    const resposta = await fetch(`/api/demandas/${idDemanda}`);
+    const dados = await resposta.json().catch(() => ({}));
+
+    if (!resposta.ok) {
+        throw new Error(dados.mensagem || "Não foi possível carregar a demanda.");
     }
+
+    return dados;
 }
 
 // busca os projetos na API da Valentina (GET /projetos) e preenche o select
@@ -315,13 +343,22 @@ campoProjeto.addEventListener("change", function () {
 
 // primeiro carrega os projetos, depois preenche a edição
 async function iniciar() {
-    await carregarProjetos();
-
     if (modoEdicao) {
         document.querySelector("h1").innerText = "Editar demanda";
         document.querySelector("button[type='submit']").innerText = "Salvar";
-        await carregarDemanda();
-    } else if (projetoInicialId && Array.from(campoProjeto.options).some(opcao => opcao.value === projetoInicialId)) {
+        try {
+            // Essas consultas não dependem uma da outra; carregar juntas reduz a espera na edição.
+            const [, demanda] = await Promise.all([carregarProjetos(), buscarDemandaParaEdicao()]);
+            await preencherDemanda(demanda);
+        } catch (erro) {
+            painelErro.innerText = erro.message;
+            painelErro.classList.remove("d-none");
+        }
+        return;
+    }
+
+    await carregarProjetos();
+    if (projetoInicialId && Array.from(campoProjeto.options).some(opcao => opcao.value === projetoInicialId)) {
         campoProjeto.value = projetoInicialId;
         await carregarMembros(projetoInicialId);
     }
