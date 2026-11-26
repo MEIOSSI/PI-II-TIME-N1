@@ -562,7 +562,7 @@ async function carregarDemandas() {
 
         const usuario = obterUsuarioLogado()
 
-        const resposta = await fetch(`${API_BASE_URL}/api/demandas/${usuario.id}`, {
+        const resposta = await fetch(`${API_BASE_URL}/api/demandas/usuario/${usuario.id}`, {
             method: "GET",
             credentials: "include"
         });

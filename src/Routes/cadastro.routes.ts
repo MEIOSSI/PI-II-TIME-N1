@@ -269,8 +269,8 @@ router.post("/", async (req: Request, res: Response) => {
 // Autor: Camille
 // RA: 26895813
 
-// GET /api/demandas - lista todas as demandas cadastradas
-router.get("/:id", async (req: Request, res: Response) => {
+// GET /api/demandas/usuario/:id - lista as demandas visíveis para um usuário
+router.get("/usuario/:id", async (req: Request, res: Response) => {
     try {
         const usuarioId = Number(req.params.id)
 
