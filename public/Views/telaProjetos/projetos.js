@@ -94,4 +94,19 @@ function exibirMensagemLista(tipo, mensagem) {
   areaMensagem.innerHTML = mensagem;
 }
 
-window.addEventListener("DOMContentLoaded", carregarProjetos);
+window.addEventListener("DOMContentLoaded", () => {
+    carregarProjetos();
+
+    document.querySelector(".menu-item.sair")?.addEventListener("click", async (evento) => {
+        evento.preventDefault();
+
+        try {
+            const resposta = await fetch("/api/auth/logout", { method: "POST" });
+            if (!resposta.ok) throw new Error("Não foi possível encerrar a sessão.");
+
+            window.location.href = "/";
+        } catch (erro) {
+            exibirMensagemLista("danger", erro.message);
+        }
+    });
+});

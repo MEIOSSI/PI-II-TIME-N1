@@ -2,42 +2,50 @@ import { randomBytes } from "node:crypto";
 import { Request, Response, NextFunction } from "express";
 
 export type UsuarioSessao = { id: number; nome: string; email: string; perfil: string };
-type Sessao = { usuario: UsuarioSessao; expiraEm: number };
 
-const COOKIE_SESSAO = "pi2.sid";
+const NOME_COOKIE = "pi2.sid";
 const DURACAO_SESSAO_MS = 8 * 60 * 60 * 1000;
-const sessoes = new Map<string, Sessao>();
+const DURACAO_COOKIE_SEGUNDOS = DURACAO_SESSAO_MS / 1000;
+const sessoes = new Map<string, { usuario: UsuarioSessao; expiraEm: number }>();
 
-function lerCookie(cookieHeader: string | undefined): string | undefined {
-    const cookie = cookieHeader?.split(";").map(parte => parte.trim())
-        .find(parte => parte.startsWith(`${COOKIE_SESSAO}=`));
-    return cookie?.slice(COOKIE_SESSAO.length + 1);
+function idDoCookie(cookieHeader?: string): string | undefined {
+    return cookieHeader
+        ?.split(";")
+        .map(cookie => cookie.trim())
+        .find(cookie => cookie.startsWith(`${NOME_COOKIE}=`))
+        ?.slice(NOME_COOKIE.length + 1);
 }
 
-export function usuarioDaSessao(cookieHeader: string | undefined): UsuarioSessao | undefined {
-    const idSessao = lerCookie(cookieHeader);
-    if (!idSessao) return undefined;
+export function usuarioDaSessao(cookieHeader?: string): UsuarioSessao | undefined {
+    const id = idDoCookie(cookieHeader);
+    if (!id) return undefined;
 
-    const sessao = sessoes.get(idSessao);
+    const sessao = sessoes.get(id);
     if (!sessao) return undefined;
     if (sessao.expiraEm <= Date.now()) {
-        sessoes.delete(idSessao);
+        sessoes.delete(id);
         return undefined;
     }
+
     return sessao.usuario;
 }
 
 export function criarSessao(usuario: UsuarioSessao, res: Response): void {
-    const idSessao = randomBytes(32).toString("hex");
-    sessoes.set(idSessao, { usuario, expiraEm: Date.now() + DURACAO_SESSAO_MS });
+    const id = randomBytes(32).toString("hex");
+    sessoes.set(id, { usuario, expiraEm: Date.now() + DURACAO_SESSAO_MS });
+
     const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-    res.setHeader("Set-Cookie", `${COOKIE_SESSAO}=${idSessao}; HttpOnly; SameSite=Lax; Path=/; Max-Age=28800${secure}`);
+    res.setHeader(
+        "Set-Cookie",
+        `${NOME_COOKIE}=${id}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${DURACAO_COOKIE_SEGUNDOS}${secure}`
+    );
 }
 
 export function encerrarSessao(cookieHeader: string | undefined, res: Response): void {
-    const idSessao = lerCookie(cookieHeader);
-    if (idSessao) sessoes.delete(idSessao);
-    res.setHeader("Set-Cookie", `${COOKIE_SESSAO}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`);
+    const id = idDoCookie(cookieHeader);
+    if (id) sessoes.delete(id);
+
+    res.setHeader("Set-Cookie", `${NOME_COOKIE}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`);
 }
 
 export function carregarUsuarioDaSessao(req: Request, _res: Response, next: NextFunction): void {
