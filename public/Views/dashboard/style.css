@@ -128,13 +128,13 @@ a {
     fill: #fff;
 }
 
-/* ícone que vem de <img src="...svg"> não aceita "fill": usa filtro */
+
 img.white-icon {
     filter: brightness(0) invert(1);
 }
 
 
-/* ---------- CONTEÚDO PRINCIPAL ---------- */
+/* CONTEÚDO PRINCIPAL */
 
 .conteudo {
     min-width: 0;
@@ -188,7 +188,7 @@ img.white-icon {
 }
 
 
-/* ---------- CARDS DE INDICADORES ---------- */
+/* CARDS DE INDICADORES*/
 
 .cards {
     display: grid;
@@ -242,7 +242,7 @@ img.white-icon {
 .cancelada-icon { background: #ffe1e1; color: #d83b3b; }
 
 
-/* ---------- PAINÉIS (cards grandes) ---------- */
+/* PAINÉIS */
 
 .painel {
     background: #fff;
@@ -267,14 +267,14 @@ img.white-icon {
     color: var(--cor-titulo);
 }
 
-/* subtítulo (ex.: "Demandas que precisam de atenção") */
+
 .painel .card-header div > p {
     margin-top: 6px;
     font-size: 13px;
     color: #3b82d6;
 }
 
-/* "Resumo" */
+
 .painel .card-header > span {
     font-size: 13px;
     color: #8a95a3;
@@ -297,7 +297,7 @@ img.white-icon {
 }
 
 
-/* ---------- DEMANDAS POR PRIORIDADE ---------- */
+/* DEMANDAS POR PRIORIDADE */
 
 .prioridade-item {
     margin-bottom: 18px;
@@ -314,7 +314,7 @@ img.white-icon {
     color: #556170;
 }
 
-/* bolinha + nome à esquerda, número à direita */
+/* bolinha e nome esquerda, número  direita */
 .prioridade-item > div:first-child > span:nth-child(2) {
     flex: 1;
     margin-left: 10px;
@@ -355,7 +355,7 @@ img.white-icon {
 .progress-bar.baixa   { background: #26be61; }
 
 
-/* ---------- DEMANDAS POR TIPO ---------- */
+/* DEMANDAS POR TIPO */
 
 .tipo-item {
     display: flex;
@@ -383,8 +383,7 @@ img.white-icon {
 }
 
 
-/* ---------- CRÍTICAS EM ABERTO / PRÓXIMAS DO PRAZO ----------
-   (itens gerados pelo dashboard.js: cada item é um <div> filho da lista) */
+/* CRÍTICAS EM ABERTO - PRÓXIMAS DO PRAZO */
 
 #listaDemandasCriticas > div,
 #listaProximasDemandas > div {
@@ -420,7 +419,7 @@ img.white-icon {
     color: #87919e;
 }
 
-/* prazos próximos em vermelho */
+
 #listaProximasDemandas strong {
     font-size: 13px;
     color: #d33b42;
@@ -428,7 +427,7 @@ img.white-icon {
 }
 
 
-/* ---------- LISTA DE DEMANDAS ---------- */
+/* LISTA DE DEMANDAS */
 
 .demandas-section {
     margin-top: 8px;
@@ -493,7 +492,7 @@ img.white-icon {
     cursor: pointer;
 }
 
-/* ---------- BADGES (tabela) ---------- */
+/* tabelas */
 
 .tabela-demandas .badge {
     display: inline-block;
@@ -503,19 +502,19 @@ img.white-icon {
     font-weight: 600;
 }
 
-/* tipo */
+
 .tipo-tarefa, .tipo-task                    { color: #3b69bc; background: #e1edff; }
 .tipo-defeito, .tipo-defect                 { color: #c63a3a; background: #ffe5e5; }
 .tipo-melhoria, .tipo-improvement           { color: #a47b1c; background: #fff0c8; }
 .tipo-documentacao, .tipo-documentation     { color: #7042bf; background: #eee5ff; }
 
-/* prioridade (só dentro da tabela, para não afetar as bolinhas) */
+
 .tabela-demandas .prioridade-critica { color: #d33131; background: #ffe2e2; }
 .tabela-demandas .prioridade-alta    { color: #d96a22; background: #ffead9; }
 .tabela-demandas .prioridade-media   { color: #a27a00; background: #fff0bf; }
 .tabela-demandas .prioridade-baixa   { color: #299653; background: #def5e5; }
 
-/* status */
+
 .status-aberta, .status-aberto, .status-open                      { color: #2477a5; background: #dceff9; }
 .status-andamento, .status-em-andamento, .status-progress         { color: #9a7411; background: #fff0c4; }
 .status-revisao, .status-em-revisao, .status-review               { color: #714bc0; background: #eee4ff; }
@@ -523,7 +522,7 @@ img.white-icon {
 .status-cancelada, .status-cancelado, .status-canceled            { color: #c63a3a; background: #ffe5e5; }
 
 
-/* ---------- RESPONSIVO ---------- */
+/* RESPONSIVO */
 
 @media (max-width: 1400px) {
     .cards {
