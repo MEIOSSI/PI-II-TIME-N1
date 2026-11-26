@@ -1,10 +1,12 @@
 //por Valentina Bastos - 26893594
 
+//fução de carregar tanto os projetos do usuário quanto o perfil
 async function carregarProjetos() {
     try {
 
         const dados = await listarProjetosApi();
         await renderizarUsuario(dados.usuario);
+        //Se o perfil logado for administrador, retorna true
         const ehAdministrador = dados.usuario.PERFIL === "ADMINISTRADOR";
         await renderizarCardProjeto(dados.projetos, ehAdministrador);
         
@@ -14,15 +16,13 @@ async function carregarProjetos() {
     
 }
 
+//função que renderiza os projetos do usuário
 async function renderizarCardProjeto(projetos, ehAdministrador) {
     const projetoListado = document.getElementById("listar_projeto");
 
-    if (!projetoListado) {
-        throw new Error('Elemento "listar_projeto" não encontrado na página.');
-    }
-
     projetoListado.innerHTML = "";
 
+    //Se o usuário não participar de nenhum projeto, retorna uma mensagem
     if (!Array.isArray(projetos) || projetos.length === 0) {
         projetoListado.innerHTML = `
         <div class="pt-5 sem-projetos">
@@ -31,6 +31,8 @@ async function renderizarCardProjeto(projetos, ehAdministrador) {
         return;
     }
 
+    //Renderiza os cards de projeto
+    //Se o usuário for administrador, aparece também o botão de ver usuários daquele projeto
     projetos.forEach((projeto) => {
 
         projetoListado.innerHTML+= `
@@ -60,6 +62,7 @@ async function renderizarCardProjeto(projetos, ehAdministrador) {
 
 }
 
+//função que renderiza o nome e perfil do usuário logado
 async function renderizarUsuario(usuario) {
     const nomeUser = document.getElementById("nomeUsuario")
     const perfil =document.getElementById("perfilUsuario")
@@ -82,6 +85,7 @@ async function renderizarUsuario(usuario) {
     inicialUser.textContent =usuario.NOME.trim().charAt(0).toUpperCase();
 }
 
+//função de exibir mensagem em caso de erro
 function exibirMensagemLista(tipo, mensagem) {
   const areaMensagem = document.getElementById("areaMensagem");
 
@@ -97,6 +101,7 @@ function exibirMensagemLista(tipo, mensagem) {
 window.addEventListener("DOMContentLoaded", () => {
     carregarProjetos();
 
+    //Quando clicar no item de sair do menu, desloga o usuário
     document.querySelector(".menu-item.sair")?.addEventListener("click", async (evento) => {
         evento.preventDefault();
 

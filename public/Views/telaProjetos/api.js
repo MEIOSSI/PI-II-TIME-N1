@@ -1,12 +1,15 @@
 //por Valentina Bastos - 26893594
 
+//url base
 const API_BASE_URL = "http://localhost:3000";
 
+//lista os projeots
 async function listarProjetosApi() {
   const resposta = await fetch(`${API_BASE_URL}/projetos`);
   return tratarRespostaApi(resposta);
 }
 
+//função que verifica se a resposta recebida é um JSON
 async function tratarRespostaApi(resposta) {
   const tipoConteudo = resposta.headers.get("content-type") || "";
 

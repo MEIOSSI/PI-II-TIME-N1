@@ -34,9 +34,25 @@ body {
 }
 
 .voltar {
+    display: flex;
+    align-items: center;
     color: #e0edfa;
     text-decoration: none;
     font-size: 14px;
+}
+
+.icon-voltar {
+    width: 25px;
+    filter: brightness(0) invert(1);
+    transition: transform 0.2s ease;
+}
+
+.icon-voltar:hover {
+    transform: scale(1.2);
+}
+
+.voltar-texto {
+    margin-left: 5px;
 }
 
 .projeto h2 {

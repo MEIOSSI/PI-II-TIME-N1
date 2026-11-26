@@ -374,6 +374,8 @@ app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
             d.TIPO,
             d.PRIORIDADE,
             d.STATUS,
+            TO_CHAR(d.DATA_CRIACAO, 'YYYY-MM-DD') AS DATA_CRIACAO,
+            TO_CHAR(d.PRAZO_FINAL, 'YYYY-MM-DD') AS PRAZO_FINAL,
             d.RESPONSAVEL_ID,
             u.NOME AS RESPONSAVEL
         FROM pi2Demandas d

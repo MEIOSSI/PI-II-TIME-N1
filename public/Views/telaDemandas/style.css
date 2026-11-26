@@ -279,6 +279,7 @@ main {
     border-radius: 5px;
 }
 
+/*Arruma o layout em telas pequenas*/
 @media (max-width: 767.98px) {
     body {
         height: auto;
