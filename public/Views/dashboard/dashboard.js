@@ -68,6 +68,34 @@ function formatarData(valor) {
     return new Intl.DateTimeFormat("pt-BR").format(data);
 }
 
+function obterUsuarioLogado() {
+    // Obter usuario logado que esta em session storage
+    const usuarioSession = sessionStorage.getItem("usuario")
+
+    // transformar objeto em formato JSON
+    return JSON.parse(usuarioSession)
+}
+
+async function renderizarUsuario() {
+    const nomeUser = document.getElementById("nomeUsuario")
+    const perfil = document.getElementById("perfilUsuario")
+
+    const usuario = obterUsuarioLogado()
+
+    nomeUser.textContent = usuario.nome;
+
+    if (usuario.perfil === "ADMINISTRADOR") {
+        perfil.textContent = "Administrador";
+    }
+
+    if (usuario.perfil === "LIDER_DE_PROJETO") {
+        perfil.textContent = "Líder";
+    }
+
+    if (usuario.perfil === "MEMBRO_DA_EQUIPE") {
+        perfil.textContent = "Membro";
+    }
+}
 
 function mostrarMensagem(mensagem, tipo = "danger") {
 
@@ -487,7 +515,7 @@ function listarDemandas() {
             link.textContent = "Ver";
             link.className = "btn btn-sm btn-outline-primary";
 
-          
+
             link.href = `/detalhes/${encodeURIComponent(id)}`;
 
             colunaAcoes.appendChild(link);
@@ -509,6 +537,7 @@ function listarDemandas() {
 
 // Atualizando todas as informações na tela
 function atualizarDashboard() {
+    renderizarUsuario()
 
     atualizarCards();
 
@@ -522,6 +551,7 @@ function atualizarDashboard() {
 
     listarDemandas();
 
+
 }
 
 
@@ -530,10 +560,13 @@ async function carregarDemandas() {
 
     try {
 
-        const resposta = await fetch(`${API_BASE_URL}/api/demandas`, {
+        const usuario = obterUsuarioLogado()
+
+        const resposta = await fetch(`${API_BASE_URL}/api/demandas/${usuario.id}`, {
             method: "GET",
             credentials: "include"
         });
+
 
         if (!resposta.ok) {
             throw new Error("Não foi possível buscar as demandas.");

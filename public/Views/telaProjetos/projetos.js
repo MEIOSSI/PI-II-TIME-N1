@@ -40,7 +40,7 @@ async function renderizarCardProjeto(projetos, ehAdministrador) {
                     <h4 class="mb-0 fw-bold" id="nome_projeto">${projeto.TITULO}</h4>
                     <div class="d-flex flex-wrap gap-2">
                         ${ehAdministrador ? `<a class="btn btn-outline-primary" href="/projetos/${encodeURIComponent(projeto.ID_PROJETO)}/usuarios">Ver integrantes</a>` : ""}
-                        <a class="btn btn-primary irpara" href="../telaDemandas/demandas.html?id=${encodeURIComponent(projeto.ID_PROJETO)}">Ir para Dashboard
+                        <a class="btn btn-primary irpara" href="/demandas?id=${encodeURIComponent(projeto.ID_PROJETO)}">Ir para Demandas
                             <img class="icon-ir" src="../../icons/arrow-right-solid.png" alt="">
                         </a>
                     </div>

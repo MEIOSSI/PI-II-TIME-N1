@@ -4,6 +4,7 @@
 // rota do cadastro de demandas
 import { Router, Request, Response } from "express";
 import { executar, BIND_OUT, TIPO_NUMERO } from "../Database/executar";
+import { executarConsulta } from "../Database/db";
 
 // mini-servidor só pro cadastro, o app.ts que liga ele lá
 const router = Router();
@@ -107,6 +108,7 @@ function linhaParaDemanda(linha: any) {
         status: statusParaTela[linha.STATUS],
         projetoId: linha.PROJETO_ID,
         responsavelId: linha.RESPONSAVEL_ID,
+        responsavel: linha.RESPONSAVEL,
         prazo: linha.PRAZO_FINAL,
         dataCriacao: linha.DATA_CRIACAO,
         dataAtualizacao: linha.DATA_ATUALIZACAO
@@ -268,19 +270,51 @@ router.post("/", async (req: Request, res: Response) => {
 // RA: 26895813
 
 // GET /api/demandas - lista todas as demandas cadastradas
-router.get("/", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
     try {
-        const resultado = await executar(
-            `SELECT ID_DEMANDA, TITULO, DESCRICAO, TIPO, PRIORIDADE, STATUS,
-                    TO_CHAR(PRAZO_FINAL, 'YYYY-MM-DD') AS PRAZO_FINAL,
-                    PROJETO_ID, DATA_CRIACAO, DATA_ATUALIZACAO
-             FROM pi2Demandas
-             WHERE ATIVO = 'S'
-             ORDER BY DATA_CRIACAO DESC`
+        const usuarioId = Number(req.params.id)
+
+        const resultado = await executarConsulta(
+            `SELECT
+                d.ID_DEMANDA,
+                d.TITULO,
+                d.DESCRICAO,
+                u.nome as RESPONSAVEL,
+                d.TIPO,
+                d.PRIORIDADE,
+                d.STATUS,
+                TO_CHAR(d.PRAZO_FINAL, 'YYYY-MM-DD') AS PRAZO_FINAL,
+                d.PROJETO_ID,
+                d.DATA_CRIACAO,
+                d.DATA_ATUALIZACAO
+            FROM pi2Demandas d
+            INNER JOIN pi2Projetos p
+                ON d.PROJETO_ID = p.ID_PROJETO
+            LEFT JOIN pi2Usuarios u on u.ID_USUARIO = d.RESPONSAVEL_ID
+            WHERE
+                d.ATIVO = 'S'
+                AND p.ATIVO = 'S'
+                AND (
+                    EXISTS (
+                        SELECT 1
+                        FROM pi2MembrosDosProjetos mp
+                        WHERE mp.PROJETO_ID = p.ID_PROJETO
+                        AND mp.USUARIO_ID = :usuarioId
+                    )
+                    OR p.LIDER = :usuarioId
+                    OR EXISTS (
+                        SELECT 1
+                        FROM pi2Usuarios u
+                        WHERE u.ID_USUARIO = :usuarioId
+                        AND u.PERFIL = 'ADMINISTRADOR'
+                        AND u.ATIVO = 'S'
+                    )
+                )
+            ORDER BY d.DATA_CRIACAO DESC`, {usuarioId}
         );
 
         // transforma cada linha do banco no formato que a tela espera
-        const demandas = resultado.rows.map((linha: any) =>
+        const demandas = resultado.map((linha: any) =>
             linhaParaDemanda(linha)
         );
 
