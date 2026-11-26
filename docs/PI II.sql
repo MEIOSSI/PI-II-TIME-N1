@@ -1,3 +1,8 @@
+
+/*
+por: Camille Chagas - 26895813
+*/
+
 create table usuarios (
     id integer primary KEY,
     nome varchar2(200) not NULL,
