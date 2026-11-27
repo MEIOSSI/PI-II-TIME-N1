@@ -710,7 +710,7 @@ app.get("/demanda/:id/historico", async (req: Request, res: Response) => {
              INNER JOIN pi2Usuarios
                 ON pi2HistoricosDeDemandas.USUARIO_ID = pi2Usuarios.ID_USUARIO
              WHERE pi2HistoricosDeDemandas.DEMANDA_ID = :id
-             ORDER BY pi2Historic,osDeDemandas.DATA_ALTERACAO ASC`,
+             ORDER BY pi2HistoricosDeDemandas.DATA_ALTERACAO ASC`,
             { id: idDemanda }
         );
 

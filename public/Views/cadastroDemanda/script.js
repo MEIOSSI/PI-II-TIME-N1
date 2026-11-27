@@ -175,12 +175,11 @@ try {
     // editou: volta pra tela de detalhes da demanda
     if (modoEdicao) {
         window.location.href = `/detalhes/${idDemanda}`;
-     return;
+        return;
     }
 
-        // deu certo
-        painelErro.classList.add("d-none");
-        painelResultado.classList.remove("d-none");
+    // Após criar, abre o quadro de demandas do projeto selecionado.
+    window.location.href = `/demandas?id=${encodeURIComponent(demanda.projetoId)}`;
     } catch (erro) {
         // erro.message traz a mensagem da API, ou um aviso se o servidor estiver desligado
         painelErro.innerText = erro.message;
