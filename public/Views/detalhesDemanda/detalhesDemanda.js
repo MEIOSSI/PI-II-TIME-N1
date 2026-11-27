@@ -199,6 +199,12 @@
             const ehResponsavel = Number(demanda.RESPONSAVEL_ID) === usuarioIdLogado;
             const ehAdministrador = String(demanda.PERFIL_USUARIO_LOGADO ?? "").trim().toUpperCase() === "ADMINISTRADOR";
             const papelUsuarioProjeto = String(demanda.PAPEL_USUARIO_PROJETO ?? "").trim().toUpperCase();
+            const botaoEditar = document.getElementById("btnEditarDemanda");
+            const podeEditar = ehAdministrador || papelUsuarioProjeto === "LIDER";
+            botaoEditar.hidden = !podeEditar;
+            botaoEditar.onclick = podeEditar
+                ? () => { window.location.href = `/Views/cadastroDemanda/index.html?id=${encodeURIComponent(id)}`; }
+                : null;
             const nomePapel = ehAdministrador
                 ? "Administrador"
                 : papelUsuarioProjeto === "LIDER"

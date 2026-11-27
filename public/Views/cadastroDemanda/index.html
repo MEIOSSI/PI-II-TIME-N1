@@ -34,7 +34,7 @@ RA: 26896423 -->
 
             <div class="mb-3">
                 <label for="projeto" class="form-label">Projeto:</label>
-                <select name="projeto" id="projeto" class="form-select">
+                <select name="projeto" id="projeto" class="form-select" disabled>
                     <option value="">Selecione o projeto...</option>
                 </select>
                 <div id="erroProjeto" class="invalid-feedback"></div>
@@ -72,7 +72,9 @@ RA: 26896423 -->
             <!--Responsável-->
             <div class="mb-3">
                 <label for="responsavel" class="form-label">Responsável:</label>
-                <input type="text" id="responsavel" name="responsavel" class="form-control" placeholder="Ex: Mario Almeida ou Equipe de Suporte">
+                <select name="responsavel" id="responsavel" class="form-select">
+                    <option value="">Sem responsável por enquanto</option>
+                </select>
                 <div id="erroResponsavel" class="invalid-feedback"></div>
             </div>
 

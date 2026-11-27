@@ -1,7 +1,7 @@
 //Este arquivo contém multiplos autores.
 // verifique o autor  no topo de cada trecho.
 
-import Express, { Request, Response, NextFunction } from "express";
+import Express, { Request, Response } from "express";
 import "dotenv/config";
 import { conectarBanco, executarConsulta, executarComando } from "./Database/db";
 import path from "path";
@@ -9,9 +9,10 @@ import authRoutes from "./Routes/auth.routes";
 import cadastroRoutes from "./Routes/cadastro.routes";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
+import { carregarUsuarioDaSessao, usuarioDaSessao } from "./Functions/Utils/session";
 
 const app = Express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 const servidor = createServer(app); // -> transforma o app (que é um servidor express em http)
 const io = new Server(servidor); //-> usa esse servidor http para um servidor que é compativel com a biblioteca socket.io
 
@@ -49,32 +50,10 @@ async function usuarioPodeAcessarDemanda(idDemanda: number, usuarioId: number): 
 }
 
 io.use(async (socket, next) => {
-    if (process.env.NODE_ENV === "production") {
-        return next(new Error("Autenticação não configurada."));
-    }
-
-    try {
-        const lideres = await executarConsulta(
-            `SELECT LIDER
-             FROM pi2Projetos
-             WHERE ID_PROJETO = :idProjeto
-               AND ATIVO = 'S'`,
-            { idProjeto: 1 }
-        ) as Array<{ LIDER: number }>;
-
-        if (lideres.length === 0) {
-            return next(new Error("Usuário simulado não encontrado."));
-        }
-
-        socket.data.usuario = {
-            id: Number(lideres[0].LIDER),
-            papel: "LIDER"
-        };
-
-        next();
-    } catch (erro) {
-        next(erro instanceof Error ? erro : new Error("Falha na autenticação."));
-    }
+    const usuario = usuarioDaSessao(socket.handshake.headers.cookie);
+    if (!usuario) return next(new Error("Usuário não autenticado."));
+    socket.data.usuario = usuario;
+    next();
 });
 
 io.on("connection", (socket) => {
@@ -144,6 +123,7 @@ io.on("connection", (socket) => {
             io.to(salaDemanda).emit("comentario-criado", {
                 idDemanda,
                 usuarioId,
+                nomeUsuario: socket.data.usuario.nome,
                 texto
             });
             responderAck?.({ ok: true });
@@ -157,6 +137,7 @@ io.on("connection", (socket) => {
 
 
 app.use(Express.json());
+app.use(carregarUsuarioDaSessao);
 app.use("/api/auth", authRoutes);
 app.use(Express.static(path.join(__dirname, "../public")));
 
@@ -164,35 +145,6 @@ app.get("/detalhes/:id", (_req: Request, res: Response) => {
     res.sendFile(
         path.join(__dirname, "../public/Views/detalhesDemanda/detalhesDemanda.html")
     );
-});
-
-// Emulação de login: assume o líder cadastrado no projeto 1.
-// Esta simulação não é ativada em produção.
-app.use(async (req: Request, _res: Response, next: NextFunction) => {
-    if (process.env.NODE_ENV === "production") {
-        return next();
-    }
-
-    try {
-        const lideres = await executarConsulta(
-            `SELECT LIDER
-             FROM pi2Projetos
-             WHERE ID_PROJETO = :idProjeto
-               AND ATIVO = 'S'`,
-            { idProjeto: 1 }
-        ) as Array<{ LIDER: number }>;
-
-        if (lideres.length > 0) {
-            (req as Request & { usuario?: { id: number; papel: string } }).usuario = {
-                id: Number(lideres[0].LIDER),
-                papel: "LIDER"
-            };
-        }
-    } catch (erro) {
-        console.error("Erro ao simular login do líder do projeto 1:", erro);
-    }
-
-    next();
 });
 
 app.get("/api/usuarios", async (_req: Request, res: Response) => {
@@ -221,6 +173,36 @@ app.get("/", (_req: Request, res: Response) => {
 app.get("/cadastrar-usuario", (_req: Request, res: Response) => {
     return res.sendFile(
         path.join(__dirname, "../public/Views/login/tela-cadastro/cadastro.html")
+    );
+});
+
+app.get("/demandas", (_req: Request, res: Response) => {
+    return res.sendFile(
+        path.join(__dirname, "../public/Views/telaDemandas/demandas.html")
+    );
+});
+
+app.get("/dashboard", (_req: Request, res: Response) => {
+    return res.sendFile(
+        path.join(__dirname, "../public/Views/dashboard/dashboard.html")
+    );
+});
+
+app.get("/view/projetos", (_req: Request, res: Response) => {
+    return res.sendFile(
+        path.join(__dirname, "../public/Views/telaProjetos/projetos.html")
+    );
+});
+
+app.get("/usuarios", (_req: Request, res: Response) => {
+    return res.sendFile(
+        path.join(__dirname, "../public/Views/usuarios/usuarios.html")
+    );
+});
+
+app.get("/projetos/:id/usuarios", (_req: Request, res: Response) => {
+    return res.sendFile(
+        path.join(__dirname, "../public/Views/usuarios/usuarios.html")
     );
 });
 
@@ -255,7 +237,17 @@ app.get("/projetos", async (req: Request, res: Response) => {
                 AND d.RESPONSAVEL_ID = :usuarioId
                 AND d.ATIVO = 'S'
                 AND d.STATUS IN ('ABERTA', 'EM ANDAMENTO')
-             WHERE (mp.USUARIO_ID = :usuarioId OR p.LIDER = :usuarioId)
+             WHERE (
+                    mp.USUARIO_ID = :usuarioId
+                    OR p.LIDER = :usuarioId
+                    OR EXISTS (
+                        SELECT 1
+                        FROM pi2Usuarios u
+                        WHERE u.ID_USUARIO = :usuarioId
+                          AND u.PERFIL = 'ADMINISTRADOR'
+                          AND u.ATIVO = 'S'
+                    )
+               )
                AND p.ATIVO = 'S'
              GROUP BY p.ID_PROJETO, p.TITULO
              ORDER BY p.TITULO`,
@@ -283,6 +275,72 @@ app.get("/projetos", async (req: Request, res: Response) => {
         return res.status(500).json({
             erro: "Não foi possível consultar os projetos."
         });
+    }
+});
+
+app.get("/api/projetos/:id/usuarios", async (req: Request, res: Response) => {
+    const idProjeto = Number(req.params.id);
+    const usuarioId = (req as Request & { usuario?: { id: number } }).usuario?.id;
+
+    if (!Number.isInteger(idProjeto) || idProjeto <= 0) {
+        return res.status(400).json({ erro: "ID do projeto inválido." });
+    }
+    if (!usuarioId) {
+        return res.status(401).json({ erro: "Usuário não autenticado." });
+    }
+
+    try {
+        const usuariosLogados = await executarConsulta(
+            `SELECT PERFIL
+             FROM pi2Usuarios
+             WHERE ID_USUARIO = :usuarioId
+               AND ATIVO = 'S'`,
+            { usuarioId }
+        ) as Array<{ PERFIL: string }>;
+
+        if (usuariosLogados[0]?.PERFIL !== "ADMINISTRADOR") {
+            return res.status(403).json({ erro: "Somente administradores podem consultar os integrantes do projeto." });
+        }
+
+        const projetos = await executarConsulta(
+            `SELECT ID_PROJETO, TITULO
+             FROM pi2Projetos
+             WHERE ID_PROJETO = :idProjeto
+               AND ATIVO = 'S'`,
+            { idProjeto }
+        ) as Array<{ ID_PROJETO: number; TITULO: string }>;
+
+        if (projetos.length === 0) {
+            return res.status(404).json({ erro: "Projeto não encontrado." });
+        }
+
+        const usuarios = await executarConsulta(
+            `SELECT DISTINCT
+                u.ID_USUARIO,
+                u.NOME,
+                u.EMAIL,
+                u.PERFIL,
+                CASE
+                    WHEN u.ID_USUARIO = p.LIDER THEN 'LIDER_DE_PROJETO'
+                    ELSE mp.PAPEL_NO_PROJETO
+                END AS CARGO
+             FROM pi2Projetos p
+             JOIN pi2Usuarios u
+               ON u.ATIVO = 'S'
+             LEFT JOIN pi2MembrosDosProjetos mp
+               ON mp.PROJETO_ID = p.ID_PROJETO
+              AND mp.USUARIO_ID = u.ID_USUARIO
+             WHERE p.ID_PROJETO = :idProjeto
+               AND p.ATIVO = 'S'
+               AND (u.ID_USUARIO = p.LIDER OR mp.USUARIO_ID IS NOT NULL)
+             ORDER BY CARGO, u.NOME`,
+            { idProjeto }
+        );
+
+        return res.json({ projeto: projetos[0], usuarios });
+    } catch (erro) {
+        console.error("Erro ao consultar integrantes do projeto:", erro);
+        return res.status(500).json({ erro: "Não foi possível consultar os integrantes do projeto." });
     }
 });
 
@@ -316,6 +374,8 @@ app.get("/projetos/:id/demandas", async (req: Request, res: Response) => {
             d.TIPO,
             d.PRIORIDADE,
             d.STATUS,
+            TO_CHAR(d.DATA_CRIACAO, 'YYYY-MM-DD') AS DATA_CRIACAO,
+            TO_CHAR(d.PRAZO_FINAL, 'YYYY-MM-DD') AS PRAZO_FINAL,
             d.RESPONSAVEL_ID,
             u.NOME AS RESPONSAVEL
         FROM pi2Demandas d

@@ -1,11 +1,14 @@
 //por Valentina Bastos - 26893594
 
+//fução de carregar tanto os projetos do usuário quanto o perfil
 async function carregarProjetos() {
     try {
 
         const dados = await listarProjetosApi();
         await renderizarUsuario(dados.usuario);
-        await renderizarCardProjeto(dados.projetos);
+        //Se o perfil logado for administrador, retorna true
+        const ehAdministrador = dados.usuario.PERFIL === "ADMINISTRADOR";
+        await renderizarCardProjeto(dados.projetos, ehAdministrador);
         
     } catch (erro) {
         exibirMensagemLista("danger", erro.message);
@@ -13,15 +16,13 @@ async function carregarProjetos() {
     
 }
 
-async function renderizarCardProjeto(projetos) {
+//função que renderiza os projetos do usuário
+async function renderizarCardProjeto(projetos, ehAdministrador) {
     const projetoListado = document.getElementById("listar_projeto");
-
-    if (!projetoListado) {
-        throw new Error('Elemento "listar_projeto" não encontrado na página.');
-    }
 
     projetoListado.innerHTML = "";
 
+    //Se o usuário não participar de nenhum projeto, retorna uma mensagem
     if (!Array.isArray(projetos) || projetos.length === 0) {
         projetoListado.innerHTML = `
         <div class="pt-5 sem-projetos">
@@ -30,6 +31,8 @@ async function renderizarCardProjeto(projetos) {
         return;
     }
 
+    //Renderiza os cards de projeto
+    //Se o usuário for administrador, aparece também o botão de ver usuários daquele projeto
     projetos.forEach((projeto) => {
 
         projetoListado.innerHTML+= `
@@ -37,9 +40,12 @@ async function renderizarCardProjeto(projetos) {
             <div class="projeto card w-100 p-3">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0 fw-bold" id="nome_projeto">${projeto.TITULO}</h4>
-                    <a class="btn btn-primary irpara" href="../telaDemandas/demandas.html?id=${encodeURIComponent(projeto.ID_PROJETO)}">Ir para Dashboard
-                        <img class="icon-ir" src="../../icons/arrow-right-solid.png" alt="">
-                    </a>
+                    <div class="d-flex flex-wrap gap-2">
+                        ${ehAdministrador ? `<a class="btn btn-outline-primary" href="/projetos/${encodeURIComponent(projeto.ID_PROJETO)}/usuarios">Ver integrantes</a>` : ""}
+                        <a class="btn btn-primary irpara" href="/demandas?id=${encodeURIComponent(projeto.ID_PROJETO)}">Ir para Demandas
+                            <img class="icon-ir" src="../../icons/arrow-right-solid.png" alt="">
+                        </a>
+                    </div>
                 </div>
                 <div class="row">
                     <p class="p-3">
@@ -56,6 +62,7 @@ async function renderizarCardProjeto(projetos) {
 
 }
 
+//função que renderiza o nome e perfil do usuário logado
 async function renderizarUsuario(usuario) {
     const nomeUser = document.getElementById("nomeUsuario")
     const perfil =document.getElementById("perfilUsuario")
@@ -78,6 +85,7 @@ async function renderizarUsuario(usuario) {
     inicialUser.textContent =usuario.NOME.trim().charAt(0).toUpperCase();
 }
 
+//função de exibir mensagem em caso de erro
 function exibirMensagemLista(tipo, mensagem) {
   const areaMensagem = document.getElementById("areaMensagem");
 
@@ -90,4 +98,20 @@ function exibirMensagemLista(tipo, mensagem) {
   areaMensagem.innerHTML = mensagem;
 }
 
-window.addEventListener("DOMContentLoaded", carregarProjetos);
+window.addEventListener("DOMContentLoaded", () => {
+    carregarProjetos();
+
+    //Quando clicar no item de sair do menu, desloga o usuário
+    document.querySelector(".menu-item.sair")?.addEventListener("click", async (evento) => {
+        evento.preventDefault();
+
+        try {
+            const resposta = await fetch("/api/auth/logout", { method: "POST" });
+            if (!resposta.ok) throw new Error("Não foi possível encerrar a sessão.");
+
+            window.location.href = "/";
+        } catch (erro) {
+            exibirMensagemLista("danger", erro.message);
+        }
+    });
+});

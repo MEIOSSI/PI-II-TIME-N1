@@ -24,8 +24,10 @@ const erroStatus = document.querySelector("#erroStatus");
 // Painel exibido quando a demanda é cadastrada com sucesso
 const painelResultado = document.querySelector("#painelResultado");
 
-// se a URL tiver ?id=9 a tela abre em modo edição, senão é um cadastro novo
-const idDemanda = new URLSearchParams(window.location.search).get("id");
+// ?id identifica uma demanda para edição; ?projetoId pré-seleciona o projeto no cadastro.
+const parametrosUrl = new URLSearchParams(window.location.search);
+const idDemanda = parametrosUrl.get("id");
+const projetoInicialId = parametrosUrl.get("projetoId");
 const modoEdicao = idDemanda !== null;
 
 // traduz o valor do select (tipo/prioridade) pro nome que a API usa
@@ -127,12 +129,6 @@ formulario.addEventListener("submit", async function (event) {
         formValido = false;
     }
 
-    // Responsável é opcional na criação, mas se preencher precisa ter 3+ letras
-    if (responsavel !== "" && responsavel.length < 3) {
-        mostrarErro(campoResponsavel, erroResponsavel, "O responsável deve possuir pelo menos 3 letras");
-        formValido = false;
-    }
-
     // Validar prazo (precisa ser hoje ou data futura)
     if (prazo === "") {
         mostrarErro(campoPrazo, erroPrazo, "Prazo é obrigatório!");
@@ -169,7 +165,8 @@ formulario.addEventListener("submit", async function (event) {
         tipo: tipos[tipo],
         prioridade: prioridades[prioridade],
         projetoId: Number(projeto), // o select entrega texto e a API quer número
-        prazo
+        prazo,
+        responsavelId: responsavel ? Number(responsavel) : null
     };
 
 try {
@@ -178,12 +175,11 @@ try {
     // editou: volta pra tela de detalhes da demanda
     if (modoEdicao) {
         window.location.href = `/detalhes/${idDemanda}`;
-     return;
+        return;
     }
 
-        // deu certo
-        painelErro.classList.add("d-none");
-        painelResultado.classList.remove("d-none");
+    // Após criar, abre o quadro de demandas do projeto selecionado.
+    window.location.href = `/demandas?id=${encodeURIComponent(demanda.projetoId)}`;
     } catch (erro) {
         // erro.message traz a mensagem da API, ou um aviso se o servidor estiver desligado
         painelErro.innerText = erro.message;
@@ -220,45 +216,77 @@ async function enviarDemandaApi(demanda) {
 
 // tira acento e maiúsculas pra comparar textos (ex.: "Em revisão" e "em revisao")
 function normalizar(texto) {
-    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    // A API pode não retornar o status em alguns registros antigos.
+    // Converte valores ausentes em texto vazio antes de remover acentos.
+    return (typeof texto === "string" ? texto : "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
 }
 
-// modo edição: busca a demanda na API e preenche o formulário
-async function carregarDemanda() {
-    try {
-        const resposta = await fetch(`/api/demandas/${idDemanda}`);
-        const dados = await resposta.json();
-
-        if (!resposta.ok) {
-            throw new Error(dados.mensagem);
-        }
+// modo edição: aplica no formulário os dados já carregados da API
+async function preencherDemanda(dados) {
+        // Aceita respostas envolvidas em "demanda"/"data" e nomes de coluna Oracle.
+        // A busca ignora caixa e underscores (ex.: projetoId, PROJETO_ID).
+        const envelope = Object.keys(dados).find((chave) => ["demanda", "data"].includes(chave.toLowerCase()));
+        const registroRecebido = envelope ? dados[envelope] : dados;
+        const registro = Array.isArray(registroRecebido)
+            ? registroRecebido[0] ?? {}
+            : registroRecebido;
+        const campo = (...nomes) => {
+            const chaves = Object.keys(registro);
+            for (const nome of nomes) {
+                const chave = chaves.find((item) => item.replace(/_/g, "").toLowerCase() === nome.replace(/_/g, "").toLowerCase());
+                if (chave !== undefined && registro[chave] !== null) return registro[chave];
+            }
+            return undefined;
+        };
+        const projetoId = campo("projetoId", "PROJETO_ID", "ID_PROJETO");
+        const status = campo("status", "STATUS");
 
         // o select só tem o projeto 1 fixo, então cria a opção se a demanda for de outro projeto
-        if (!campoProjeto.querySelector(`option[value="${dados.projetoId}"]`)) {
-            campoProjeto.add(new Option(`Projeto ${dados.projetoId}`, dados.projetoId));
+        if (!campoProjeto.querySelector(`option[value="${projetoId}"]`)) {
+            campoProjeto.add(new Option(`Projeto ${projetoId}`, projetoId));
         }
 
-        campoProjeto.value = dados.projetoId;
-        campoTitulo.value = dados.titulo;
-        campoDescricao.value = dados.descricao;
-        campoTipo.value = Object.keys(tipos).find((chave) => tipos[chave] === dados.tipo);
-        campoPrioridade.value = Object.keys(prioridades).find((chave) => prioridades[chave] === dados.prioridade);
-        campoPrazo.value = dados.prazo || "";
+        campoProjeto.value = projetoId ?? "";
+
+        campoTitulo.value = campo("titulo", "TITULO") ?? "";
+        campoDescricao.value = campo("descricao", "DESCRICAO") ?? "";
+        const tipo = campo("tipo", "TIPO");
+        const prioridade = campo("prioridade", "PRIORIDADE");
+        campoTipo.value = Object.keys(tipos).find((chave) => normalizar(tipos[chave]) === normalizar(tipo)
+            || normalizar(chave) === normalizar(tipo));
+        campoPrioridade.value = Object.keys(prioridades).find((chave) => normalizar(prioridades[chave]) === normalizar(prioridade)
+            || normalizar(chave) === normalizar(prioridade));
+        campoPrazo.value = campo("prazo", "PRAZO_FINAL") ?? "";
 
         // o status vem como "Em andamento": acha a opção do select com o mesmo texto
         for (const opcao of campoStatus.options) {
-            if (normalizar(opcao.text) === normalizar(dados.status)) {
+            if (normalizar(opcao.text) === normalizar(status)
+                || normalizar(opcao.value) === normalizar(status)) {
                 campoStatus.value = opcao.value;
             }
         }
 
         // status e responsável não se alteram por essa tela
         campoStatus.disabled = true;
-        campoResponsavel.disabled = true;
-    } catch (erro) {
-        painelErro.innerText = erro.message;
-        painelErro.classList.remove("d-none");
+
+        await carregarMembros(projetoId);
+        campoResponsavel.value = campo("responsavelId", "RESPONSAVEL_ID") ?? "";
+        
+}
+
+async function buscarDemandaParaEdicao() {
+    const resposta = await fetch(`/api/demandas/${idDemanda}`);
+    const dados = await resposta.json().catch(() => ({}));
+
+    if (!resposta.ok) {
+        throw new Error(dados.mensagem || "Não foi possível carregar a demanda.");
     }
+
+    return dados;
 }
 
 // busca os projetos na API da Valentina (GET /projetos) e preenche o select
@@ -282,14 +310,56 @@ async function carregarProjetos() {
     }
 }
 
-// primeiro carrega os projetos, depois preenche a edição (senão o select ainda estaria vazio)
-async function iniciar() {
-    await carregarProjetos();
+ // busca os membros do projeto escolhido e preenche o select de responsável
+async function carregarMembros(projetoId) {
+    campoResponsavel.innerHTML = '<option value="">Sem responsável por enquanto</option>';
 
+    if (!projetoId) {
+        return;
+    }
+
+    try {
+        const resposta = await fetch(`/api/demandas/projeto/${projetoId}/membros`);
+        const membros = await resposta.json().catch(() => []);
+
+        if (!resposta.ok) {
+            throw new Error("Não foi possível carregar os membros do projeto.");
+        }
+
+        membros.forEach((membro) => {
+            campoResponsavel.add(new Option(membro.nome, membro.id));
+        });
+    } catch (erro) {
+        painelErro.innerText = erro.message;
+        painelErro.classList.remove("d-none");
+    }
+}
+
+// quando troca o projeto, recarrega a lista de responsáveis
+campoProjeto.addEventListener("change", function () {
+    carregarMembros(campoProjeto.value);
+});
+
+// primeiro carrega os projetos, depois preenche a edição
+async function iniciar() {
     if (modoEdicao) {
         document.querySelector("h1").innerText = "Editar demanda";
         document.querySelector("button[type='submit']").innerText = "Salvar";
-        await carregarDemanda();
+        try {
+            // Essas consultas não dependem uma da outra; carregar juntas reduz a espera na edição.
+            const [, demanda] = await Promise.all([carregarProjetos(), buscarDemandaParaEdicao()]);
+            await preencherDemanda(demanda);
+        } catch (erro) {
+            painelErro.innerText = erro.message;
+            painelErro.classList.remove("d-none");
+        }
+        return;
+    }
+
+    await carregarProjetos();
+    if (projetoInicialId && Array.from(campoProjeto.options).some(opcao => opcao.value === projetoInicialId)) {
+        campoProjeto.value = projetoInicialId;
+        await carregarMembros(projetoInicialId);
     }
 }
 

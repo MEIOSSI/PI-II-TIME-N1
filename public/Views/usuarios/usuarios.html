@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrantes do projeto</title>
+    <link href="/Views/usuarios/style.css" rel="stylesheet">
+    <script defer src="/Views/usuarios/usuarios.js"></script>
+</head>
+<body>
+      <!-- CABEÇALHO -->
+    <header class="cabecalho">
+
+        <div class="projeto">
+            <a href="/view/projetos" class="voltar">
+                <img src="/icons/arrow-left-solid.png" alt="" class="icon-voltar">
+                <span class="voltar-texto">Voltar para Projetos</span>
+            </a>
+            <h2 id="nomeProjeto">Integrantes</h2>
+        </div>
+
+        <div class="acoes">
+            <span id="quantidadeUsuarios">Carregando integrantes...</span>
+        </div>
+
+    </header>
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="conteudo">
+
+        <h1>Pessoas envolvidas no projeto</h1>
+
+        <p class="subtitulo">
+            Equipe responsável pelo desenvolvimento e acompanhamento das demandas
+        </p>
+
+
+        <!-- LISTA DE PESSOAS -->
+        <div id="mensagemUsuarios" role="status"></div>
+        <section class="equipe" id="listaUsuarios"></section>
+
+    </main>
+
+</body>
+</html>
