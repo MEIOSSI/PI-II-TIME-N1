@@ -191,7 +191,7 @@
             }
 
             document.getElementById("linkVoltarDemandas").href =
-                `/Views/telaDemandas/demandas.html?id=${encodeURIComponent(demanda.PROJETO_ID)}`;
+                `/demandas?id=${encodeURIComponent(demanda.PROJETO_ID)}`;
 
             const statusAtual = String(demanda.STATUS ?? "").trim().toUpperCase();
             const nomeUsuarioLogado = demanda.NOME_USUARIO_LOGADO ?? "Usuário não autenticado";

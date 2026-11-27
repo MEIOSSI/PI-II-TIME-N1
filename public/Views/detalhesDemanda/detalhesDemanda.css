@@ -17,10 +17,6 @@ header {
     flex: 0 0 auto;
 }
 
-.icon-voltar:hover{
-    transform: scale(1.2);
-}
-
 .icon-voltar{
     width: 25px;
     transition: filter 0.2s ease;
@@ -48,6 +44,15 @@ header {
 .proj-header a:hover {
     color: white;
     text-decoration: underline;
+}
+
+.proj-header a.link-voltar-demandas,
+.proj-header a.link-voltar-demandas:hover {
+    color: white;
+    text-decoration: none;
+    background-color: transparent;
+    border-color: #f8f9fa;
+    box-shadow: none;
 }
 
 .perfil-texto {
