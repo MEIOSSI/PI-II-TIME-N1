@@ -1,5 +1,5 @@
 // por: Vitor Hugo Turati Ianagui - <26025950>
-// Funções de hash de senha (bcrypt). O banco guarda só o hash, nunca a senha.
+// Funções de hash de senha (bcrypt)
 
 import bcrypt from "bcryptjs";
 

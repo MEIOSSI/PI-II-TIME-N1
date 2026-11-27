@@ -1,4 +1,4 @@
-
+//Por Vitor Hugo Turati Ianagui RA: 26025950
 import { validarSenha } from "./senha.validator";
 import { validarCPF } from "./cpf.validator";
 import { validarCEP } from "./cep.validator";

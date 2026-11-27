@@ -1,3 +1,4 @@
+//Por Vitor Hugo Turati Ianagui RA: 26025950
 
 export function validarCPF(cpf: string): boolean {
   const numeros = cpf.replace(/\D/g, "");

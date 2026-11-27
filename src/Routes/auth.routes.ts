@@ -206,7 +206,6 @@ router.post("/redefinir-senha", async (req: Request, res: Response) => {
     }
 
     try {
-        // 2) Senha atual confere com o hash do banco?
         const usuario = await buscarUsuarioAtivoPorEmail(dados.email);
         const senhaAtualCorreta = await compararSenha(dados.senhaAtual, usuario?.SENHA);
 
@@ -217,7 +216,6 @@ router.post("/redefinir-senha", async (req: Request, res: Response) => {
             });
         }
 
-        // 3) Salva o hash da nova senha
         const novoHash = await gerarHashSenha(dados.novaSenha);
         await executarComando(
             `UPDATE pi2Usuarios
