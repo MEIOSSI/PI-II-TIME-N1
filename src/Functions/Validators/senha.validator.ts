@@ -1,3 +1,4 @@
+//Por: Vitor Hugo Turati Ianagui (26025950)
 
 export function validarSenha(senha: string): string[] {
   const erros: string[] = [];

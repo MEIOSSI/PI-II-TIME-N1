@@ -3,7 +3,7 @@ interface RespostaViaCEP {
   cep?: string;
   erro?: boolean | string;
 }
-
+// Por: Vitor Hugo Turati Ianagui (26025950)
 export async function validarCEP(cep: string): Promise<boolean> {
   const numeros = cep.replace(/\D/g, "");
 
